@@ -1,0 +1,95 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about an extension of the self-attention mechanism,
+
+which is going to allow us to make it more general and more powerful, and generally use it as a strong component of modern neural networks.
+
+So the one of the drawbacks of attention, as we've seen so far,
+
+is that while I can theoretically look at a long context of information and mix a lot of different information together,
+
+in practice that doesn't always happen. Uh, the distributions that come out of softmax tend to be very peaky,
+
+partially because it's hard to balance the values of different logits very precisely when they're sort of computed based on different inputs.
+
+So in reality, what we kind of want for.
+
+Language modeling in a situation like this is if you're saying I visited New Blank,
+
+we really need to know that this is like a place that's new something, and it's a place maybe that I visited or I want to visit.
+
+Right. So, you know, maybe we think that the attention distribution should be something like this where it kind of places equal uh,
+
+weight and un visited and new.
+
+Um, but then. Usually what we end up with is something like this, where it'll kind of like have much more weight on one than the other.
+
+And so we're not going to kind of be able to blend information about these two concepts, uh, together.
+
+So one solution to this is to just stack layers, right.
+
+We can have many different layers of the network and kind of, over time, gradually be able to, uh, integrate this information together.
+
+If like layer one looks at new and layer two looks at visited.
+
+But it would be great if we could get this, uh, capability within a single layer of the model as well.
+
+And this is what multi-head self-attention is going to allow us to do.
+
+So we mentioned the idea of an attention head before.
+
+And basically we're just going to copy paste the whole architecture that we had and do multiple independent copies of attention.
+
+So we talked about it as a process that's parameterized by wq, k and WV.
+
+Now what I said is that those were matrices that you could just randomly initialize.
+
+And then we're going to learn through back propagation.
+
+But what you can do is you could say all right I'm going to randomly initialize two sets of these matrices.
+
+Right. Uh, just have two different queues, two different ways, two different wvs for the same sets of inputs.
+
+Now these are going to compute different queries keys and values.
+
+And so the attention computations you get are naturally going to be different.
+
+So to kind of show it in a little more detail we take our word embeddings X and we take all of these different matrices.
+
+In this case we're going to look at eight copies borrowing this figure from Alamar.
+
+And that is going to then give us eight different outputs of the attention z0 through z seven here.
+
+Remember that the Z's were kind of linear combinations of the values produced by, uh, taking the attention matrices from each corresponding q and k.
+
+So at each point here, like these two are going to combine to form.
+
+Uh, something we're going to call A1 that's going to have, you know, some distribution.
+
+These two are going to form a zero, which might have, you know, a different distribution.
+
+So at the end we get all these Zs, and what we need to do is we need to kind of collapse them all back down.
+
+So instead of having a three dimensional embedding for each of two words, we're going to concatenate them all together.
+
+So we actually got a 24 dimensional embedding for each of those two words.
+
+Then multiply it by a matrix and kind of bring it back down to the same size as the input.
+
+So now we've got our input and output the same size,
+
+but we've been able to incorporate all of this different information from the different distributions that can do things like A1 looks at new,
+
+A0 looks at visited. They can look at this different a different, these different words in the context for example.
+
+So ultimately we've kind of achieved our goal here where we can have one head, attend a new another, attend a visited.
+
+And this stuff gets all kind of blended together in this model and turned into a new contextualized representation here.
+
+And we see now with all these pieces of the transformer in place, it's really enabled us to kind of deliver on this,
+
+this view here of taking this information and using stuff from all throughout the context in a kind of non-uniform way,
+
+but still be able to kind of scale efficiently and do so with a small number of parameters.
+
+That's the end of this segment.
+

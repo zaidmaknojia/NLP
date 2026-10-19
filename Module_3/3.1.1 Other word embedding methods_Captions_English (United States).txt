@@ -1,0 +1,355 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about connections between the skip gram method for producing word embeddings and other techniques,
+
+uh, and sort of related ideas that have come up in the literature.
+
+So recall that the skip gram method predicts a word of context based on each word we have in some big corpus up to a distance k.
+
+I'm going to show you another formulation of this, uh, which is that we take our kind of word and focus,
+
+which here is bet and we can think about this prediction as multiplication by a matrix W and then applying a softmax.
+
+And this returns a distribution over the vocabulary which reflects a distribution over context words given.
+
+Um, again this kind of word in focus. Uh, and so, you know, for this example, uh, we have that dog as one example.
+
+And that would be another example. When we take window size k equals one.
+
+And the parameters here are the same as the other version, where we just think about it in terms of vectors.
+
+The only difference is that now this matrix W is what's encoding the context vectors.
+
+But you should be able to verify it for yourself that essentially, um, this uh,
+
+embedding of the word that, uh, this word vector then gets kind of multiplied by each, uh, each row of W.
+
+And so we can think about those rows of W as context vectors corresponding to each word in the vocabulary.
+
+And so why is this technique called the skip gram model?
+
+Well, because if we think about window sizes larger than one, we would be having pairs in our, uh, training corpus like man.
+
+And so we're predicting the context word man skipping over this intermediate word.
+
+Uh uh. And this is related to an idea from n gram language modeling.
+
+We'll come back to n gram language modeling later.
+
+And the idea was when you want to predict a word, you know, based on some other words in the context, but not, uh, kind of immediately adjacent.
+
+One is called a skip gram model. So we can think about very similar approaches to, uh, tackling this problem.
+
+And, uh, Thomas Micallef at all, uh, in their work in 2013, uh, looked at a related technique called the continuous bag of words.
+
+And this almost in a way, kind of flips around the skip gram model.
+
+Now, instead of thinking about predicting a word context from that word, we're thinking about predicting the word based on its context.
+
+And the only difference here is that now we can think about using multiple words of context.
+
+So for example, if bit is our focus word now it's what we're trying to predict.
+
+So we have the and dog embeddings from those.
+
+Uh we just add those up to get a single embedding of size D.
+
+And then everything kind of proceeds the same as before. We have uh, a multiplication by a matrix w softmax.
+
+And uh, now we have a prediction where in this case what we're trying to predict is bet.
+
+And this gives us a distribution over the vocabulary.
+
+Um, so mathematically we can write that like this, uh, where we have context embeddings for w minus one and w plus one.
+
+I'm just using those as placeholders for saying the previous word in the next word,
+
+uh, embed those with these context embeddings multiply by w and softmax.
+
+The parameters of this are the same as before.
+
+I've kind of flipped the colors here, but you could see that, uh, the context vectors are now what is kind of at the input layer.
+
+And this matrix W now reflects the word vectors.
+
+But again these things are kind of, you know, symmetric anyway.
+
+So which one you call word and context is not is not super important.
+
+It's really just notation.
+
+This technique performs very similarly to the skip gram model, so we're not going to talk about it in, uh, much more detail.
+
+Um, but it goes to show that there's multiple different ways of framing this idea of learning,
+
+uh, embeddings based on just sort of co-occurrence in a large corpus.
+
+And there's several different reasonable things you can do.
+
+And the last thing I'll say about this is that here we show an example again with window size k equals one.
+
+But you could do the same thing as in the skip gram model where you can go up to progressively larger window sizes and uh,
+
+incorporate more words of context in this initial sum. So we could look at these two formulations here.
+
+And the problem with them from an implementation standpoint is that this matrix
+
+multiply and softmax over the entire vocabulary is very slow to compute.
+
+If we think about what's required, suppose we have, you know,
+
+a billion words on the web that would give us roughly a billion training examples, let's say.
+
+But then for each one of those, what we need to do is we need to multiply by this, uh, if our vocabulary size is 10,000,
+
+which is actually pretty small for one of these vocabularies, but if it's 10,000, we have to multiply by a 10,000.
+
+Uh, a, you know, a matrix with 10,000 rows in it and take a softmax over that, um, which starts to get very, very slow.
+
+So. The problem here is that we're using the standard softmax, where we have to compute all a dot product for each word in the vocabulary.
+
+So we can leverage this idea called the hierarchical softmax.
+
+This is one way to make things faster. And the idea here is rather than having a single kind of 10,000 way branching decision,
+
+essentially we instead have a bunch of binary decisions and these form a tree.
+
+And at the leaves of the tree are the words in our vocabulary.
+
+So for example here we might have v and a uh at the leaves here.
+
+And then the tree might kind of continue over here. So we can think of this as basically taking our vocabulary,
+
+doing some kind of encoding scheme like Huffman coding to convert it into a sequence of binary decisions.
+
+And then we can model those binary decisions with binary classifiers.
+
+So in order to actually get to a leaf of this tree, we now only need to make log the binary decisions for each, uh, prediction that we want to make.
+
+So obviously significantly better than order V. The number of dot products that we need to do in and computing.
+
+It is much smaller. But, um, it's worth noting that the number of parameters is the same because in order to have a binary tree with,
+
+uh, with the nodes here, um, we end up with, with the leaves to encode the entire vocabulary.
+
+Um, we end up having v minus one decisions in that.
+
+So essentially the same number of parameters as before. This is one technique for taking these methods and speeding that.
+
+Another one that's a little bit more common is what's called skip gram with negative sampling.
+
+And the way we can think about this is okay, well, we formulated the skip gram objective in the continuous bag of words.
+
+But I mean we had a lot of degrees of freedom when doing this.
+
+Right. Did we even need to necessarily define our, uh, embedding optimization problem in this particular way?
+
+And the answer is no. And here's another way to think about forming formulating this problem,
+
+which is that we can take word and context pairs and classify them as quote unquote, real or not.
+
+And so real pairs come from our data. So for example, if we have bit and then we see those together that constitutes a real pair.
+
+And then we can create negative examples by taking, you know, the word bet and saying, okay,
+
+what's a sort of fake context word that I could make up for this and I'm just going to sample some random word.
+
+Maybe I get cat. And so we call this a negative example.
+
+Now this is an example that actually could show up in our corpus.
+
+So in some sense it's you know, like it's not a kind of hard negative and that we know that, uh, you know, this could show up elsewhere.
+
+Um, but if we if we kind of go through this process, we'll, we'll sort of get, uh, you know, a collection of, uh,
+
+both positives that we collect and negatives that we sample, and some of them will be good, and some of them won't be.
+
+And then we can formulate this as binary classification,
+
+where we consider the score of a pair to be the dot product of the weight vector and the context vector.
+
+And we just use standard logistic regression to say, is this a positive example or a negative example?
+
+And so we get the same effects as before, which is that a word?
+
+Two words is similar. Context should select for uh, you know, similar uh, basically similar other words.
+
+And if we optimize this objective, it turns out we can kind of achieve the same effects.
+
+And again, we don't care about this actual classifier.
+
+What we care about are the embeddings. So from the perspective of learning embeddings this is a viable way to do it.
+
+So the number of parameters is the same as before. We've still got word and context vectors.
+
+Um, and the objective now looks like this thing where we are maximizing the log probability of, uh, the positive label associated with real pairs.
+
+That's what's on the left here. And then we have, uh, a set of, uh, k negatives here where the, uh, for each negative,
+
+we want to, uh, well, maximize the probability of it being labeled in the negative class.
+
+And so, um, what we've written here is a sampling of, uh, sampling the word whether you sample the word or the context doesn't really matter.
+
+All right, so this is one of the more, uh, common techniques for doing this kind of, uh, for,
+
+you know, in this, uh, Michelob style, uh, continuous bag of words, skip gram formulation.
+
+This is one of the most common techniques just because it's the most efficient.
+
+We're not going to connect up these techniques that we've seen with a couple of, uh, ideas from that encode the,
+
+uh, co-occurrence as a matrix and are going to avoid our dependance on the size of our corpus altogether.
+
+So here's how that's going to look like. So one thing we can kind of reflect on our current technique is that.
+
+The skip gram model is really in some sense operating over counts of word pairs, right?
+
+Uh, you know, what we've done is we look at our corpus and we compute these counts of okay, bit.
+
+And, uh, I saw that here, and then I saw, you know, bit cat later, whatever.
+
+And so we can think about boiling down our corpus, the entire web, whatever, into a set of counts like this.
+
+And then what comes out from this procedure is a set of word vectors and context vectors which have these dimensions.
+
+Now if we if, if we look at this, this really kind of looks like matrix factorization.
+
+And so the question is can we interpret it this way. And the answer is yes.
+
+So uh, Omar Levy at all in 2014 uh,
+
+kind of worked work this out where if we assign the cells of this V by V matrix to have the following uh values, um,
+
+the ij, the ij cell has a value being the pointwise mutual information of y and c j minus log k,
+
+where log k is a is is like the k from negative sampling.
+
+Um, then what we recover, it turns out, is going to be the skip gram with negative sampling.
+
+Uh objective. And so this PMI term looks like this.
+
+Uh, it's basically the probability of y and j co-occurring,
+
+which is just the count of those pairs divided by like the total number of pairs in our data set D.
+
+And then in the denominator here we just have the number of the or the fraction I guess of occurrences of y and k each.
+
+And so the skip gram objective with negative sampling exactly corresponds to factoring this matrix.
+
+Um, under two assumptions. The first is that we sample negative examples from the uniform distribution over words.
+
+Um, and, uh. The reason.
+
+Actually. Sorry. That's a mistake. That should be the, uh, the unigram distribution, um, meaning the counts of each, uh, you know,
+
+basically the number, the number of times you see that word normalized by the corpus.
+
+And the reason, uh, the reason, you know, connecting this up to the PMI thing above is that, uh, you know, we see.
+
+Each context a certain number of times. And then if we sample the negative examples uniformly at random,
+
+that kind of gives us this independent process for picking a context word and then a word.
+
+And so that kind of gives you the denominator here for your negatives.
+
+And then the numerator looks like the positives because it looks like true pairs from the data set.
+
+Uh, and the other thing you have to do is make this a weighted factorization problem,
+
+where the cost of reconstructing each cell in this matrix depends on the,
+
+uh, frequency of, uh, or basically the kind of weight associated with the, uh, the word is in that cell.
+
+So this is kind of a this is kind of a nice connection.
+
+And it leads us into, uh, the kind of main technique that gets used here, um, which is called glove for global vectors.
+
+This is a technique that also operates on the counts matrix.
+
+It doesn't view it as, uh, a factorization problem, but instead just as a regression problem.
+
+So here what we are doing is we are trying to reconstruct the values, uh, in the cells of this matrix, uh, where the values here are these log counts.
+
+And the, uh, regression works by using, uh, the word and context vectors.
+
+And then also, uh, some constants here.
+
+And so the, uh, you know, essentially what essentially the the kind of nice thing about this technique is it enables us to break away from, uh.
+
+Having to. Again, if we have a billion words in our data set, having to iterate over a billion training examples instead,
+
+we just need to look at this word by word, uh, vocabulary matrix and do a regression on it.
+
+And this ends up being a lot more efficient. So it's quadratic in the vocabulary size, but ends up being constant in the data set size.
+
+And this lets it scale, uh, more nicely. Um, this is probably the most common method for using word vectors today.
+
+Um, it has a huge number of citations, and those started coming soon after it came out.
+
+So very quickly became the standard technique in this space. All right, I'll just mention two last, uh, related techniques.
+
+The first is called fast text.
+
+Um, this is the same as skip gram with negative sampling, but it looks at each word and breaks it down into a set of character n grams.
+
+For example, uh, when we have the word where we can decompose that into three grams, four grams, five grams, and six grams like this.
+
+And then instead of representing a word by a set of, uh, or by a single vector,
+
+we represent that word as a sum over the character n grams within that word.
+
+So the nice thing about this is it lets us actually deal with words that we've never seen before,
+
+because we can now embed them by summing up their n grams.
+
+So that's pretty cool.
+
+It turns out that this technique, uh, you know, as as nice as it is, uh, sort of fell by the wayside with the advent of pre-trained models.
+
+Uh, so these are models that we're going to come back to, uh, later in the course.
+
+But the way they deal with, uh, the problem of rare words or, uh,
+
+needing to generalize to things we haven't seen before is by encoding what are called subwords.
+
+Um, so, for example, we have this, these snippets,
+
+and there were no refueling stations anywhere or one of the city's more unprincipled real estate agents, and in this case, refueling.
+
+And on principle, these are rare words.
+
+And what happens is they get broken up into these little chunks that end in semicolon or, sorry, that end in underscores.
+
+And so any word is either in the vocabulary, like most of the words we see here,
+
+or it can be expressed as a sequence of sub words that are in the vocabulary.
+
+So we don't have to think about kind of summing over all possible ngrams.
+
+Instead, we have a canonical segmentation for each word. All right.
+
+We're not going to talk more about these embedding techniques now.
+
+Um, rather than just assigning a fixed embedding to a subword, the main power of these techniques is that they use, uh,
+
+techniques like recurrent neural networks and transformers to actually compute those embeddings in a context aware way.
+
+Um, so it's not just like a big table of numbers like we've got in our other embedding techniques,
+
+but we actually need to run some sort of heavyweight model in order to compute them.
+
+Uh, and these are, these techniques are all going to be learned through language modeling.
+
+It doesn't look so dissimilar from what we're doing with skip gram and continuous bag of words, in the sense that we're going to be,
+
+you know, predicting a word based on either the words that came before it or the words around it or something.
+
+Um, but we're going to come back to, uh, language modeling ideas later, uh, in the course.
+
+And so for here, you know, the main takeaway is that there's many ways to think about going from a large corpus to a set of word embeddings.
+
+Uh, and we've seen a few of those here.
+
+And this should give you an idea of what the standard techniques in the space are doing, uh, and what their differences are.
+
+And that's the end of the segment.
+

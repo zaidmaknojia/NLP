@@ -1,0 +1,145 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to introduce the ideas behind Bert so that we can understand what's going on inside that model and how it's trained.
+
+And then further on down the road, we'll look at all the things that it can do.
+
+So the basic history is that Elmo came out in the spring of 2018.
+
+Uh, and then uh, follow up called GPT, which was more or less a sort of transformer based version of some similar ideas came out that summer.
+
+And when Bert came out, it had several major changes compared to Elmo.
+
+One was using Transformers, uh, but the main kind of critical one that informs how we think about what these models are
+
+doing is using a different type of training objective called masked language modeling,
+
+instead of the normal language modeling training objective that Elmo used.
+
+So we'll talk about some of these other differences, uh, later.
+
+But for now, let's talk about this idea of masked language modeling and see why we might want to do it.
+
+So in Elmo and also GPT three, we have a unidirectional model.
+
+So if we think about encoding this sentence and trying to get good vector representations or contextualized vector representations of the words in it,
+
+the way that we would understand the word Copeland is by having Elmo run in each direction
+
+and taking the representations from those LSTMs at the time step corresponding to Copeland.
+
+And so maybe, you know, the forward Elmo should tell us that Copeland is a ballet dancer,
+
+and the backward Elmo should tell us that Copeland is a performer.
+
+Right? And so these pieces of information are then stapled together into a single vector, but they're not deeply merged, right.
+
+Like we're just concatenating these two independent views of what's going on in the rest of the sentence.
+
+Bert is going to do something different,
+
+where it's going to be able to look at the whole sentence and produce a vector that ideally captures both of these aspects.
+
+So how do we learn this model that's so-called deeply bidirectional?
+
+Um, so one thing we've said was that Bert, compared to Elmo, replaces LSTMs with Transformers.
+
+And so Transformers allow us to look at the context more broadly with the self-attention mechanism.
+
+And so maybe we can just train a language model and use transformers instead of LSTMs.
+
+And then we'd be done. So what happens if we do that?
+
+So it turns out that this does not work.
+
+And the reason it doesn't work is because in language modeling, you're always thinking about predicting the next word based on the current word.
+
+And so you have to be very careful to set up your model so that it doesn't look at the next word.
+
+If you're feeding all this stuff in as a batch, right? Um, I mean, Elmo is set up so that every prediction going on here,
+
+even though it's all one neural network, only looks at the past in order to predict the next word.
+
+And that's correct. But here, if we just naively threw Transformers at this, um, you know,
+
+this prediction of Madagascar, for example, can be informed by self-attention from visited.
+
+Looking at the next word here. Um, so what I'll say is that GPT uses a one sided transformer, which only looks at, uh.
+
+Which only looks back at the past here. Um, and so there are ways to fix this.
+
+Uh, but that doesn't solve the problem of how we integrate information from both the
+
+past and the future in order to inform the representation of the current word.
+
+All right. So that's where masked language modeling comes in.
+
+What we do in masked language modeling is we say, all right, we're going to take a chunk of text.
+
+And rather than try to predict every word based on what came before, instead we're going to say,
+
+let's just forget some of the words, let's replace them with mask tokens.
+
+And then we're going to try to predict the words that fill the that fill in those mask tokens.
+
+And we're going to do this not to every word. Because if we replace everything with masks, there would be nothing to predict from.
+
+But roughly 15% of the words we're going to try to predict based on the context.
+
+And this is going to allow the model to then look at everything but not cheat.
+
+Right, because there's no way of seeing Madagascar. Um, if just this, this mask token is in the input and Madagascar is not in the input at all.
+
+All right. So this is the one of the fundamental ideas behind Bert and a lot of the other models that have followed on it.
+
+So what they do is they have a input that consists of, uh, a couple of different sections here.
+
+It starts off with this CLS token. We'll talk about the function of that later.
+
+And then it starts with one chunk of text a separator token and then another chunk of text.
+
+And these two chunks of text might be from, let's say, contiguous paragraphs on Wikipedia.
+
+Uh, and in this case, we mask out, you know, 15% of our tokens and predict words based on the masks.
+
+Okay, so why is this in red here? And why is it starting? Suddenly start talking about Madonna.
+
+So 50% of the time, what they do is they take two paragraphs that are not contiguous on Wikipedia,
+
+uh, or whatever corpus they're training from, and they ram these together.
+
+And then what they want to do is they want to use this class embedding to predict
+
+whether this second chunk is the true continuation of the first chunk or not.
+
+So the idea behind this was twofold. One was to try to get even more non-local reasoning in this model by saying, all right.
+
+Like, I want this. I want this model to have to really think about the interactions between these two
+
+chunks in order to understand whether these are continuations of each other or not.
+
+And so that then that prediction gets localized at the CLS token.
+
+And the CLS token can attend everywhere, right. So kind of where it shows up is not necessarily so important.
+
+But the fact is we have this one token in our model that we're saying is going to
+
+be useful for making this classification decision that looks at the entire input.
+
+And that's something that we're going to want to do. We're going to see in a future segment how Bert is applied.
+
+And we're going to understand that that CLS token is usually what people use in order to aggregate information about the whole context.
+
+So the overall Bert objective combines this masked language modeling and this next sentence prediction.
+
+Now it turns out in some future work that the next sentence prediction part is not so important.
+
+But I think this gives you the intuition for how we're going to get the model to look at all this context,
+
+understand these tokens in this deeply bidirectional fashion.
+
+Where to figure out Madagascar. You want to look at everything that came before and after it.
+
+Um, and then how that's going to be the foundation of our how we build classifiers that live on top of Bert.
+
+That's the end of the segment.
+

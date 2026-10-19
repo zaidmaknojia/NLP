@@ -1,0 +1,163 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about how to take word embeddings and actually apply them in, uh, a basic neural net architecture for NLP.
+
+The deep averaging network. So the typically the way that embeddings get used is in the first layer of the network.
+
+The first step we do is we take, uh, our indices of words.
+
+Essentially we've, we've, uh, kind of mapped them into our vocabulary.
+
+And then we embed those words. We, uh, we use our embeddings to convert them into vectors.
+
+So there's actually a few different ways to do this. The first is that we, uh, learn these embeddings as parameters from our data.
+
+Meaning we don't use any kind of pre-trained or vectors that are learned over the web.
+
+Uh, instead, we just randomly initialize all of them and learn them with backpropagation.
+
+And that's actually can work reasonably well. Um, if you have enough data in your, uh, in your data set,
+
+you can learn the important relationships between words purely from the data without, uh, needing to appeal to this kind of external resource.
+
+Of course. But it can't do is let you deal with words that aren't seen in your training set.
+
+Uh, and things like that.
+
+So the second approach is to initialize these word embeddings with glove and then keep them fixed, meaning that we, uh, take glove vectors.
+
+And I mean, again, you can use any of the techniques here. Continuous bag of words, skip gram, whatever you take those vectors, uh,
+
+your first layer of the network just looks up that glove embedding, um, and then sticks it in to whatever is going to happen from there.
+
+And so this is, uh, this is sort of slightly more efficient from a training perspective because we don't need to update,
+
+uh, we don't need to update the word embedding layer at all.
+
+Um, but of course,
+
+it's a little bit inflexible if the glove objective doesn't actually learn exactly the right structure in the vector space for whatever task you have,
+
+um, it's not necessarily going to work great. And this is true for sentiment, where, uh,
+
+a kind of famous problem with embeddings is that antonyms like good and bad often end up kind of closer than you would want,
+
+because they can occur with a lot of the same words like, you know, good food, bad food.
+
+Right? Both of those show up. So the third technique, uh, is to initialize with glove, but then additionally fine tune the embeddings during learning,
+
+meaning, uh, kind of backpropagate your gradients into this embedding layer as well.
+
+Uh, and whether this works better than approach two or approach one like this really
+
+depends on the task and the specifics of the amount of data that you have.
+
+Um, but for tasks like sentiment, this is often the most standard way to do it.
+
+We can.
+
+So when we think about applying these word embeddings, we can think about evaluating them, uh, intrinsically so-called on tasks like word similarity,
+
+meaning we just look at the embeddings and say, okay, how good is this embedding for sort of for embedding sake?
+
+This is not typically how we're going to think about embeddings.
+
+Um, typically what we want to do with embeddings and then also with pre-trained models like Elmo and Bert is do kind of real downstream tasks,
+
+uh, like sentiment analysis, for example. So we're not going to think about taking, uh, you know, that so much about these intrinsic evaluations.
+
+But instead we're going to think about which embeddings are best from the perspective of when we plug them into these downstream tasks.
+
+What works best? All right. So let's talk about a method for actually plugging them in.
+
+So this is a relatively simple technique for sentiment that works surprisingly well.
+
+Um, it's uh network called the deep averaging network due to most ire at all.
+
+And the idea is quite simple. It's a feed forward neural network based on an average of the word embeddings from the input.
+
+So we have, uh, an input predator as a masterpiece.
+
+Uh, each word has an embedding, um, you know, using one of the approaches from the previous slide.
+
+And we average those, uh, just straight up arithmetic mean,
+
+and then we pass those through one or more layers of a feed forward network and then use a softmax to actually make our prediction.
+
+So the, the kind of key thing is that the feed forward network here can learn, um, you know,
+
+fairly sophisticated interactions between the different components of this, uh, green vector here.
+
+However, what it cannot do is learn about complex relationships between the different words in the input.
+
+So at the time that this came out, there was a widely held view that we need to model the syntactic structure in order to,
+
+uh, represent, you know, and solve this kind of sentiment task effectively.
+
+People are building networks that look like this on the right, where we have this compositional structure to it, where it builds up,
+
+uh, a representation of the sentence following a syntactic parse tree, which we're going to come to a little bit later in the course.
+
+But what it turned out was that at least in 2015,
+
+the simple averaging technique can work as well as this kind of syntactic composition for these problems.
+
+And I think really what this showed is not that syntax is useless, but that at the time these methods were not actually really leveraging it.
+
+And we're not doing more than, uh, this more basic approach can do.
+
+Um, so if we look at the, uh, kind of results on this from this model, uh,
+
+the deep averaging network here, um, and so this was actually not using pre-trained embeddings at all.
+
+So is approach one, uh, from the first slide. And this was, uh, outperforming some of these very strong bag of words methods sometimes.
+
+And it was also, you know, about on par with these tree structured neural networks, which had seen a lot of a lot of work.
+
+And this, uh, in particular this convolutional neural network, uh, approach from, uh, Kim in 2014.
+
+Um, we see that the results are sort of roughly in the same ballpark.
+
+And so this indicates that, like, you know, in fact,
+
+a lot of these techniques that were either building up a tree structure or using Convnets weren't actually achieving much better composition,
+
+uh, than just simply averaging these vectors together.
+
+So we can take a look at what this method is, is kind of unable to do.
+
+And, you know, maybe this this will then surprise us to how good these results are.
+
+Um, so we have here a few examples and we have that that are all, uh, ground truth positive and the deep averaging networks predictions and this,
+
+uh, deep recurrent neural networks predictions which uses this tree structured composition.
+
+We see that for all of these examples, the deep averaging network, uh, or the deep averaging network should be predicting positive.
+
+And it gets positive for the first one.
+
+Um, which kind of makes sense given that there's, you know, a fair amount of, of sort of positive stuff in here.
+
+But then for the next two, it predicts negative. It's not able to, uh, you know,
+
+it's not able to deal with this kind of mix of positive and negative things and appropriately judge how these things combine in the final assessment.
+
+And we can look at, uh, a kind of more targeted case here.
+
+Um, the movie was not good. Good. Bad. Not bad.
+
+And, uh, it's not able to correctly learn this structure either.
+
+Basically not and bad. Both end up meaning negative.
+
+And so it predicts -3 in 3 out of four cases, which is not correct.
+
+Um, so we'll come back to the ideas of compositionality once we get, uh, some syntax, uh, and start talking about tree structures.
+
+And also when we talk about, uh, recurrent neural networks and long short term memory models or LSTMs.
+
+Um, but for now, this is, uh, you know, this is at least one way of taking the word embeddings we have so far making predictions.
+
+Uh, and it works in, I would say, surprisingly well for this task.
+
+And that's the end of this segment.
+

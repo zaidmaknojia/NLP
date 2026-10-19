@@ -1,0 +1,249 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to bridge from the idea of attention, which has a single query indexing over a set of keys to the idea of self-attention,
+
+which is going to be the mechanism in a transformer that processes an entire sequence at once.
+
+So self-attention takes. Each word in a sequence or each vector, and it assigns that vector both roles of key and query at the same time.
+
+So it's going to use the same idea of attention that we saw before, but kind of extended.
+
+And the way we're going to start introducing it is to look at these things as matrices.
+
+So Q is going to be a sequence length by d matrix, where D is going to be our embedding dimension.
+
+And for the purposes of these slides that's going to be two. And the keys again each word or vector is a both a key and a query.
+
+So the keys in the query are going to be the same size. So keys are also sequence length by d.
+
+So now we have uh basically many uh queries at the same time.
+
+Now. In order to kind of represent the fact that what we're looking for and what each token is, are not the same thing.
+
+We're going to dive right back into that idea we saw of multiplying these by matrices to kind of transform them.
+
+So we're going to set up a matrix here wq that we're going to multiply q by.
+
+And that's going to take this form. It's going to have uh basically zero one in both rows.
+
+And what this is going to do is it's going to tell us that no matter what the value of this particular token is,
+
+we're going to look for B's, which correspond to the second, uh, kind of position in our in our vector space.
+
+And we're going to go back to the idea of using this diagonal matrix.
+
+Uh, that kind of boosts the scale of the embeddings that we're dealing with.
+
+So because we're multiplying q and k by these two matrices, and because ultimately they're going to get multiplied by each other.
+
+There are actually many different equivalent parameterizations that are going to do exactly the same thing that we're seeing here.
+
+I'm just kind of setting up this one to sort of illustrate things.
+
+But in reality, what a model learns through back propagation is not going to have this nice clear structure.
+
+Okay. So let's kind of go through what happens in each of these steps.
+
+So the first thing that we do is we compute.
+
+Uh well we're going to compute our matrix Q based on the embeddings being multiplied by wq.
+
+And what that gives you is.
+
+It gives you this. Matrix where every row is the same.
+
+Like we said, the kind of semantics of this is that every single token is going to be looking for.
+
+All right. Are there other B's around? Remember, that's our kind of objective here.
+
+If we're thinking about making predictions and then the keys get the same treatment but they're multiplied by this matrix.
+
+And what that does is it just scales up.
+
+The, uh, raw embeddings in E. All right.
+
+So now the scores are going to be computed in the same way that they were before.
+
+Uh, we're basically taking an inner product between the queries and the keys, but now we're doing it by just multiplying these matrices together.
+
+And so if we want to kind of break it down in terms of an individual component in one of these matrices, uh,
+
+we end up with the ij value of this s matrix that we're going about that we're about to compute is going to be q I dotted with k j.
+
+So essentially in some sense measuring the compatibility or the similarity of the ith query and the j key.
+
+So it turns out if you go through this computation you get a matrix that looks like this.
+
+It's going to be a square matrix because, uh, the sort of dimensions of these things that we're multiplying,
+
+we're multiplying by a four by two by a two by four, and we're going to end up with every row being the exact same thing.
+
+And the rows represent.
+
+Attention scores. So if we think about, uh, kind of row one.
+
+It's saying I care about. Word.
+
+Three. Right. That's kind of what this row here is telling us.
+
+Um, and when we softmax this,
+
+we're going to see that it puts a high probability distribution there or a high probability in that point in the distribution.
+
+And this is what we wanted. Right. Because our original, uh, sort of sequence here, Arba uh, what we care about is finding the B,
+
+and it turns out we've now successfully cooked up this self-attention computation, where now we have a distribution at each position.
+
+That's a kind of placing high probability mass on the B token.
+
+And we did it all uh, with these kind of linear operations.
+
+And then, uh, ultimately this kind of softmax.
+
+Uh, which is going to turn this into a distribution.
+
+Uh, per row. So yeah.
+
+So this is a row wise softmax in this matrix.
+
+All right. So then the final step here is we compute the output which is just going to be this matrix A.
+
+Uh. Which is form to the softmax.
+
+Times e and I'm going to kind of put a little asterisk here, which is that this is actually going to be a times.
+
+E times WV. So we're going to use a separate so called values matrix to transform the embeddings before we multiply them.
+
+And take this kind of weighted sum with the uh with the probability matrix here the attention matrix A.
+
+So. What that basically gives us is, uh, the formula that is given in Botswana at all for the, uh, attention computation.
+
+We've kind of gone through all the different steps of this. So their formula involves q, k and v, which are computed based on, uh,
+
+the kind of input embeddings like we've been doing, uh, multiplying by these parameter matrices wq and WV.
+
+And we take this softmax of q times k transpose so that we've all seen.
+
+And then there's one extra little step that they do here, which is they divide and rescale everything by square root of DQ,
+
+uh, which is the basically vector dimension that all of these, uh, inner products are happening in.
+
+It basically just has the, uh, effect of making the softmax loss peaked.
+
+It's not too important. And then they multiply by V here in order to get the output.
+
+So they're taking their, uh, attention matrix A and multiplying that by V.
+
+And so what they're getting is the output is a uh, kind of weighted combination of V.
+
+So this is what we call one head of self-attention.
+
+So we're going to talk about multi-head self-attention a little bit later.
+
+Uh but the key thing here is that this is not some just like uniform non parameterized computation.
+
+It's parameter it parameterized by these matrices wkj and WV.
+
+So as you change those matrices through uh learning and things like that, what this computation does changes as well.
+
+All right. So in terms of what this produces like I've been saying, we get this square attention matrix A which is the output of the softmax here.
+
+Uh, so this is what's been giving us our, our attentions.
+
+A and then we multiply that by the input or this transformed form of the input.
+
+And ultimately it gives us something that's the same dimension as the input.
+
+So we've gone through all this, all this kind of complexity here.
+
+But the idea of self-attention or the, the API for it is in some sense very simple,
+
+which is that you take a sequence of words and then you get back a new sequence of vectors,
+
+which are the same length as the original sequence that now represent those words in context.
+
+And so we have this very powerful general purpose transformation that can kind of contextualize, uh, representations of structured data.
+
+All right. So we've gone through all the steps kind of mathematically, there's this very nice, uh,
+
+blog post by Jay Alamar called The Illustrated Transformer, which is going to walk through it all kind of graphically.
+
+So I'm just going to show this here and talk through it really quickly.
+
+Um, you can go read the blog post in more detail if you want to see another breakdown.
+
+But basically we have a length to sequence.
+
+Thinking machines are the two words. And so we have two embedding vectors.
+
+And then uh, we have these three matrices wq and WV that are going to embed these.
+
+And ultimately we get Q's K's and V's which are uh now two by three because we've kind of gone from vector dimension four to vector dimension three,
+
+uh, with these matrix multiplies and.
+
+Now the softmax operation produces a, uh, kind of attention matrix, which we're not seeing.
+
+And then we multiply that by v and as output we get this matrix Z.
+
+So, uh, this attention matrix again is sentence length by sentence length.
+
+So you see that we're multiplying a two by three by a three by two.
+
+So we're going to end up with a two by two. And.
+
+Then we get a sentence length by hidden dimension as the output.
+
+Uh, and it's a weighted combination of the rows of V.
+
+So just to show one more, uh, kind of representation of this attention, uh, computation.
+
+This is an example of a kind of character level classification task.
+
+That and we visualized the attention matrix that's in kind of one part of a transformer for this task.
+
+And so again, what we see is that we have a square matrix where each cell is a probability.
+
+And these probability distributions sum to one over the rows.
+
+So kind of higher or brighter colors are higher values.
+
+So you could see that uh when there's like a white cell in the row, the rest of the row is very faint.
+
+Um, but you can have a like number of red cells if the distribution is more uniform.
+
+So finally kind of bringing things back around to why are we using this kind of self-attention mechanism?
+
+Why did we beat up on RNNs a little bit? Well, the nice properties that self-attention has are the following.
+
+The first is that it doesn't involve any so-called sequential operations.
+
+The whole thing is fully parallelizable, right? If you have a thousand tokens, each one has to attend to 999 other things.
+
+But all of that happens in parallel.
+
+So you just put everything through that layer and there's no order of 1000, um, sequential dependance in your computation computation.
+
+You also can kind of see every other token with a distance of one.
+
+Right? Like the word at position 847 can see the position at, you know, 200 word a position 232.
+
+So you can access and figure out information from the context a lot more easily than something like an RNN,
+
+where you have to kind of go through all the different steps to pass the information along.
+
+Um, that said, the big kind of drawback of, uh, self-attention as it's presented here is this n squared, uh, complexity.
+
+Right? We have to form these matrix, this attention matrix, that sentence sequence length by sequence length.
+
+That's going to be big, hard to store. It's going to be a lot of memory.
+
+There's a lot of subsequent work that's kind of tried to make this better.
+
+And we're going to talk about some of that uh, a little bit later.
+
+But that's sort of the one drawback.
+
+But other than that, there's a lot of, uh, kind of benefits of this architecture compared to others that we've seen.
+
+That's the end of the segment.
+

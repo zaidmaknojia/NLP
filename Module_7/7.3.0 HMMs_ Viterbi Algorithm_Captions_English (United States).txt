@@ -1,0 +1,325 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about how to do inference in hidden Markov models using the Viterbi algorithm.
+
+So HMMs are a model of this joint distribution over P of Y and X uh,
+
+given by the following uh formula that reflects this kind of Markov assumption over the Y's.
+
+And uh, this emission distribution where each acts is emitted from a corresponding Y.
+
+But the thing that we really want to compute, uh, for inference,
+
+especially from the perspective of a task like part of speech tagging, is the argmax over y of p of y given x.
+
+Um, that is to say, given a sentence, what is the most likely part of speech tag sequence that, uh, could have produced that sentence?
+
+So this is a little bit tricky because our model is kind of set up in the other direction in some sense.
+
+Like it, it kind of generates a sequence of y's and then generates x's conditioned on those y's.
+
+How do we flip it around to actually figure out what the most likely y's are given the x's.
+
+So we can do this by a little bit of rewriting and rearrangement.
+
+Um. So. This is equal to.
+
+The following. And so what we've done here is we've multiplied the top and bottom by p of x.
+
+And when you multiply the top by p of x, uh, it kind of combines via the chain rule to give you this, uh, joint distribution.
+
+And now the bottom is this p of x term. Um, and.
+
+This term is constant.
+
+With respect to why? So from the perspective of argmax over Y, we don't actually need to worry about it.
+
+Um, so. We can.
+
+Say that. All right.
+
+That kind of numeric value of the max we get, uh, from this won't be the same as P of y given x, but, uh, it'll give the same maximal sequence y.
+
+Um, and then we're going to apply our other favorite trick here, uh,
+
+when dealing with Max, which is that we want to max the log probability, uh, of this.
+
+All right, so now that we've rearranged this, we've got something that feels a little bit more tractable.
+
+Um, and now we're going to expand this out. Uh, and I'm going to write these as y twiddle here.
+
+And so on and so forth. So we have this fairly complicated expression and we can't max over it directly, obviously,
+
+because this would require an exponential search over all the different possible values of the of the Twitter lies.
+
+And so what we're going to do in order to do this, Max, is appeal to dynamic programing.
+
+Uh, and so I'm going to tell you basically what the dynamic program looks like.
+
+And then we're going to see how that, uh, kind of falls out of the structure of this computation,
+
+and in particular how it takes advantage of this Markov property, uh, of hidden Markov models.
+
+Okay. So. So we're going to define our dynamic programing matrix here.
+
+And this is an n by t matrix where uh and is the sentence length.
+
+And, uh, t is the number of tags.
+
+In our tag set, and the semantics of this is going to be the score.
+
+Of the best path. Ending.
+
+And. Why twiddle add time?
+
+I. So kind of starting from, uh, position one at the beginning of the sentence.
+
+We're going to compute, uh, partial max, but that max is going to be anchored to this particular, uh, tag y twiddle at this time step.
+
+And so, uh, you know, it's going to represent some amount of kind of maxing and having done inference,
+
+but it's also going to maintain uncertainty in the sense that at a given time step, we, uh,
+
+are tracking the best max for each possible tag that we could be in at that time step.
+
+All right. So. Let's define our dynamic program.
+
+Uh, here. So. V one of y twiddle.
+
+Is log p of x1 given.
+
+Y. Twiddle plus log. P of Y twiddle.
+
+And this is basically, uh, you know, when you tell me, okay, I have to be in this particular state at the first time step.
+
+Uh, this is the score that is associated with that.
+
+And, uh, you can think about this as kind of all of the terms that and that,
+
+that kind of come up to that point in, uh, the computation of the, uh, the joint probability.
+
+So, um, kind of graphically, again, we're kind of thinking about, okay, what are all the scores up until this point?
+
+Well, you know, there's two nodes that we need to generate here.
+
+Uh, we need to generate this one and we need to generate this one.
+
+And then it is true that this next node over here depends on, uh, the value of y1, but that's going to fall out in the recursive case.
+
+And so here's what that case looks like. So we have the emission at the current time step.
+
+And then we have Max over the previous time step.
+
+So. What we're doing here is we're saying, okay, in order to compute.
+
+The you know, we've computed basically the scores for, let's say the first time step here.
+
+And then in order to compute the scores for the second time step, what terms do we need to account for.
+
+Well, we need to account for this admission here um, which corresponds to uh which corresponds to this term.
+
+And we also need to account for the transition. Now the transition depends on the value of the previous, uh, the previous tag here.
+
+And remember that at the end of the day, our goal is to compute the the kind of best sequence ending in this tag at this particular time step.
+
+And so what we do is we think about, okay, what are all the possible previous tags that could have brought me here.
+
+And so that's what this Max over y twiddle is doing.
+
+We are considering all of these different possibilities and saying, okay, for each one.
+
+We already know the best path that gets you there. And then we can compute the transition probability and then add the new emission.
+
+And then that's going to give you the best tag or the score of uh y twiddle for the best path getting you there at this time step.
+
+And uh, you can kind of proceed from there. All right.
+
+So just to motivate a little bit why this works.
+
+Um, like, recall that what we were doing, uh, was maximizing.
+
+Y twiddle n through y twiddle one. I'm going to write it in this direction.
+
+Um. Etc.
+
+If you just look at this sequence of terms, which I'm not going to write out,
+
+it turns out what you can do is you can move the max over y twiddle one basically all the way over here to the beginning,
+
+and you just end up with those first couple terms involving this, uh, that are involving Y1 here.
+
+And so it kind of very naturally emerges from just looking at what happens when you apply these maxes to the sequence.
+
+You can kind of compute the max has passed all the terms that don't involve them.
+
+And then if you kind of deal with the sequence in this like right to left fashion and say, okay,
+
+I'm going to first figure out what's going on with this Y1 term, and then and then kind of push it forward from there.
+
+And the only thing that makes it tricky are these transitions.
+
+Now notice again that the reason that dynamic programing was necessary to begin with was because we had these transitions involved, right?
+
+If we didn't have transition probabilities, if it were just emissions, we would be able to just independently max at each time step.
+
+But the transition sort of end up coupling everything together.
+
+But because of this Markov property where we only depend on the one previous time step, uh,
+
+we can get away with this relatively small dynamic programing chart that just maintains,
+
+uh, basically a score for the kind of tag at the current time step.
+
+All right. So let's just make this algorithm a little bit more explicit.
+
+Okay. So this this computation of V of Y twiddle is just going to use the formulas up above.
+
+Uh and then at the end. And you basically have to push things forward and account for the stop symbol.
+
+And then, uh, this equals.
+
+The max over. Why? Log p of x comma y.
+
+And so that's the result that we want. Although, hey, wait a minute.
+
+What we're doing right now is we're computing a max, and what we wanted was the ARG Max.
+
+We wanted to know the actual path rather than just like the numeric value of this log probability.
+
+Um, and so there's an extra step here that I'm not going to show where you have to track what what are called back pointers.
+
+Uh, essentially at each step, when you compute, uh,
+
+when you compute the V of Y twiddle during the recurrence, there's some y preve that this came from.
+
+And you want to keep track of what that is, because then at the end of the day you want to say,
+
+all right, here's the, you know, here's the final score I got.
+
+What was the kind of previous tag that along this path that got me here.
+
+And then you kind of unwind it and you can go back and actually reconstruct the sequence of tags that got you here in addition to just the score.
+
+Okay. I'm going to very briefly show an example of what this looks like.
+
+Um, so we're going to follow, uh, the same.
+
+Rough template for this that we've been using for a couple of examples so far.
+
+Uh, and what I'm showing here are log probabilities.
+
+Um, so these are not exactly going to sum to one.
+
+Um, but uh, the Viterbi algorithm, although we're defining it in terms of probabilities,
+
+uh, you could actually deal with any, uh, kind of real valued scores here.
+
+We're going to see that when we come to conditional random fields.
+
+And, uh, in fact, the Eisenstein book kind of defines it in that terminology as well.
+
+So, uh. We have our favorite they can fish example.
+
+All right. And so what we do is we define our chart V.
+
+Um, I'm going to write VI of VI twiddle here.
+
+Um, it's a little bit overloaded with the verb tag. And we're going to do the following sentence.
+
+They can can fish. Um, meaning they can put fish in cans, right?
+
+Uh, and then. We're going to have to have this extra, uh, kind of column, I guess, for the stop symbol.
+
+Um, and, you know, we're going to we're going to think about basically transitioning to a kind of a special, a special state there.
+
+Uh, so we're not going to go through all of this. Uh, it's a good exercise if you want to check your understanding.
+
+Um, I'm just going to fill in the first two values here.
+
+So for the first, uh, cell we have the initial probability of noun which is minus one.
+
+And then the emission uh probability of they given noun which is also minus one giving you a minus two.
+
+Uh, and then we have the same thing for verb which is minus four.
+
+Uh, taking again this value here and then also this minus three over here.
+
+All right. So then what the recurrence looks like is for this cell.
+
+What we need to do is say, all right, we have to think about what are the two possible places we could have come from here.
+
+Um. And we could have. Come from this cell.
+
+And so what we would get there is the transition from noun to noun, which is an additional minus two.
+
+And then we would also get the emission of tan given noun, which is a minus three.
+
+So we have a minus two from the value of the previous cell. We have a minus two from the transition.
+
+And we have a minus three from the emission. And that gives us a minus seven here.
+
+All right. And we have to think about, uh. We have to think about another.
+
+Possibility here as well. Um, which is the following?
+
+Uh, which is what if we came from the minus four cell here?
+
+So in this case we would have minus four from the previous.
+
+We would have the transition from verb to noun.
+
+Which is a minus one. And then we have the emission which again is minus three.
+
+So that's actually the same between both of these. And that in this case we get minus eight.
+
+Okay, so, uh, when we're applying this Max, then.
+
+We kind of discard this possibility, and minus seven is what gets chosen.
+
+And so the most likely way to get to the second can being a noun is to have they also be a noun?
+
+Okay. Uh, and I'm not going to go through the whole computation, but, uh, it turns out that the best,
+
+uh, the best way to get to this cell, uh, is have they be a noun and then can be a verb.
+
+Uh, and, you know, this kind of makes sense given our intuition about the sentence.
+
+So, uh, we end up with minus two. Uh.
+
+The transition from noun to verb, which is minus one, and then the emission of can given verb which is minus one, and that's a minus for.
+
+All right. So you could push the rest of this computation forward.
+
+Notice that we do need to keep both of these possibilities alive, even though, uh, this lower path, you know, having can be a verb looks a lot better.
+
+And the reason is because there could be some other word coming up that makes us reevaluate how we analyze the sentence so far and say,
+
+okay, actually, you know, it really does seem like that can was a noun.
+
+You don't want to kind of commit yourself greedily to doing the wrong thing,
+
+when there might be more information that tells you something further down the road.
+
+Okay. So that sort of tells us how the Viterbi algorithm works.
+
+The last thing I'm going to mention about it, from the perspective of implementation and debugging,
+
+is that a very good way to check this is to try it explicitly, uh, on a small example.
+
+So it's exponential to enumerate all the possible sequences.
+
+But computers are pretty fast these days.
+
+And when you have just 4 or 5, uh, uh, words in a sentence, you actually can just enumerate them with a bunch of nested for loops.
+
+And so you should be able to confirm that this dynamic program and this algorithm is giving
+
+you the same result as explicitly doing this max over all these possible sequences.
+
+So this is how we're going to do inference in Hidden Markov models.
+
+And it's going to set the stage also for inference in conditional random fields.
+
+So generally this is a very useful tool for dealing with these kind of sequence models where you have pairwise dependance between,
+
+uh, adjacent decisions. And that's the end of the segment.
+

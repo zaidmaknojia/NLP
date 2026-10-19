@@ -1,0 +1,225 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about, uh,
+
+kind of basic introduction to neural networks and why there's something that we're going to want to use here.
+
+So I'm going to return to this example that we saw in binary classification, um, where we had, uh, the following sentences.
+
+Quote unquote sentences. Good. Bad. Not good.
+
+And not bad. And we had the following features.
+
+Uh, kind of bag of unigram features associated with these, um, giving rise to the following feature vectors.
+
+So, uh, this gave us something that geometrically looked like this.
+
+Um, and, uh, all of these points are kind of on the same plane and the kind of, uh,
+
+I guess checkerboard pattern of pluses and minuses here means that no linear classifier is able to separate these things.
+
+Okay. So there's plenty of solutions to this problem.
+
+So we talked about one which was defining, uh, these bigram features which look at pairs of words.
+
+And then suddenly there were kind of more dimensions in the feature space. And we could do it.
+
+Uh, you could also appeal to something like kernel methods, um,
+
+like polynomial kernels or RBF kernels allow you to, uh, learn a classifier that separates these things.
+
+Um, the you know, there's a lot of reasons we're not going to pursue these methods.
+
+Um, in general, throwing in like, all pairs of features is really expensive.
+
+And, uh, kernel methods, uh, have sort of undesirable properties, um, from the standpoint of NLP.
+
+So what we're going to do is we're going to think about neural nets, uh, as our kind of way of fixing this.
+
+Um, and so what neural networks are going to do is they're going to transform.
+
+The data into. A latent feature space.
+
+So rather than kind of operating with our classifier in this raw space, uh, with,
+
+uh, the features that we have here, we're instead going to, uh, transform it.
+
+And what we're going to see is that in that transform space, it's going to be not too hard to learn something that allows us to separate these.
+
+Okay. So, um. The idea here is that, uh.
+
+We want to have, uh.
+
+Our linear classifier from before. Again, we're just going to think about binary here.
+
+But it's the same thing for multi-class. Um, we, uh.
+
+Are going to replace. F of x.
+
+Uh. With. A nonlinear.
+
+Function of, you know, I'll say the original f of x.
+
+So. We're going to define.
+
+Z a vector. This is going to be our latent feature vector, um, as the following.
+
+Okay, so, uh, what are the different pieces here?
+
+So this is we're going to say an N-dimensional.
+
+Feature vector. And this is just going to be the same F of x as before.
+
+So it's what's at the top of the slide here for these data points. Um V is going to be a D by n matrix.
+
+Um, and it's going to be d d by n.
+
+So when we multiply f of x by v, it's going to map from this n dimensional feature space into a d dimensional space.
+
+All right. And then G is going to be some kind of non-linearity.
+
+All right. Uh, and so, uh. What do we what do we mean by a non-linearity?
+
+Well, there's a whole bunch of different functions we can use here.
+
+Um, I'm just going to kind of list and draw out a few of the kind of standard ones.
+
+So, uh, hyperbolic tangent is one.
+
+Um, it kind of goes between -1 and 1.
+
+Uh, or, you know, it maps things into the range from -1 to 1.
+
+Um, and kind of looks like this where it asymptotes. Um, another common one is what's called rectified linear units, which, uh,
+
+look like this sort of hinge thing, um, where basically it's just the max of the value and zero.
+
+So it kind of clips and becomes flat at zero. Uh, and there's other choices like sigmoids, um, various other kind of forms of value that do,
+
+uh, you know, kind of funky things where they like, dip down and then go up, um, etc.
+
+So there's lots of different choices here. Um, and it's going to be very important that we use that.
+
+We use one of them. But uh, exactly which non-linearity we use again is not going to impact too much of what we do.
+
+All right. So now what we need to think about is, you know, how how can.
+
+V and G give us. Useful latent features.
+
+So we've, uh, kind of defined this whole, uh, this whole pipeline.
+
+And what we want to do is we want to somehow transform F of X in a way that's actually going to make the problem easier.
+
+Um, and the reason is because now what? Then what we're going to do is we're going to classify.
+
+With. W transpose Z.
+
+Uh, I guess I'll write. I guess I'll write z of X here.
+
+Um, just to make it clear that, uh, this is still a function of X, but we're going to try to learn a classifier with w transpose z.
+
+And so now we want these points to be separable in this z space.
+
+Right. Okay, so, uh, let's see how we can actually make this work.
+
+So. Suppose.
+
+V. Is the following matrix.
+
+And g equals tan h. And then also suppose, uh.
+
+Ten zero zero. Well. Okay. You don't have to suppose that.
+
+That's just true. Um, ten of one we're going to say is approximately equal to one and ten H of two, uh, is approximately equal to one as well.
+
+Um, so that's it's it's not quite true, but um, for the purposes of keeping the math simple,
+
+uh, this will let us illustrate, uh, the kind of point here, um,
+
+and most neural networks, by the way, do have this, uh, this, you know,
+
+this property with when you use units like ten H where there's a kind of saturation.
+
+Um, and that's kind of why, uh,
+
+that's part of the reason why the term neural networks came about is it's sort of motivated from the idea of action potentials in neurons,
+
+which is that, you know, you basically get this kind of build up and then the neuron fires.
+
+Um, but it's this kind of binary thing where, um, you know, it sort of fires in a discrete way.
+
+So here it's like once you get enough activation, um, you get the value of one, but then kind of increasing it additionally doesn't do anything.
+
+All right. So. Now, Z um, in this case, uh, is going to be, uh.
+
+The. Okay. So, uh.
+
+Sorry. The example that we're going to use here is going to be a simplified version of the good bad example.
+
+That's going to look like this. And, uh, now Z is going to be.
+
+Ten h of x one. Ten of x2 um and ten of x1 plus x2.
+
+Okay, where did this come from? So remember that, uh, we're multiplying v.
+
+By uh, f of x. In this case, f of x is two features.
+
+Uh, it's x1 and x2. And so uh, and then we're applying G to it.
+
+Right. Um and then that's going to give us Z. So when we do all that we get now a three coordinate z that has this property.
+
+Okay. So now what we're doing is we're transforming.
+
+This original feature space into the following one.
+
+So, uh, this point at the origin stays at the origin.
+
+Um, what happens to the pluses that are along these coordinate axes?
+
+Um, well, the plus that has a value of one for x1, um, gets a value of one for zero, z1 zero for z2, and one for Z3.
+
+Um, so that plus, uh, ends up here.
+
+Um, the other plus, uh, does exactly the same thing.
+
+And then, uh, this is the part that's kind of impossible to draw, but, um, the there's a minus that ends up being at, uh, one, one one.
+
+Um, and I'll kind of draw this from another perspective.
+
+Um, you know, we have like, the negative here, uh, the two positives, like here and here, and then this other negative is kind of out here.
+
+Um, and it's a little bit hard to see, but in this space now, these are actually separable.
+
+Um, you can kind of imagine cutting away like the, the, the two, the two pluses, um, which are, uh,
+
+you know, kind of, you know, up and kind of back closer to the, uh, origin than, than the other minus.
+
+And so you can, um, you can kind of get a hyperplane in there to separate these.
+
+So the overall idea and motivation behind all this is that now that we've introduced these, uh, ten acres,
+
+they allow us to transform the space in a meaningful way and learn these conjunctive features that talk about multiple parts of the input.
+
+So, for example, this last coordinate of Z, uh, is effectively, uh, an or gate between x1 and x2, at least the way that we've defined tan H here.
+
+Uh, and this is going to allow us to think about, you know, just again, with this machinery of vnt here,
+
+learning these combinations of features that are going to allow us to, uh, do a better job at classifying these things.
+
+And so, um, we're not going to go through the example in detail, but, uh, you should be able to convince yourself that,
+
+uh, with the right V and G, um, you can try to write down ones that'll be effective here.
+
+Um, you can get this example of good bad, not good, not bad.
+
+Um, to also be separable.
+
+And so what neural nets will do is that rather than having to specify okay, here, you know, here are the interactions I want.
+
+And here's how we're going to broadcast. Not to these different, uh, words.
+
+We're instead just going to be able to learn all of this in an end to end way.
+
+Uh, so we'll talk a little bit more about, uh, neural net intuition and motivation and definitions.
+
+But this this gives you the basics. And that's the end of this segment.
+

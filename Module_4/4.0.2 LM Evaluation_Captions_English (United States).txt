@@ -1,0 +1,59 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about evaluating language models. So we've talked about language modeling as a next word prediction task.
+
+And so given that it's a prediction task you might think well should we just check the accuracy of those next words that are getting predicted.
+
+But accuracy doesn't really make much sense.
+
+We've talked about how language modeling is sort of impossible, in the sense that you never really know what word is coming next.
+
+You can try to just place a probability distribution over reasonable possibilities.
+
+So it'd be a little weird to talk about, oh, this language model got 5% accuracy and then going up to 5.5% accuracy is like a great advance.
+
+So we're going to need a different metric.
+
+The typical metric that people use is very similar to how these models are trained, which is likelihood of data or log likelihood.
+
+Now, instead of using the training data, which is the training objective, we're instead going to look at log likelihood of held out data.
+
+And we also average over the number of tokens in this data to kind of normalize for the length.
+
+So basically if we train our language model on a big corpus of a bunch of documents, then what we can do is take a few of those documents,
+
+hold them out, and evaluate the probability that the model assigns to the tokens there.
+
+Now, the way that this actually gets reported is in a slightly different metric, still called perplexity.
+
+Perplexity is the exponential of the average negative log likelihood.
+
+So this is a metric where lower is better. So if we think about log likelihoods they're often like minus two minus three things like that.
+
+So negative log likelihood it's going to be a positive number. Then when we exponentiate that we're going to get a kind of higher positive number.
+
+Now you might think okay this is just this weird transformation.
+
+Perplexity actually kind of has a nice interpretation,
+
+which is that suppose that we're predicting for words and we give them probabilities a quarter, a third, a quarter, a third.
+
+Now the perplexity has an interpretation of the average branching factor of this model,
+
+and you can think about that as the average of these denominators.
+
+Now, rather than the arithmetic mean, the perplexity computes the geometric mean since its averaging is happening in log space.
+
+Uh, but basically the perplexity of a language model assigning these probabilities is 3.464.
+
+So it's, uh, somewhat intuitive metric.
+
+That said, uh, these numbers are usually only reported in language modeling research and not used much elsewhere.
+
+And you really have to kind of interpret them with respect to other systems.
+
+Um, but I did want to introduce that, uh, these numbers will range anywhere from 10 to 200, depending on the application you're looking at.
+
+So you can kind of be aware of the scale and, uh, how this metric is used.
+
+That's the end of the segment.
+

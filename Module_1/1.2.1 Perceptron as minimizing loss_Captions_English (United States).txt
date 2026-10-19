@@ -1,0 +1,211 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to look at the perceptron from a different perspective, rather than kind of defining it as this algorithm,
+
+as this kind of algorithm that iterates through the data and uses the error driven update procedure,
+
+we're instead going to reframe it as an instance of stochastic gradient descent, where it's minimizing a loss function.
+
+And so the place we're going to start with that. Is looking at what that loss actually is.
+
+Uh, so we are going to define a loss function in the vein, uh, of what we saw with SGD.
+
+That is going to have a little bit of a complicated structure, but we're going to unpack it.
+
+Um. Okay, so we have this, uh.
+
+Yeah. We have we have these two cases here that depend on this term w transpose f of x I times y I.
+
+This is a little bit of a weird thing. Uh, the way.
+
+Yeah. I want you to think about this is that, uh, basically this is.
+
+Zero. If. W transpose f of x I.
+
+Um, is greater than or equal to or greater than or equal to zero.
+
+And. Why I.
+
+Is one. Um. Or.
+
+W transpose. F of x I.
+
+Uh, is less than zero. And.
+
+Why I is minus one. All right.
+
+So what we're going to do is we're going to.
+
+We're just going to focus on the case where y equals one. Um, it ends up being kind of symmetric for positive and negative examples.
+
+But um, this is just a little bit easier to wrap our heads around.
+
+Um, so it turns out we end up with a loss function that looks like this.
+
+So what I'm going to put on the x axis here is w uh transpose f of.
+
+X I. Um, so I'm not defining this in terms of like some normal thing like X,
+
+where instead of looking at the dot product between W and the feature vector on this example.
+
+And the loss ends up having this structure.
+
+Um, so the y axis here is loss. All right, so you should be able to convince yourself that when y is one.
+
+Um, again, that's what that's the case that we're looking at here.
+
+Um, you know, you can kind of plug this into the equation up above and we get these two terms.
+
+So it's zero when this w transpose f of x thing is greater than or equal to zero.
+
+So that's the that's the kind of flat part on the on the right.
+
+And then we have negative of that quantity when it's less than zero.
+
+So um that gives the slanted part on the left here.
+
+All right. So I have just defined this loss function.
+
+And I guess what I'm asserting to you is that this loss function plus stochastic
+
+gradient descent is going to give you the perceptron algorithm as we saw it before.
+
+Um. So. We could do a bit of a sanity check here.
+
+So, uh. So first of all, when the loss is zero, we don't make it update.
+
+So, uh, in the perceptron algorithm we check if the example was classified correctly and if it was, we don't make an update.
+
+In this case, when we're on the kind of right part of this graph, um, we've classified the example correctly.
+
+And the gradient, uh, of the loss is with respect to w is going to be zero.
+
+So that that kind of tracks. Um, and what is that gradient.
+
+Um. So as we said at zero when f of x I.
+
+Greater than zero. Um. And it's minus f of x I.
+
+Otherwise. Uh, and so the competing, the great like thinking about the gradient of this as is a little bit tricky, but, um,
+
+this ends up just being a linear function, uh, of, you know, you could think about it just as essentially scalars w times times, uh, f of x.
+
+Um, you can actually write out the dot product if that's easier for you to think about.
+
+Um, and when you. Yeah.
+
+And you should be able to confirm that when you're on the left part of this graph, um, you know, and you have this minus w transpose f of x thing,
+
+um, taking the gradient with respect to each particular weight w uh gives you that corresponding feature value.
+
+And so we can just kind of batch all those up as um, you know, the gradient with respect to the vector w is uh,
+
+minus f of uh, you know, the whole, the whole feature vector, uh, f of x.
+
+Um, if you're not familiar with, uh, vector derivatives, that's okay.
+
+We're not going to use them too much throughout this class. All right.
+
+So this is kind of encouraging in that, uh, it also lines up with the other case that we saw.
+
+So again, we're looking at a positive example here and in the stochastic gradient descent algorithm.
+
+When, uh, we come to an example, we multiply the gradient.
+
+We multiply the gradient by this minus alpha thing.
+
+And so, uh, let's say alpha is one. What that's going to do is that's going to take our weight vector.
+
+And when we apply that gradient update we're going to add f of x into that uh into the weight vector w.
+
+And that exactly lines up with what the perceptron algorithm was doing.
+
+So we have a bit of a we have sort of an alignment here between, uh, this view of the perceptron and our,
+
+uh, stochastic gradient descent algorithm when we define the loss function in this particular way.
+
+Um. So we can actually look at what this looks like on an example.
+
+So the, uh, what I have on the right here is I have cooked up a small example with, um, basically two, uh, two coordinates here.
+
+Um, so, uh, we have four data points.
+
+Two are positive and two are negative. And they have the, uh, the coordinate values as shown.
+
+Um, and. We can plot the, uh, the loss value with respect to the weight vector.
+
+So what we're showing here on the left is as you change the values of x and y, which are the, the two components of the weight vector here.
+
+Um, you incur different amounts of loss.
+
+Uh, and so that's, that's colored with this heatmap here.
+
+And the thing you want to note is that there's this, there's this kind of wedge shaped segment here, um, where the loss is zero.
+
+And what does this mean?
+
+Well, if we have a weight vector that's right here at the edge of the wedge, um, what that does is that gives you this decision boundary.
+
+Um, I'm actually gonna draw it slightly above the axis just so you can, um, you know,
+
+just so you can see that it it kind of exactly just sort of barely gets everything correct.
+
+Um, depending on how you break ties. Um, and then when you have, uh, a vector that's, uh, kind of pointing out here along.
+
+Okay, if I can draw a reasonable diagonal line pointing out here along the diagonal, um, the, the kind of perpendicular to this looks like this.
+
+And so, um, again, you're going to kind of just barely get the sort of positives on the right side of the line.
+
+Um, and then, you know, any other vector, um, in the middle here works as well.
+
+Um, all of these have lost zero. Uh.
+
+And we can look at the week.
+
+We just kind of rotate this and look at it from another perspective, and we can see the sort of landscape here of the lost value with respect to,
+
+uh, the, uh, you know, with respect to these coordinates of the weight vector.
+
+And so the way to think about this is that gradient descent wants to move down along this loss surface.
+
+And so if we initialize the model to some weight point here, the and then and then we pick up an example.
+
+Well the gradient on a on that example is going to, you know, somehow push us, you know down down this loss surface.
+
+Or if we accumulated the gradient over all of these examples, um, you know,
+
+we would actually we would kind of directly go, um, down along the direction of steepest descent here.
+
+Uh, and so as we, as we kind of make our, our perceptron updates following this loss,
+
+we will eventually get to this kind of, uh, the sort of flat plateau region at the bottom.
+
+And that represents convergence of the algorithm.
+
+Uh, so, you know, there's this nice there's a nice kind of visual intuition, I think, as well,
+
+for thinking about how this loss function interacts with, uh, the perceptron training.
+
+Um, and I'll just quickly show one more, uh, example of this.
+
+Um, here, we've removed, uh, the data point in the top right.
+
+And so the loss values are now different because, uh, you know, we only we have three data points instead of four.
+
+And so the, uh, um, the kind of sum of losses over this training set is going to be different.
+
+However, the thing I want to point out is that, uh, this, uh, this kind of wedge here is still the same.
+
+Um, and the reason is because these two points were the ones that really kind of governed where the, uh, separating decision boundary had to be.
+
+And so the fact that we remove the other point actually doesn't impact where the optimal solutions are at all.
+
+Uh, and so, you know, I think it's, it's just a nice visualization of, again, connecting the,
+
+uh, loss formulation of perceptron with, uh, kind of error driven procedure we saw before.
+
+Um, and so we're going to move on from, from perceptron and discuss other, uh, uh, other learning algorithms.
+
+But um, this, you know, maybe helps connect possibly a Persian version of the perceptron you might have seen before with this, uh, SGD formulation.
+
+That's it for this segment.
+

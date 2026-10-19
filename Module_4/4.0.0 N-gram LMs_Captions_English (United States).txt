@@ -1,0 +1,191 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about n-gram language modeling.
+
+Language modeling is one way of placing distributions over sentences, and there are many ways to place a distribution over sentences.
+
+We could, for example, do it with, uh, probabilistic context free grammar, um, which models a tree.
+
+But also we can think of as generating a bunch of words in a sentence.
+
+And grams are going to do something, uh, a little bit simpler.
+
+We are going to say that the probability of a sequence of words, which I'll write out explicitly as w one through W, um, uh.
+
+Can be written as just. The product of each word.
+
+The probability of each word conditioned on the previous words using the chain rule.
+
+Uh. So essentially each word conditions on all of the passwords so far.
+
+And this is just true, uh, because of the chain rule of probability.
+
+Now. An N-gram language model makes a simplifying assumption about this distribution.
+
+That's going to allow us to actually model it and do parameter estimation, etc.
+
+Uh, so an ngram. LMN defines.
+
+PFW in the following way is the product of I equals one to m.
+
+It generates where we are conditioned.
+
+On. The previous.
+
+N minus one words.
+
+Okay, so we didn't get very far in the expansion above, but when once you get up to say ten, it's going to condition on all past nine words.
+
+And in an N-gram language model, we simplify that and only condition on the past n minus one.
+
+And n typically has values that are something like, you know, three through seven or something like that.
+
+So let me just illustrate what a two gram.
+
+LM looks like. We're going to use this bracket s as a start of sentence symbol here.
+
+So when we generate the first word I'm just going to write it that we condition on a
+
+start of sentence symbol rather than having like a separate distribution over words here.
+
+This way just everything looks like two grams. And so on and so forth.
+
+So you notice that W3. Is conditionally.
+
+Independent of W1, given W2 and so an n-gram.
+
+LM basically corresponds to a n minus one order.
+
+Markov model.
+
+And so in this case, for example, uh, we recover our so-called first order Markov model that we saw in HMMs for part of speech tagging each,
+
+uh, in that case tag conditioned on the one before it. And here each word conditions on the one before that one.
+
+All right. And so then a three gram language model, uh, just to make it completely explicit, we are now going to have two start of sentence tokens.
+
+And so on and so forth. So what we see here is that, uh, we've dramatically simplified the amount of context that each word looks at.
+
+And so we're going to kind of think about whether statistically this is a good assumption or not.
+
+Uh, from a modeling perspective, it throws out a lot of context that we might otherwise find useful.
+
+Uh, we're going to look at some cases later where look,
+
+being able to look back many words is probably important for knowing what words about to come next.
+
+However, what it does is it can allow us to model this in a fairly simple way and dramatically reduce the number of parameters that we need.
+
+So. The typical way that we do this.
+
+Uh. I'm just going to take the case of a two gram model is we use multinomial.
+
+Distributions. So what we have is where we're going to let V denote the size of the vocabulary we have v by v parameters.
+
+And what do these parameters look like. Uh. The parameters.
+
+Look like a table. Of probabilities for each possible word that can follow a context word.
+
+For. So, for example, if we look at, uh.
+
+What words come after the.
+
+We're generally going to end up with some very flat distribution.
+
+Over a bond over the following words.
+
+Because if we only see the word the, we have no idea what's coming up next.
+
+And so we're not going to have a lot of constraints to tell us, oh, okay.
+
+We're in some very specific context that only like one word can come next.
+
+Now we generally these have sort of the same property as skip gram models.
+
+We're going to draw some additional connections later.
+
+But these are the same property as skip gram models in that it's a very under constrained problem.
+
+We don't know exactly what's going to come up next. And so even uh well trained model is going to play some very flat distribution like this.
+
+All right. So. The way we estimate parameters is by.
+
+Maximum likelihood estimation or ML from a large corpus.
+
+Now. Like we saw in the case of Hmm's.
+
+There's, uh, problem here in that we're not going to necessarily see every pair of words.
+
+Right. And once you get up into higher order n grams, you're certainly not going to see, uh,
+
+a large number of, you know, words that occur after this set of four words in the context.
+
+So we're going to need to look at smoothing techniques, which we'll do in a future segment.
+
+Uh, but for right now we're just going to say that P of dog, given the is going to be defined by count of.
+
+The dog over count of. The in some big corpus.
+
+So it's however many times we see the.
+
+And then how many times did we see dog continue that if it if it came afterwards, uh, 10% of the time, then we get this probability being one tenth.
+
+And that's the maximum likelihood estimate here. All right.
+
+So. What we can do now is if I give you a large corpus of data,
+
+you can compute these counts for various kinds of n gram orders and then compute these language modeling probabilities.
+
+But as we've said, this doesn't this isn't some sort of magic trick in that it doesn't tell you,
+
+uh, it doesn't tell you what word is going to come up next.
+
+It's only going to give you a kind of rough sense, a rough probability distribution.
+
+So why is this useful? So there are a few things that, uh, n-gram lines have historically been used for.
+
+Uh, the first is generation. Uh, and specifically in machine translation.
+
+Typically the way a phrase based machine translation system works is you have a bunch of candidate translations of chunks of the source sentence,
+
+whatever sentence you're trying to translate into another language.
+
+And when you put those candidate translations together, you're like assembling these pair, these like phrases.
+
+You're kind of gluing them together in this pairwise fashion.
+
+And what you use an N-gram language model for is to assess, okay, the stitching together of all these individual phrases.
+
+Did I do that in a way that is, uh, kind of gives me plausible language in whatever language I'm translating into,
+
+in that it should have reasonably high probability under one of these language models.
+
+Uh, another application is grammatical error correction.
+
+So if we want to build a system that can take some text that might have some grammar errors in it and figure out,
+
+uh, let's say you use the wrong choice of article somewhere. Um, what we can do is we can try checking.
+
+Okay. Do other, uh, articles, like, dramatically increase the language modeling probability?
+
+So kind of help us find text that's ungrammatical, but more like, uh, or something like that, right.
+
+Which should have pretty low probability under one of these models.
+
+Uh, and the final application is not of n-gram language modeling per se, but of language modeling more general.
+
+Um, it's a way to build.
+
+Uh, what I'm going to call. Word to vec plus plus uh and so uh language models.
+
+Basically, the task of trying to predict the next word in general requires drawing out a lot of cues from text.
+
+And just like we saw that skip gram is a useful way of learning word embeddings by just saying, okay, what other words can occur with this one?
+
+We can take this language modeling task and turn it into something more sophisticated,
+
+and then use that to, uh, and then use that to build a more powerful set of word embeddings later.
+
+So for now, we've seen that we can take a corpus, estimate these probabilities from it, and build a simple n-gram language model.
+
+Uh, and that's it for the segment.
+

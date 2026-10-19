@@ -1,0 +1,329 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to be talking about logistic regression.
+
+Logistic regression is going to be an alternative classification model to the perceptron.
+
+And it's going to be the foundation of a lot of the techniques that we build going forward in this course,
+
+including things like feedforward neural networks. Uh, so logistic regression is what we call a discriminative.
+
+Probabilistic model. And what this means is that it is.
+
+It places a distribution p of y given x over labels conditioned on input data points.
+
+Um. So the alternative to this would be a generative model.
+
+Uh. Which looks like placing a joint distribution over P of x, y rather than a conditional distribution.
+
+Um. For classification, this would include approaches like Naive Bayes.
+
+We're going to come back to generative modeling later in this course.
+
+Um, particularly when we talk about hidden Markov models. So, uh, for right now, we'll stick with this discriminative framework.
+
+Okay, so let me write down the definition of binary logistic regression.
+
+So we are defining here the probability of the positive class,
+
+the probability that y equals plus one conditioned on the input data point, uh, and it takes the following form.
+
+Okay, so I. What you should notice is that we still have this dot product of the weight vector and the feature vector,
+
+which was characteristic of the perceptron algorithm as well.
+
+Um, but now we've embedded it in this function e to the x over one plus e to the x.
+
+Um and so this is called the logistic function, which is where the name logistic regression comes from.
+
+Uh and if we plot this for uh different values of x, uh what we get is the following.
+
+So this is y equals one. This is y equals 0.5.
+
+And we get uh kind of curve that looks like this.
+
+Um, so it intersects the, uh, well, at the origin, it takes the value of 0.5.
+
+You can confirm this plug in x equals zero. You got a half. Um, and then as it goes out in either direction, it approaches, uh, either plus 1 or 0.
+
+Um, and so the main reason that this is useful is because it allows us to map from real,
+
+you know, any real number into something that's going to be a valid probability.
+
+Okay. So, uh, again, what this does is it takes this w transpose f of x quantity and turns it into a probability associated with the positive class.
+
+Okay. And so, uh. We can think about the negative class probability and without me writing it down.
+
+You should be able to figure out what this is. And the reason you should be able to figure that out is we have binary logistic regression.
+
+So p of y equals minus one and p of y equals plus one have to sum to one.
+
+And so you can double check that the value that causes that to happen uh is this one.
+
+All right. Um, and then the other thing we can ask ourselves.
+
+Is what decision boundary does this imply. So remember we're doing classification.
+
+So when I give you a point. And you have a logistic regression classifier.
+
+You should be able to tell me, uh, a label for that point. Um.
+
+Okay. So, you know, one kind of plausible, uh.
+
+Way of doing this is you return plus one.
+
+If p of y equals plus one given x, uh is greater than zero.
+
+Right. So it turns out that this is equivalent to w transpose f of x.
+
+Is greater than zero. Uh, sorry. Um, if that probability is greater than 0.5, we want to return plus one.
+
+And that happens when w transpose f of x is greater than zero.
+
+Uh, and, you know, again, you can just look at what happens at the origin and, uh, kind of confirm that for yourself.
+
+Okay, so basically the decision rule ends up being the same as for the perceptron.
+
+We're just comparing this dot product with zero. But now we have this kind of probabilistic interpretation.
+
+Um and so again you know if you're just doing prediction that doesn't matter.
+
+Um, but where it impacts things is training.
+
+So. How are we going to train logistic regression.
+
+So. We're going to assume our labeled data set.
+
+Um. Which consists of points x and labels y.
+
+Um, and we're going to have capital D of these um.
+
+And what we want to do is we want to maximize the following quantity.
+
+Okay, so, uh, what we are maximizing here is what we call the likelihood, um,
+
+or the discriminative likelihood of the data, meaning that we have a bunch of labels y for data points.
+
+Uh, x and we want to maximize the probability of observing this data.
+
+Uh, and so in this case, because we have a discriminative model,
+
+we're conditioning on X and we're maximizing the product of the probability of each y given x.
+
+Essentially let's set our model parameters W such that, uh the data looks as likely as possible.
+
+Um. And so we're going to write this as a maximization over w.
+
+Uh. Of now we're going to transform this likelihood expression.
+
+Okay, so now this is the. Log likelihood.
+
+Um, because we've taken the logarithm.
+
+And so what you should be able to confirm for yourself, um, is that, uh, remember that log is a monotonic function.
+
+And so when we want to maximize the likelihood of something.
+
+Or in general maximize any function.
+
+We can also maximize the log of that function, and as long as that function is going to be positive and the log is defined,
+
+um, it's, you know, the the maximum remains the same.
+
+Uh, and so this is going to, it's going to turn out that this simplifies things a lot for us,
+
+uh, kind of computationally to deal with log likelihoods. Uh, and so that's what we're going to do here.
+
+So we take this, we take this log and, um, you know, we can push it through this,
+
+the product, and it becomes a sum, and then we get the max of a sum of log probabilities.
+
+Um, and then the one one more transformation we're going to do is, uh, we're just going to put in a negative sign and flip it around.
+
+And instead of maximizing the log likelihood, we're going to minimize the negative log likelihood.
+
+Um, and the reason we're doing this is so that, uh, now we can think of this term.
+
+As. A loss, uh, in the sense of.
+
+The basic machine learning principles we saw earlier.
+
+So we're now we now have, uh, now we have our training objective.
+
+Which is going which, uh, is negative log likelihood.
+
+Um gets abbreviated to NL, particularly, uh, in a lot of the deep learning frameworks.
+
+Um, and now, in order to deal with this, uh, we and optimize it,
+
+we can call back to that framework that we introduced earlier of stochastic gradient descent.
+
+Uh, and in order to use stochastic gradient descent, well,
+
+we need to be able to do is we need to be able to compute the gradient of each one of these terms of this outer sum.
+
+Um, so the SGD loop involves picking, you know, one we're going to say right now one data point, uh,
+
+to deal with at a time, um, out of our D and compute the gradient of the loss on that data point.
+
+Um, so that's a term that looks like this. All right.
+
+So. Remember that for the perceptron we saw, you know, just kind of defining this algorithm that, uh, you know, checked if you made a mistake and.
+
+Tried to kind of correct the value of the weight vector to make that mistake happen less in the future.
+
+Um, now, instead, we've kind of formulated this first principles idea of maximizing the probability of the data.
+
+And now we're going to compute, uh, a gradient on this.
+
+So we can try to directly optimize this objective function with gradient descent.
+
+Okay, so what we are going to do here is we are going to, uh, assume.
+
+Why I equals plus one. Um, so we're going to derive this for the case of a positively labeled example.
+
+Um, it's a good exercise for you if you want to think about this more, to try to work it out for a negatively labeled example as well.
+
+Okay. So, uh. What do we end up with?
+
+So we're going to plug in. The value of the loss here, which remember, was the negative log, uh, of the, uh, logistic function.
+
+Um, so. You end up with this?
+
+Um, so again, the, the log kind of breaks up the, uh, the, the, um, division and the numerator was this e to the w transpose f of x thing.
+
+Um, the log uh also kills off the exponential and then you negate it.
+
+Uh, and then in the denominator we end up with this slightly ugly log of one plus e to the something, um,
+
+which cannot be broken up because, uh, you know, we have this, this log of something, and you can't, uh, commute, log past some.
+
+Okay. So. Now we need to take the gradient of this expression with respect to W.
+
+So, uh, if you're not familiar with vector derivatives, again you can just think about a dot product is just going to be,
+
+um, a sum up for each term in W, in each term in F of x, uh, of the product of them.
+
+And so, uh, when you take the gradient with respect to W, it's this linear sum.
+
+And the W terms just kind of go away and leave you with the f of x terms.
+
+All right. Um, and then the second term gets a little bit more complicated.
+
+We need to appeal to the chain rule. Um.
+
+So the the way that log works is you get one over the, uh, one over the kind of inside stuff of the log, um, times the derivative of the inside.
+
+Um, and so the derivative of exponential is, uh, exponential, um, again, times the derivative of the inside stuff using the chain rule.
+
+And. Uh, we end up with this.
+
+Again. So now let's rewrite this a little bit. So we're going to factor out an F of x.
+
+And then we end up, uh, kind of cleaning up the second term here.
+
+All right. And so.
+
+The second term is kind of cool now because we had this big mess of, uh, exponentials and, you know, one over one plus, you know, e to the whatever.
+
+Uh, and it turns out that we can simplify this now, uh, in the following way.
+
+Uh, actually, I'll write it in this order. Um. So the second term ends up just being the logistic function.
+
+Again, it kind of comes back out from the, uh, process of differentiation.
+
+And now we can just replace that with the probability of y equals plus one given x under the model.
+
+So this is a quantity that we kind of already have have defined.
+
+Uh because this is the definition of our uh, logistic regression model.
+
+And so we end up with something that we can kind of simplify in this way.
+
+Okay, so then, um. Finally recall that the, uh, the SGD update looks like this.
+
+Um, you have to subtract off alpha times the gradient.
+
+Um, so I'm going to write this as, uh, adding alpha times negative, the gradient.
+
+Um, and. And that gives us this.
+
+Okay. So. We did a whole lot of work and recall that, um.
+
+If we just look at this piece of it, uh, we have something which looks very similar to the perceptron.
+
+Um, in the case of Misclassifying, a positive example.
+
+Remember when we misclassify a positive example as negative, we have to boost up, uh, its score, and so we add in f of x to the weight vector.
+
+So here we have the same term.
+
+But uh this alpha times f of x is now modulated by this one minus p of y equals plus one thing.
+
+Um so then like just to kind of intuitively think about what happens.
+
+Let's think about when this term. Is very close to one.
+
+The model is essentially making the right prediction.
+
+Um. We are not going to make much of an update because, uh, you know, this second term,
+
+this one minus P of Y plus one term is going to, uh, be very close to zero and sort of cancel out.
+
+Uh, what if instead. This is very close to zero.
+
+Um, then we recover again.
+
+Like I was saying, the perceptron update, right? Uh, because this one minus p of y equals plus one term, uh, essentially takes the value of one.
+
+And uh. Essentially takes the value of one.
+
+And the update looks basically like the perceptron update from before.
+
+All right. So. What we're going to do in order to kind of understand this.
+
+Is we're going to let Z. Equal w transpose f of x.
+
+And. Now we can rewrite the, uh.
+
+Uh, we can rewrite the law. The, um.
+
+The, uh. NL negative log likelihood for this model as the following.
+
+Log of one plus e to the z um minus z.
+
+Um, and so that's just following basically what's on the top of the slide here before we.
+
+Uh, took the gradient. And.
+
+What we can do now is we can plot this quantity z or w transpose f of x, um, against uh against the value of the loss.
+
+And so previously we saw that the perceptron had uh, kind of structure that looked like this.
+
+Um, it basically, uh, you know, it has this sort of hinge like behavior where, uh, it's zero.
+
+It kind of when the, when the value of Z is, is positive,
+
+when the prediction is correct and otherwise, as this y equals kind of minus x sort of structure.
+
+Um, and it turns out if you plot this thing, uh, you end up with something that looks like this, uh, and.
+
+This is the loss for logistic regression.
+
+And what you should be able to convince yourself of is that, uh, you know, basically in the, uh, kind of limits as you go towards,
+
+uh, you know, the, uh, basically the Z term gets, uh, very large negative or very large positive.
+
+You end up with something very similar to the perceptron loss.
+
+And so the nice thing here is that these two algorithms, which were motivated from very different,
+
+uh, intuition and ended up doing almost exactly the same thing.
+
+So this kind of, uh, informs a little bit of how we're going to approach classification for the rest of this course.
+
+We're not going to be too concerned about whether we use, uh, perceptron or logistic regression or SVM.
+
+We're going to kind of stick with what, uh, ends up essentially being most convenient, uh, for us, given what we're doing.
+
+So that that kind of wraps up this segment about, uh, logistic regression and, uh, closes us off for basic binary classification.
+

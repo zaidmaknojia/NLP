@@ -1,0 +1,175 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about fairness and classification.
+
+So now that we've built out these AI, this idea of training classifiers, either in the binary or the multiclass case,
+
+it's worth thinking about how these get used in reality and what ramifications that might have.
+
+So. The reason we might care about fairness is that classifiers can actually be used to make real world decisions that impact things in life.
+
+For example, who gets an interview?
+
+We might have a big stack of resumes and try to run a classifier over those to decide who might be the most successful candidate.
+
+Who should we lend money to? Um, based on kind of financial history.
+
+Is this online activity suspicious? And people have even done things like train classifiers to say, is someone a criminal based on their face?
+
+Now, this last case is kind of so cartoonishly wrong in a lot of ways.
+
+Uh, it's kind of not well founded in science, obviously.
+
+It's, you know, rife with possibilities for discriminating and things like that.
+
+This is the kind of system that we should not even consider building.
+
+But for the rest of these, it's something which apparently machine learning might be able to do and might be able to help us with.
+
+But there's a fair amount of ethical risk here as well. So when humans have to make these decisions,
+
+often they have to go undergo some kind of training and they're bound by various laws, for example, anti-discrimination laws.
+
+And when we want to apply classifiers to these problems, we need to ensure that they're fair in the same way.
+
+And so there are there are a lot of different factors that maybe we might want to think of when deploying machine learning models in the real world.
+
+And we'll come back to some of these throughout the course. Um, for example, how bad is a false positive versus a false negative?
+
+How do we kind of judge the error rate? Um, but here we're going to look at a particular notion of fairness,
+
+which is going to illustrate why just looking at accuracy is not going to be sufficient for thinking about how our model performs and whether it's,
+
+uh, kind of being the most beneficial model that it can for this application.
+
+So the big idea I want to underscore here is that we need to think about what classifiers are doing beyond just accuracy.
+
+Uh, and so the idea is that if we have different population subgroups,
+
+we want to think about whether the classifiers handling all of these groups fairly.
+
+So TN Cleary defined fairness as or rather bias as follows A test is biased if prediction
+
+on a subgroup makes consistent non-zero prediction errors compared to the aggregate.
+
+So let me illustrate what that means. So we have two populations here p1 and p2.
+
+And on the x axis we have their results taking some test.
+
+And on the y axis we have their ground truth performance on some task.
+
+And so let's look at performance level y star here.
+
+So y star which is on the uh uh you know, this value on the y axis here corresponds to this particular point,
+
+uh, for pi two and this particular point for pi one.
+
+And so what that means is that given the same, uh, ground truth level of performance,
+
+participants from Pi one will score higher on the test than people from Pi two.
+
+You know, someone on Pi two gets an 85 on the task.
+
+Someone from Pi one gets a 90. Um, but they actually have the same underlying ability.
+
+And so the we could think of this test as biased because it's penalizing Pi two.
+
+Right. They're getting a lower score on the test despite having the same underlying abilities.
+
+All right. Now, this is a kind of regression view of fairness. We can distill this down into, uh, kind of sense for classification as well.
+
+Um, due to Thorndyke and Peterson and Novick and others.
+
+Uh, this idea of fairness and classification being grounded in the ratio of predicted positives to ground truth positives,
+
+and that must be approximately the same for each group.
+
+Uh, so, for example, suppose we have two groups and we'll use our movie review data from kind of sentiment, uh, examples that we've been looking at.
+
+Let's say in group one the reviews are 50% positive and group two is 60% positive.
+
+Maybe group one is, uh, comedies and group two is horror movies.
+
+If we have a classifier that predicts 50% positive in both groups.
+
+That's not fair. Regardless of how accurate it is now, note that if it predicts 50% positive in both groups,
+
+it could be getting, you know, 0% accuracy on group one by just completely flipping the predictions.
+
+And it could be getting as high as 90% accuracy on group two.
+
+But it's still kind of not giving Group two a fair shake.
+
+There should be, uh, you know, a higher number of positives in group two,
+
+but the classifier is penalizing, uh, group two kind of under predicting the positive rate.
+
+So this the kind of formalism, um, particularly from Peterson and Novick,
+
+allows for using different criteria across groups, for example, imposing a different classification threshold.
+
+And kind of counter-intuitively, this can actually give a fairer result because we might say,
+
+all right, the classifier on group two actually tends to under predict positive.
+
+So let's like turn that the threshold for uh positive prediction down a little bit so that, um, you know, more things get predicted as positive.
+
+All right, so all these questions of fairness, you might wonder, well,
+
+can we just make our classifiers not depend on certain sensitive features, like for example, don't look at the genre of the movie.
+
+Don't look at the gender of the person who's writing this text, or the, you know, the person who we're giving a loan to or things like that.
+
+Um, and the answer is no. Uh, we need to be thinking about this because it's very easy to build classifiers that discriminate without even meaning to.
+
+So. The problem is that you have other features that are going to correlate with membership in a certain minority group X,
+
+and then might learn to penalize that group.
+
+So for example, uh, in the authorship attribution case, uh, even just throwing simple bag of words features which seem like how could they be biased?
+
+They they can recognize different dialects of English, um, like AV or the presence of code switching,
+
+like when you, you know, write half the sentence in English and half the sentence in Spanish.
+
+And so the model is very easily going to figure out what group someone is a member of.
+
+And then the classification results could well differ across those groups.
+
+Um, another famous example is using zip code information.
+
+You know, you're you're building a system to give loans and you don't show it information about the race of the person you're making a decision about.
+
+But you do show it zip code information. And then that heavily correlates with race.
+
+And so suddenly you're kind of back to using race in the equation.
+
+Uh, and this is not hypothetical in the least.
+
+Uh, there is a relatively well known case a few years ago where Amazon had this tool for sorting resumes,
+
+that when they looked into the weights of what it had learned, it was learning negative weight features for women's organizations.
+
+Or, uh, having gone to a woman's college was also a negative weight feature for a particular, uh, few cases.
+
+And so, again, accuracy doesn't catch this.
+
+Uh, and it's actually a little bit hard to evaluate here because, uh, in the case of Amazon, it's possible that the humans were being biased as well.
+
+Right. So we can't necessarily say that this this criterion about the right number of positives is even is even necessarily the right thing.
+
+But we absolutely want to be aware of when systems are kind of running away and doing this without us knowing about it.
+
+So the kind of takeaways here, which we'll touch on throughout the rest of the course.
+
+To think about are the following. Whenever you're building something,
+
+you should be thinking about how is this going to serve the users and what are the minority groups in the population we should be mindful of?
+
+And then we've established some of these fairness criteria.
+
+Can we check these. And then finally, you know,
+
+do we have parts of the system which can correlate with these protected classes or minority groups and are going to cause issues as a result?
+
+That's the end of this segment.
+

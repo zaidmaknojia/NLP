@@ -1,0 +1,157 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about the transformer architecture.
+
+I've been a little sloppy. And some of what I've said so far.
+
+And sometimes when I talk about multi-head attention or I call things transformer layers, when I really mean multi-head attention, um,
+
+but it's important to note that the transformer architecture itself is based on multi-head attention,
+
+but involves a few other very important components which now we're going to look at.
+
+So in particular, we start off by taking, uh, our input sequence, a bunch of, uh, kind of embeddings laid out,
+
+uh, in a, in a sequence and feeding them into the multi-head attention, uh, layer that we've been building up,
+
+uh, over the past several segments after that, uh,
+
+the kind of main other piece that functions to make transformers do what they do is a feed forward layer that operates over each word individually.
+
+So we've talked a lot about feed forward neural nets for language modeling.
+
+And this is something a little bit different. If we have let's say three words as input to our multi-head attention.
+
+Our multi-head attention is going to, you know, have all of those look at each other and produce three vectors as output.
+
+Then each of those three vectors independently gets this feed forward network.
+
+Run over it to produce three new vectors that are outputs from that process.
+
+Um, and this feed forward network is just a very simple standard like one hidden layer feedforward neural network.
+
+Nothing fancy going on there. Now there's two other things in this diagram, which is from the, uh, attention is all you need paper.
+
+The first is all these arrows. So what are these arrows doing? The arrows are reflecting residual connections in the model,
+
+which basically say we are going to take the input to the model that's given to the multi-head attention mechanism.
+
+And we're going to add it. To the output from this mechanism.
+
+And this is a trick that's used in training deep neural networks to enable gradients to flow more easily between the output in the input,
+
+because you don't actually want the model to like, have to use every layer.
+
+So you provide these residual shortcuts where I can kind of skip the layers.
+
+And the way you do that is by adding the inputs and the outputs.
+
+Um, and the final piece here is what's called layer normalization, where uh, we do a kind of rescaling so that things are more on the same scale.
+
+And this helps, uh, the optimizer do a better job of, uh, training everything, even when there's like a whole lot of different layers going on.
+
+But we want to train everything with a single uniform learning rate. All right.
+
+Let's talk a little bit about the vector dimensions of everything here.
+
+Because this is pretty important if you want to understand how transformers are implemented.
+
+So. The inputs are going to be a dimension we call D model.
+
+And this is also going to be the output of the whole layer. And this is sort of in some sense the native dimension of this architecture.
+
+Now the queries and keys. These have to have the same dimension.
+
+But remember we're multiplying them. We're multiplying the inputs by w, q and k in order to get these.
+
+So q and we don't have to be square. So we can cast things down to a smaller size.
+
+DK uh, that we're then going to do our dot products and, and do our attention computation with.
+
+And these are going to be smaller because it's going to save a lot of computation in order to do things that way.
+
+The values, uh, divi also have a separate dimension.
+
+Um, remember that when we get to the output of this layer, uh, we are going to multiply by another output matrix.
+
+Uh, to basically make everything the right size again and to combine things across the multiple heads.
+
+So, uh, you know, we can make these whatever size they want and they'll eventually get back to D model before this residual layer.
+
+However, because of the residual layer, we're going to add the input to the output.
+
+So the output has to be the same size as the input here. So once we get through all the multi-head attention we need to get back to D model.
+
+And then finally we have the feed forward network which can uh, blow things up to a larger dimension, which we're going to call D internal here.
+
+Uh, and then uh, kind of collapse it back down. So it has like one big hidden layer in the middle there,
+
+and then again comes back down to D model because we're going to have another residual connection.
+
+And so now this whole transformer block is going to have D model as input and D model as output.
+
+And then we can stack that as many times as we want and keep everything the same size.
+
+And what sizes are those? If we look at the original Vaswani paper, uh, we've got some numbers in the top left here.
+
+Uh, we've got six layers. That's what the N is 512 for.
+
+D models are kind of a moderate size there. The feed forward is 2048.
+
+So like I was saying that's a big that's a kind of big layer.
+
+Uh, we're blowing things up by a lot. And then, uh, kind of shrinking them back down and decay and V are actually quite small.
+
+There's 64. And part of the reason for this is because it, it gets very expensive to use very large,
+
+uh, values here because you're doing these expensive matrix multiplies.
+
+Uh, and, um, these seem to be kind of sufficient for, uh, you know,
+
+modeling the interactions between tokens, which is what the attention mechanism has to do.
+
+Now, if we look at how these things scale, the table below is from the GPT three paper.
+
+Uh, we see that the D model has gotten a lot, lot bigger up to like 12,000.
+
+And then the D head here, uh, of 128. This is what we call decay.
+
+It actually hasn't gotten that much larger. Right. So the complexity of the interaction around attention is not really where most of the actions
+
+at most of the action is in the D model and also the D internal of the feed forward network.
+
+Um, if we look at where the actual, uh, floating point operations are happening in this model,
+
+we can look at this as a fraction of the overall computation.
+
+This is in a model called opt, uh, that's like an open source version of GPT.
+
+So we know a little bit more about what's going on here. Um, the multi-head attention, uh, floating point operations,
+
+if we go to the largest model at the bottom of this table are only 17% of the operations, 80% of the operations are in that feed forward network.
+
+So even though I've been saying. Yeah, okay, attention. Transformers like these are the same thing.
+
+Attention is a very important component, but most of the computation is in the feed forward network.
+
+And when we think about, you know, why does ChatGPT kind of know all these facts about the world?
+
+A lot of that is because these huge feedforward layers can just store so much of that stuff.
+
+All right. So now we're kind of almost ready to understand the full model.
+
+We're going to come back to it a little bit later when we talk about seek to seek models.
+
+Because the original transformer paper presents an encoder decoder model.
+
+So it's not for language modeling. It's actually for mapping like one sequence of tokens to another sequence of tokens.
+
+Um, we don't really need to think about that right now.
+
+We can just sort of think about, uh, the encoder being a, uh, language model and ignore the decoder entire entirely.
+
+There's going to need to be some modifications to do that,
+
+but we'll come back and talk about that more when we see how this connects to language modeling.
+
+That's the end of the segment.
+

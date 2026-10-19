@@ -1,0 +1,95 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about the simplest machine learning models that we're going to see in this course,
+
+which are linear binary classifiers. So, uh, this this is maybe something that you've come across in a previous course.
+
+So, uh, you know, consider this a way to kind of establish notation for this.
+
+And just to make sure, uh, we're all on the same page.
+
+So what a classifier is roughly going to do is it's going to take as input, um, a point x in R to the D.
+
+Uh, this means a, some sort of, uh, numeric data in a d dimensional real valued feature space.
+
+Uh, and we are going to also. Use the notation f of x extensively in this course, where f is what we call a feature extractor.
+
+All right. And so the reason we think about this way, we think about it this way, is that in a lot of our problems is going to be a string.
+
+It's not going to be a numeric valued thing. And then uh, f of x is going to be the set of features, uh, in the d dimensional space.
+
+So, um, we might move back and forth between these two different notations at various points throughout the course.
+
+Um, but generally there does need to be some process of mapping from, uh, again, uh, a string input,
+
+which most natural language is into some sort of numeric representation that can be used in machine learning.
+
+All right. And then each point has a label.
+
+Y, and in binary classification, there's only going to be two possibilities.
+
+Uh, and we are going to refer to these as minus one and plus one or negative and positive class.
+
+So roughly the way we can think about this is that we've got.
+
+A set of points. Uh, this is going to be a two dimensional feature space, and we're going to draw some pluses up here.
+
+And we're going to draw some minuses down here.
+
+Uh, and so each of these again represents one of these axes.
+
+And then whether it's plus or minus represents the label. All right.
+
+And then we're going to represent a classifier. As a weight vector.
+
+W um, and you might see theta in some places, um, such as, you know, texts or uh, academic papers.
+
+Um, we're going to try to stick with W in this course, but uh, again, these, these mean the same thing.
+
+And so the way that this weight vector leads to a classification decision is the following.
+
+Um, we compute the dot product or, uh, the kind of vector transpose here of the weights and the features associated with the point.
+
+And then we ask if that's greater than zero.
+
+And essentially the way we can think about this is that, uh, there's the weight vector points in some direction in this feature space.
+
+And then we've got. This.
+
+Decision boundary. That's perpendicular to the direction that W is pointing.
+
+So the way to think about this is any point on, uh,
+
+the top right side of this decision boundary is going to be classified as positive because the dot product with is going to be positive.
+
+Any point, uh, on the other side of the boundary is going to be negative.
+
+Um, and, you know, we're not going to worry too much about what happens if you exactly land on the boundary.
+
+You need to break ties somehow. All right, so that's the basics of, uh, the kind of formulation of linear binary classification.
+
+Um, one thing I will note is that, uh, we often see, uh, in kind of other settings here.
+
+We see, uh, a bias term b, and we are going to.
+
+We are going to not use that.
+
+Um, and the reason is because we can just take f of x, um, which, you know, let's say the features for a particular point are something like this.
+
+And we transform this into, uh, an F of x that has.
+
+A one on the end of it. Um, so.
+
+By adding a one to the end. We have basically folded this bias term into, uh, you know, into the actual feature vector.
+
+And so that's what's going to allow us to stick with this representation of a classifier going forward.
+
+And we're not going to have to juggle these bias terms. So this is the this is the kind of basic setup of binary classification.
+
+Um, going forward over the next few segments, we're going to talk about, uh,
+
+the perceptron and logistic regression, which are two different ways of thinking about learning these weights.
+
+Um, that we're going to see are functionally quite similar.
+
+Um, so that's it for this segment.
+

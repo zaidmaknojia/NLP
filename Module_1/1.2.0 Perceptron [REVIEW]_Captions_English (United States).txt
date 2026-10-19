@@ -1,0 +1,269 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about the perceptron. This is going to be a basic algorithm for training a.
+
+Well. In this case we're going to look at binary classification.
+
+But training a linear binary classifier that we're going to be able to apply to our sentiment analysis example.
+
+So again recall that a.
+
+Binary classifier. Uh, we were defining to have the following decision rule.
+
+Um, and in this case, I'm going to use, uh, whether the weights dotted with the features is strictly greater than zero.
+
+Um, and this is going to give us a, uh, decision y, which is either going to be minus one if it's,
+
+you know, less than or equal to zero or plus one if it's, uh, greater than zero.
+
+All right. And so what we are doing is we are defining an algorithm to learn this set of weights w from a training set.
+
+So here is the perceptron algorithm. So we are going to run this for a certain number of epochs.
+
+Um, this is typically how we use it in practice. You can also run it until it converges.
+
+Uh, but that's not going to be something we're doing much in this course.
+
+We're going to iterate through our data. And then.
+
+The first step is we. Take.
+
+Uh, we basically make a prediction.
+
+Using the weights applied to the current.
+
+Uh example. And so again this is going to return either uh plus 1 or -1.
+
+And then. We are going to update our weight vector based on this prediction.
+
+So if. Uh.
+
+Y pred. Equals why I.
+
+So if we predicted the example correctly, we are going to do nothing.
+
+We are just going to keep the weight vector the same. Um.
+
+Otherwise. We are going to, uh.
+
+Add alpha times. F of x, I, um.
+
+If y is plus one.
+
+And we are going to subtract alpha times f of x I.
+
+If. If y equals minus one.
+
+So essentially, if we predict the example incorrectly and it should have been a positive prediction, but it was negative,
+
+that's this, uh, you know, that's this first line here, then we are going to add the weight vector into it.
+
+Sorry. The feature vector times, uh, a constant alpha into the weight vector.
+
+And so recall that the features and the weights are in the same space.
+
+So if we have a 10,000 dimensional feature space we also have a 10,000 dimensional weight vector.
+
+And so these things can be added together.
+
+And roughly what this is going to do is it's going to encourage the dot product of the weights and the features to be more positive on,
+
+uh, future iterations. So, um, and, uh, a machine learning course, you can prove that this will, uh, converge if the data are eventually separable.
+
+So in the other case, the other alpha line, we, uh, subtract alpha times f of x if y is negative.
+
+And that's just because we want to, uh, down essentially down weight the value of the prediction in the case where, uh, the true label was negative.
+
+All right. So let's see how this actually works out on uh an example.
+
+So we're going to look at uh. Some even more simplified sentiment examples.
+
+Now. Movie. Good. Movie bad.
+
+And not good. Okay.
+
+And so, uh, we've got a value of y for each one.
+
+So plus one, minus one, minus one.
+
+Um, and then we have, uh, our features f of x.
+
+Which, uh, we are going to represent by these columns M, G, B and n um, which stands for movie good, bad and not.
+
+So again, we have a bag of words feature space with four features here.
+
+Uh, and the value of each is just going to be the count of that, uh, word in the sentence.
+
+That silly a sentence ever. Um, and so, uh, that is going to give the following feature vectors.
+
+All right. So you should be able to verify that by counting the, uh, you know, just counting the number of occurrences of each word.
+
+We get something like this. All right. So now we're going to start off.
+
+With a weight vector w, which is going to be all zeros.
+
+All right. And now we're going to follow the algorithm. So uh, we're going to come to this first example.
+
+We're just going to go through these examples in order. So uh, for the first example.
+
+Y pred. Is going to be.
+
+Minus one. And the reason is that, uh.
+
+You know we have an R0 weight vector. So when we dot it with the feature vector we are going to end up with uh a value of zero.
+
+And recall that we said that our decision rule in this case was,
+
+is the weights transpose of the feature strictly greater than zero in order for it to be positive?
+
+Um, so again, the ties don't really matter, but we have to define it for the purposes of this, uh, you know, of this, uh, execution.
+
+So. What happens then is we update according to, uh, the first line here.
+
+So we are going to add alpha times the weight times the feature vector to W.
+
+And so, uh, let's just say that alpha is one for simplicity.
+
+And so after this first example, after dealing with this first example, we are going to have uh 1100 as our weight vector.
+
+All right. We come to the second example. So.
+
+Y pred. I'll give you a few seconds to think about it, but.
+
+Then I'll spoil the answer, which is that why pride in this case is going to be plus one.
+
+And roughly this is because we've learned that movie is associated with positive sentiment.
+
+Okay. That's not actually right in this case. Um, but it was a reasonable thing to learn from the first example.
+
+We don't know whether it's movie or good that's making it positive. Uh, so why pride is one.
+
+Uh, the actual why is minus one. This is bad.
+
+Uh, and so we go to that second line down there and we're going to subtract off the, uh, the, the features.
+
+And so that's going to give us the following.
+
+Uh, the following weight vector now. All right.
+
+We'll go through the we'll just, you know, the third line, uh, again, you know, I cooked this up so it would it would always be wrong.
+
+Um, and, uh, so we again make the wrong prediction where again, you know, subtract off.
+
+And so we end up with zero, one, minus one.
+
+Uh, minus one. Okay. And so this is, uh, you know, this, uh, wait, um.
+
+No. Zero.
+
+Zero. Minus one. Minus one. Uh.
+
+So what we've learned at the end of this first epoch, this first pass through the data, is that, uh.
+
+Bad. Has, uh, negative weight here and not also has negative weight.
+
+Okay. Now we're going to we're going to kind of come back around to the first example.
+
+Um, so I'm just going to reproduce that down here.
+
+Um. That so so this was this was kind of.
+
+Epoch one. Um, and this is going to be epoch two.
+
+Um, you know, again, I'm just going to rewrite the example.
+
+Uh, and it turns out that here we again screw up this first one.
+
+Um. We get y pred as minus one.
+
+Uh, and it should have been positive. So we add, you know, we add in the example, uh, and then we get one one minus one, minus one.
+
+Um. All right. And now it turns out we're actually good.
+
+When we go through the rest of the examples, we're going to classify them as positive.
+
+And it turns out, you know, we could keep doing this as long as we want.
+
+And we'll always classify them as positive. So, uh, the algorithm is converged.
+
+So hopefully this kind of shows you, uh, you know, sort of how this works and how from this kind of data, we can learn some reasonable weights here.
+
+All right. We're going to look at one more example. Uh.
+
+And then. To, to kind of understand one of the shortcomings of this algorithm.
+
+So. We're going to use the following for again quote unquote sentences.
+
+So good. Bad. Not good. Uh. Not bad.
+
+Again, Y plus one, minus one.
+
+Minus one plus one. Uh. And then. Uh.
+
+Here are the, uh. The F of X is 100.
+
+010. 101 and 011.
+
+All right, so I'm just going to draw this, uh, using my three dimensional drawing skills.
+
+Which are non-existent. But, uh. And we end up with the points arranged like this.
+
+Um, so again, this is a good kind of test for visualizing what these feature spaces look like.
+
+Um, so because we have three features, we're in a three dimensional space.
+
+And so, uh, if we think about, you know, this point, for example, corresponds to not bad because, uh,
+
+we're kind of out at position one on the bad access, position one on the not axis, and then position zero on the good access.
+
+Uh, yeah. All right.
+
+And so, uh, what happens when we execute the algorithm?
+
+So I encourage you to go off and do this as an exercise.
+
+Uh, but you might already kind of see the problem here, which is that, uh, the algorithm will actually loop infinitely.
+
+Um, and this is because the data are not separable.
+
+Um. The perceptron is guaranteed to find a solution, uh, or a classification boundary that separates the positive and negative examples.
+
+If one is possible in this case, you can't do it there.
+
+There are kind of on this, uh, there's sort of on this sheet that's exactly, you know,
+
+uh, aligned with your screen and there's no way to there's no way to, to cut them up.
+
+So this, this kind of illustrates, I mean, this sort of illustrates a, uh, fundamental issue with the perceptron and unigram features,
+
+which is that, uh, they can't model these interactions between words that are somewhat important.
+
+Um, and so the solution to this.
+
+Ends up being that. Uh, we want to add bigrams.
+
+Um, and so what we could do is we can expand our feature space with not good and not bad.
+
+Um, and, uh, it turns out if we do this.
+
+Um. You know, I'm not going to draw a five dimensional space because I can't.
+
+But, uh, if we do this, the data end up being separable.
+
+And now we, uh, now we can classify them.
+
+Um, and so separability is not something that we're going to think about all of that much because, uh,
+
+a lot of times the data, you know, is separable because you just end up with having a bunch of features.
+
+But, um, what this does illustrate is that by changing the underlying feature set, uh, we're going to go from, you know,
+
+something that doesn't work to something that does work, and that is going to be a pattern that we see fairly frequently.
+
+Um, as we think about feature design problems for the first part of this course.
+
+Uh, so essentially this shows how the kind of how the perceptron works.
+
+You've seen an example of that. Uh, and we can think a little bit about how it interacts with the underlying set of features.
+
+That's it for this segment.
+

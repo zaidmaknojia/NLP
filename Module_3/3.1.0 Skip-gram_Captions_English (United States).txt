@@ -1,0 +1,267 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about how to concretely produce word vectors or word embeddings.
+
+Given a particular algorithm that's called the skip gram.
+
+Uh, well, uh, a model called the skip gram model.
+
+So. The input. To this method is a.
+
+Large corpus of sentences. Okay.
+
+And so unlike other techniques for things like sentiment analysis,
+
+where we thought about supervised learning of classification, uh, here all we need is raw data.
+
+And you'll see why when we define it a little bit later.
+
+So, you know, literally the best thing to do here is to just scrape as much data as you can from the web and,
+
+uh, try to, uh, you know, try to learn your embeddings over that.
+
+Uh, and there's some there's some issues with that, particularly if you pick up, uh,
+
+kind of sensitive data or things that you don't, you know, associations that you don't necessarily want your model to have.
+
+But this is the standard methodology, uh, in any case, which is to try to get as much data of the form that you do want as possible.
+
+All right. And the output? Is going to be factors.
+
+V and C for each word type w, uh.
+
+So I'm going to use, uh, type here to reflect that for the word movie, there's going to be a single V and a single C.
+
+Um, even though we're going to see many occurrences of the token movie all throughout the text.
+
+So will, uh, you know, there might be thousands of occurrences of movie as a token,
+
+but there's going to be one vector associated with the word type movie.
+
+All right. The hyperparameters of this method are a word vector.
+
+Dimension D um, which I said, you know, maybe we could use 50 or 300 or something in that range.
+
+These are common values that you see, um, in, uh, kind of pre-computed and distributed word embeddings, uh, as well as what's called a window size k.
+
+All right. So, uh, we're going to assume k equals one for right now.
+
+And then let's look at how this works. So.
+
+Here's one of our example sentences the film inspired. Well, we're going to do.
+
+Is. Uh. Take all neighbors.
+
+Of each. Word token.
+
+Up to K um, you know, positions away.
+
+Okay. So, um, in this case, if k if k were equal to two, you would look two words on either side.
+
+Um, you know, if you add more words in the sentence.
+
+And now what we have is we basically have, uh, what we call our word and our context word, and then the skip gram model.
+
+Is a probabilistic model. Of context.
+
+Given a word. So specifically, it's defined in the following way.
+
+I. If we use y to denote the context word and x to denote the word uh, then we have something.
+
+That should look somewhat familiar.
+
+Okay. So. This looks like.
+
+Multi-Class logistic regression. And that we have an exponential of some kind of score divided by a sum of exponentials.
+
+So things I want to point out. Ah, that this bottom sum is over the vocabulary.
+
+So, uh, we if we have 10,000 words that we've seen in our data, this is going to be a sum over all 10,000 of them.
+
+All right. And then, um. V and C are model parameters.
+
+Um, and, you know, each of these is going to be V by D.
+
+And the way to think about this is just that, uh, you know, basically think about stacking up the vectors for these words into one big matrix.
+
+And so you're going to have v rows. And each of those is a d dimensional uh word embedding.
+
+And we have two different sets of parameters for uh, you know, one for v and one for c.
+
+So we have two times v times the parameters in this model.
+
+All right. So now let's finally think a little bit about what this is actually saying.
+
+Um, basically what this model says is if, you know.
+
+V acts is similar. To see why.
+
+Um. Why is likely to be.
+
+And acts as context. Right.
+
+So we are taking this dot product and then Exponentiating.
+
+If you imagine that uh v x and c y are very closely aligned, then their dot product is going to be large.
+
+And then when we exponentiate that is going to get a high score. And then we'll assign that thing a high probability.
+
+Mhm. So again we're learning two different sets of vectors here v and c.
+
+But the idea is that we should be able to capture relationships that say all right you know V uh.
+
+Basically v v for one word being similar to C for another word is going to be indicative of those two things occurring near each other.
+
+All right. Let's take a look at an example here. So.
+
+We have a, uh, relatively simple corpus here.
+
+Um, and then let's assume that we have. Uh, d equal to.
+
+Um. And we just have.
+
+The two words I and saw. And they look like this.
+
+So this is the saw.
+
+And this is why I.
+
+So spoiler alert the way this algorithm is going to work is that we are going to randomly initialize all of these parameters and run gradient descent.
+
+So there's no notion of like having a fixed set of vectors a priori.
+
+But we are taking this set of vectors here just to understand mathematically what's going on.
+
+Uh, you know, in this computation and what is you know what, what's kind of happening here?
+
+Okay. So we get two word and context pairs from this.
+
+Um, so in one the word is AI and the context is saw in the other the context the word is saw in the context is AI.
+
+All right. So. The first thing we can do to just kind of understand a little bit more here.
+
+Um. If.
+
+See? Saw is one zero.
+
+And see I is zero one.
+
+Um. What is p of context given?
+
+Uh. The word is sore.
+
+All right. So just just to kind of understand, um.
+
+Just to understand kind of what's going on here. Uh, what we are saying is that, uh.
+
+Seesaw is going to be over here at the same place as VI.
+
+Um. And then PSI is going to be up here.
+
+I'm drawing them not totally on top of each other, but they are.
+
+And. We could go through the computation that we saw on the previous slide.
+
+Uh, and for this particular example.
+
+We have to compute x of. V.
+
+Uh. Saw.
+
+Dot c I. And then also exp above.
+
+The saw dot. See saw.
+
+Now this is important because remember we have to loop over the whole vocabulary.
+
+So even though we we never see like saw and saw next to each other,
+
+like what we're thinking about when we think about this distribution is we're thinking about the whole vocab.
+
+And so we need to compute these, these values for everything in the vocabulary.
+
+Okay. So um we saw and seesaw here are orthogonal if you look up at the picture.
+
+And so uh, the uh this is going to be one um, and then uh, we saw and CI are aligned.
+
+Their dot product is going to be one. And then the exp of that we're going to say it's roughly equal to three.
+
+We're going to assume e is three. Um. So in this case, p of, uh.
+
+Context equals AI given word equals saw is uh, three fourths.
+
+And then uh for saw given saw. Um, it's going to be one fourth.
+
+So this is kind of nice in that it can sort of we've set up these word and context vectors,
+
+and it kind of confirms our intuition about how this should behave.
+
+Right. We should have, uh, you know, saw be more likely or.
+
+Yeah, I more likely to happen given saw than the other way around.
+
+The other thing it shows you is this idea that the, the word space V and the context space V are not really like the same.
+
+Right? Um, in fact, we kind of need them in this case to be like rotations of each other so that like the words can be close to their contexts.
+
+Um, but they're not necessarily close to like those, you know, word vectors.
+
+Right. Like we saw in C, I need to be close to each other, but v saw and v are typically not.
+
+Okay. So that that gives you a kind of sense of this computation.
+
+Um. So now we're going to talk about training this.
+
+And training. It is also going to follow a similar, uh, kind of schema as we've seen before.
+
+Okay, so remember that based on our window size k, we extract a certain number of word and context pairs like we saw in the example.
+
+And what we're going to do in training is we are going to maximize the sum over these pairs of the log probability of that context given that word.
+
+So again given given the web we just with k equals one.
+
+We're just kind of extracting these adjacent pairs of words. We form this big training set of these word context pairs.
+
+And now we want to maximize the probability of the sum of the log probabilities of the observed pairs.
+
+So the thing I will say that is a bit different from sentiment is that this is an, uh, I'm going to say, quote unquote impossible problem.
+
+We're never going to be able to, uh, uh. Uh.
+
+Well, I'll say we can't. We can't drive the probability to one.
+
+We're never going to be able to fit this distribution perfectly.
+
+Or I guess we're never going to be able to completely optimize this objective from the standpoint of getting every prediction to be of probability.
+
+One. Um, because there's going to be, uh, many words that occur in the context of a single word x.
+
+So you're going to have these like conflicting training examples.
+
+So unlike classification where it's totally reasonable to assume that you can fit the data perfectly,
+
+um, and in many cases a big enough neural network. Well, uh, here, that's not going to happen.
+
+And, uh, the last thing I'll point out here.
+
+Is that, uh, we are going to initialize our parameters randomly.
+
+So again, we've talked about for neural networks how important it is to have good initialization.
+
+Here we're just going to kind of throw out some random vectors and then iterate over this data.
+
+And what happens roughly is that, you know, the model is going to kind of pull, you know,
+
+similar vectors together over time because they're going to be seen in similar contexts.
+
+And optimizing this objective is going to give us vectors of the sort that we want.
+
+So this is the basic skip gram model and skip gram uh training procedure.
+
+Uh, we'll talk more about alternatives to this and understanding it uh, in a little bit more detail.
+
+Um, but this is the foundation for producing word vectors, which are going to be useful for lots of different NLP tasks.
+
+Um, and it's a kind of nice technique that builds out of a lot of things we've seen so far.
+
+That's it for this segment.
+

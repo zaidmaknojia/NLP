@@ -1,0 +1,139 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about techniques for handling rare words and, uh,
+
+kind of breaking up things into smaller pieces for the purpose of sequence to sequence modeling.
+
+So words, although they're kind of linguistically well motivated, they're sometimes a fun, uh, kind of difficult unit to work with.
+
+Um, we've talked about how there you can kind of hack in stuff to do copying of words that you haven't seen before from the input into the output.
+
+Uh, but you always have to struggle with this idea of how big is your word vocabulary.
+
+And then if it's too small, you need to do a lot of copying. And that's hard to implement.
+
+Um, and if it's too large,
+
+then things get really slow because you always have this softmax or you're placing distributions over the whole set of words.
+
+So one solution that people explored kind of briefly this was big in about 2016, 2017 was character level modeling.
+
+So why not just kind of produce things that the character level rather than the word level.
+
+And the problem is characters are kind of two smaller unit.
+
+Uh, were with uh, we've talked about how LSTMs can't actually remember things for that long a distance.
+
+And so now instead of producing eight words, you're producing something like 60 characters.
+
+And that's not, uh, you know, that's pretty hard to model.
+
+So the compromise solution that the field has largely converged on is to use
+
+what's called what are called Subword tokens or a subword tokenization scheme.
+
+Uh, and these tokens might be whole words, or they might just be parts of words.
+
+And so, for example, in this example that we've seen before, the eco attacks particle and Pornhub, we um,
+
+we have a couple of words here, like eco tax, where, uh, an underscore indicates that, uh, it's a unit beginning a word.
+
+So what we've done is we've broken eco attacks into two pieces, underscore eco the beginning and then attacks, which doesn't start with an underscore.
+
+So we know that that's continuing the previous, uh, the previous segment, uh, and then Portico and Ponded, we also get chunked up in some way here.
+
+Right. Um, and then there's also a similar chunking on the output side.
+
+And the nice thing about this is that we see that, uh, eco attacks can now be directly mapped into eco tax.
+
+And so for the purposes of machine translation, which we'll talk about, uh, later,
+
+we can do things like transliteration by, uh, sort of translating each of these segments.
+
+Right. And this structure, uh, is pretty nice and is a lot easier than trying to handle the whole word eco tax all at once.
+
+So one of the techniques that people use for this is called byte pairing coding.
+
+What you do is you start with each individual byte or roughly a character as its own symbol, and then you merge, uh, adjacent pairs.
+
+So basically you have some kind of vocabulary.
+
+You get your bigram statistics from that vocabulary.
+
+What are the pairs of characters that are, uh, you know, that are most frequent together?
+
+And then you merge some of those most frequent characters, and now your vocab consists of your original characters that you had before,
+
+and also super characters which are now now reflect these merges.
+
+Uh, and so when you go through this process, you typically use some kind of weighting of your vocabulary to prefer more frequent words.
+
+And so what happens is, you know, very common combinations like T-h will show up first,
+
+and then maybe you'll get the word VI in English, because that word is very common in a large corpus.
+
+And so that then becomes a quote unquote subword unit that can actually just be used as a, as a word in a lot of cases.
+
+Um, and so people do a fair number of merges. A lot of times the vocabularies here are, you know, in the thousands or tens of thousands.
+
+And what this gives you is actually a lot of common words.
+
+And then rare words get broken up in these nice ways.
+
+So these are two real examples, uh, of what uh, tokenization does.
+
+And there were no refueling stations anywhere. Everything gets preserved as a complete word, but refueling gets broken up.
+
+Or in the next example, unprincipled gets broken up into three pieces.
+
+There's an alternative technique called the word pieces method.
+
+Uh, this largely does the same thing, but instead of thinking about just merging pairs that are frequent together,
+
+um, it actually thinks about this from the standpoint of language model perplexity.
+
+So basically, if we want to explain some corpus of data, how can we find a segmentation or subword tokenization that is the easiest to language model.
+
+So there's a library from Google that implements this.
+
+Uh, and this is how they do their machine translation, uh, on Google Translate,
+
+the, uh, you know, you can ask how this might compare to the BP method.
+
+Um, one of my students, Kai Bostrom, has looked into this question.
+
+And, uh, what we found was that actually, BP does, uh,
+
+much worse job at coming up with linguistically plausible segmentations than this unigram lm method.
+
+So even though the BP method is popular and initially got some traction, uh,
+
+the unigram lm method is much better at producing segmentations that look, uh, morphologically and linguistically plausible.
+
+For example, in the top right here. Tricycles, uh, is broken into these very natural units.
+
+Try cycle s rather than just some kind of random, you know, segmentation that doesn't really correspond to the underlying morphology.
+
+And that's actually matters. When we'll talk later about pre-trained language models like Bert and GPT.
+
+These all rely on subword tokenization schemes,
+
+and so having the right subword tokenization scheme is then very important because that influences your pre-trained model,
+
+which will then influence everything that you do based on that model.
+
+Um, there's also been some nice work which looks at ensembling across multiple tokenization.
+
+So having multiple different subword schemes and having kind of different models that then,
+
+uh, work together to do a better job at ad translation or whatever.
+
+So this kind of shows how we can keep this modeling paradigm that we have, that we have built up where we've talked about things in terms of words,
+
+um, not have to worry quite as much about copying because now every word can be represented as some sequence of words.
+
+So we don't have to think about having to copy to introduce new words.
+
+And, uh, this is going to be a very effective approach for kind of navigating this, uh, boundary between word level and character level modeling.
+
+That's the end of the segment.
+

@@ -1,0 +1,99 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about one of the, uh,
+
+sort of lingering problems with the word embedding technique from the standpoint of, uh, bias and fairness.
+
+So the way that we train word embeddings is we take some very large corpus, usually as much data as we can get.
+
+So, you know, basically as kind of text from the web in whatever language we want to deal with.
+
+But the problem is that this text is not neutral or somehow drawn from some, uh,
+
+you know, underlying distribution that, uh, is just kind of linguistically pure.
+
+Right? This data encodes biases about the real world.
+
+And the concern from the standpoint of word embeddings is that we are at a very early stage in our NLP pipeline, encoding those biases into our model.
+
+So let's talk about what that kind of means.
+
+Um. One way we can analyze this is we can take the words she and he and look for them in our vector space and take the difference between them.
+
+And what this finds is this finds an axis that, uh, should roughly correspond to, uh, notions of binary gender here.
+
+If we are kind of just looking at these two genders.
+
+And we can look at words that are most heavily associated with XI and most heavily associated with he.
+
+And we find that the, uh.
+
+The occupations. Once we filter these words to just be occupations, kind of reflect stereotypes about, uh,
+
+you know what historically men and women have tended to do in society, for example, homemaker is one of the most extreme occupations.
+
+Uh, and we could find similar things for, uh, kind of race and religion as well.
+
+So these models kind of encode these associations based on the data, which, you know,
+
+it shouldn't be surprising if you think about, well, okay, maybe this is just scraping data from newspapers.
+
+Right. And, you know, a lot of newspaper articles are talking about, you know, what jobs people had and then, you know, 1980s, right.
+
+If it's data that's a little bit older and it's not really going to have these kinds of biases.
+
+So, um, there are some of this work that, uh, you know, first of all, it assumes, uh, it assumes a gender binary here.
+
+So, uh, it kind of doesn't fully handle this problem.
+
+Certainly. But, uh,
+
+they tried to at least take a crack at debiasing by looking at this Sheehy axis and other gendered words like woman and man and identifying this,
+
+uh, you know, this kind of thick line here that they said roughly corresponded to the, uh, um, you know, the axis of, of gendering these things.
+
+Then what they did is they took words like homemaker.
+
+They projected them onto this subspace, and then they subtracted off that projection from, uh,
+
+the words uh, from the original word embedding to find this new embedding homemaker prime.
+
+And so you notice that this is kind of centered homemaker. Now along, uh, along this axis.
+
+And, you know, of course, this is a much higher dimensional space than two dimensions of the picture.
+
+Looks a little bit different. But the idea is to take all these words that we think or we don't want our model to
+
+associate with particular gender and kind of bring them back to the middle here.
+
+This is a nice technique. Um, it doesn't work.
+
+Uh, there are some results from this, but the problem is that in these word embedding spaces, everything is kind of tied up together, right?
+
+It's not just about where the occupation words lie, but it's about, you know,
+
+where homemaker lies with respect to, like, you know, child or caring or something like that.
+
+And, you know, when you do that, even when you kind of do this process, you still end up with other dimensions of,
+
+of meaning that are kind of reflecting this, uh, this bias and these differences.
+
+And so the bias is not just this kind of local thing that we can get rid of,
+
+but instead it's a it's a it's a kind of pervasive property of the space that's very hard to scrub from our data.
+
+And so this is a major ongoing challenge in NLP.
+
+There's no easy answers for it.
+
+Uh, if we need to train on large scale text corpora, there's no way we can get ones that, uh, that kind of don't reflect bias somehow.
+
+Um, and so there's work on both improving this from the standpoint of pre-trained models, uh, and things like word embeddings,
+
+improving it in our kind of final downstream classifiers by thinking about how to evaluate it and how to kind of correct for it,
+
+even if it does exist in the embeddings.
+
+Uh, but it's a major ongoing area of research that, uh, we don't have many standard techniques in the repertoire for yet.
+
+That's the end of this segment.
+

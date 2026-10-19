@@ -1,0 +1,195 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about word embeddings. Word embeddings are one of the most important ideas in NLP in the last decade.
+
+And the reason is because they really are what allow us to bridge the gap from.
+
+Raw text to, uh, representations that can work well for models like neural networks.
+
+Neural networks have been around for a very long time, and they're very good at learning functions over continuous data.
+
+But for a long time, it wasn't really clear how to take just kind of very discrete data like words and particularly
+
+like bag of words representations and actually get them to work well in neural nets.
+
+And so, uh, word embeddings are kind of the first step towards bridging that gap.
+
+And so they were one of the key pieces to enable the kind of neural revolution in NLP with things actually working a lot better.
+
+Okay. So to sort of set up the basic idea, we're going to start with, uh.
+
+Again, very simple sentence sentiment. Uh. Example sentence.
+
+Um, where? Uh, we can map movie was good into a bag of words representation.
+
+And so again we're going to use unit grams here. And so, uh, you know, roughly we can think about that as some space like this.
+
+Where, you know, you've got a whole bunch of zeros and then three ones in this vector.
+
+Uh, that correspond to, uh, the positions of the words which occur in the sentence.
+
+One way to think about this is that it is the sum of three vectors.
+
+Um, and I'm just going to write them like this, uh, to mean that there is only a single one, uh, in each of these, um.
+
+Okay. So, uh, again, we can decompose this into, uh, three vectors, each of which has a single one.
+
+And that summed together and that gives our bag of words representation that has three ones in it.
+
+Okay. So this is a way of thinking about going from a word level representation to a sentence level representation.
+
+So why is bag of words a problem.
+
+So if we say. Film is great.
+
+Uh. You know, we.
+
+Have some other set of ones.
+
+And this is actually orthogonal. To.
+
+Movie was good. So there is no apparent connection between these two sentences because they don't overlap in any words.
+
+So the dot product between these is going to be zero.
+
+And generally we kind of can't tell that these are related at all.
+
+And so that's that's okay. If we have a ton of training data. Right.
+
+Like if we have a whole bunch of data, we can theoretically see examples of both.
+
+Movie was good and film is great. And, uh, you know, learn appropriate weights for all of these things.
+
+But in some sense, this that sort of shows that our input representation doesn't reflect very much about the underlying structure of language,
+
+because we're not taking advantage of the fact that, uh, for example, film and movie are, you know, very closely related terms in this case.
+
+And so this is where the idea of word embeddings come in.
+
+So word embeddings are we are going to say low dimensional.
+
+Representations. Of words.
+
+Um, capturing their similarity. Okay.
+
+When I say low dimensional, uh.
+
+You know, a typical range of values we're going to think of, at least for this part of the course, is between 50 and 300.
+
+So this may not seem all that low dimensional until you think of the fact that, uh, you know, let's assume that our vocabulary size is 10,000 words.
+
+Um. And like. This, this zero one vector up here was a 10,000 dimensional vector.
+
+So 300 much less than 10,000 and sort of low dimensional from that standpoint.
+
+And the rough kind of picture you should have, which again, we're going to draw a kind of two dimensional view of this is that, uh, these embeddings.
+
+Should group similar words near each other, right?
+
+So, uh, unlike before, where every word was as like as far apart from every other word as it was from any other word.
+
+Uh, because they're all mutually orthogonal in this 10,000 dimensional space.
+
+Now, you know, you can expose the idea that movie and film are perhaps more similar to one another than either is to the words was or is.
+
+So this is a very powerful idea, because it's going to start to let us have networks that generalize potentially to words that we haven't seen before.
+
+We trained something on movie was good, and now suddenly film is great, comes in as input.
+
+And even though we've never seen those particular words,
+
+the vectors are sufficiently close to things that we have seen before that the network's going to like output the same prediction.
+
+And in this case, that would be the right thing to do.
+
+So before we get into any specific algorithms, we're just going to talk about the rough idea of how we might go about learning these embeddings.
+
+Uh, so this is an idea that goes back to J.R.
+
+Firth, uh, in 1957. And it's what's called the distributional hypothesis.
+
+Um, and it can be succinctly summarized as. You shall know a word.
+
+By the company it keeps. All right.
+
+What does that actually mean concretely here? So let's say we have access to a whole bunch of text on the web.
+
+How are we going to use that to learn what these different words mean?
+
+Yeah. We're going to look at a examples of four sentences.
+
+All right. So. We have.
+
+Four examples here, two each containing movie and film.
+
+And so the basic idea behind the distributional hypothesis is that movie and
+
+film seem to be words that are substitutable or can occur in similar contexts.
+
+So, for example, I watched the movie or I watched the film, um, we're going to talk about syntactic parsing further down the road.
+
+But, uh, movie and film here are both direct objects of watched.
+
+And so watched has what we call selection on preferences that, you know,
+
+has certain types of arguments that, uh, you know, are things that you can watch, right.
+
+Uh, and in this case, we see that movie and film are both things that can be watched.
+
+Um, the film inspired me. The movie inspired me.
+
+Um, so there are also things that, in this case, are the subjects of the verb inspire.
+
+And so, uh, even just looking at kind of surface word context around each of these words,
+
+we can get a sense that they might be similar because they get used in similar contexts.
+
+And so that's the kind of idea behind Firth's hypothesis.
+
+So it's worth it's worth saying that like I'm presenting a very simplified view here.
+
+Um, you know, if you have another sentence like I developed.
+
+The film. And the Dark Room.
+
+Um. This is going to be a context that's unique to film, because we have a different sense of the word we're talking about,
+
+like the actual like film reel or whatever, rather than, um, you know, the idea of, of, of a movie basically.
+
+Um, so, uh, you know, there's, there's going to be complexity in terms of learning these things.
+
+But basically, in aggregate, we expect to see movie and film in more similar contexts than we expect to see movie in mango or something like that.
+
+So it's also worth noting that there have been implementations of this idea going back a long time in NLP.
+
+So, um, you know. Uh.
+
+There's kind of older algorithms like Brown clustering, um, etc. that have, uh, implemented this kind of idea for a long time.
+
+Um, so, but, uh.
+
+The kind of version of this that really seemed to take off and stick, uh, was a version called Word to Back, uh, by Thomas Micallef at all in 2013.
+
+And the idea is the following. Um.
+
+Each word. Is going to be mapped to a, uh.
+
+A word vector. And a context factor.
+
+And we predict.
+
+Each words. Context.
+
+Given that word. So the idea here is that, uh, we are going to see a whole bunch of examples of words in context,
+
+and we are going to learn vectors where a word's vector should be predictive of the words that are going to occur in the car in,
+
+you know, around places where that word is seen in the text.
+
+And so by doing this, uh, we're going to talk about the, uh, exact, you know, methods for doing so, which there's a lot of them.
+
+Um, but essentially we are going to learn we are going to kind of operationalize this idea of the
+
+distributional hypothesis and be able to learn vectors that capture this kind of similarity.
+
+That's it for this segment.
+

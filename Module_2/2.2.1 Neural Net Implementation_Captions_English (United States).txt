@@ -1,0 +1,235 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about some basics of implementing neural networks in PyTorch.
+
+The basic idea behind frameworks like PyTorch and TensorFlow and others is that computing gradients is hard,
+
+and we want to instead be able to offload that work on to, uh, a basically onto something like a compiler.
+
+And so the core idea is that if we have a bunch of mathematical operations written in code, uh, we can theoretically use, uh,
+
+a tool called automatic differentiation to understand basically what's going on in that code and keep track of the derivatives.
+
+So roughly, you can think about this as follows. If I write y equals x times x, um, then a compiler should be able to uh,
+
+look at that multiplication operation and uh, you know, generate code which does the following.
+
+Um, we're going to keep track of this, this kind of d y term here, um, which is going to track, uh, the derivatives here as well.
+
+And of course Y is going to capture x times x as before.
+
+Um, and so this is the idea behind so-called computation graphs.
+
+Rather than just doing operations on numbers in our code.
+
+Uh, we want to think about defining and instantiating this object,
+
+which represents that computation and which then we can do reasoning over, like for example, differentiation.
+
+Uh, and so the computation is now something that, uh, we handle symbolically.
+
+And so, you know, we have to change the way we write code a little bit.
+
+Right? And that we couldn't necessarily just, um, you know, use kind of constants or do all the kinds of operations we want before.
+
+Um, but assuming we're willing to kind of play within those, you know, very mild restrictions,
+
+uh, we can use libraries like PyTorch or TensorFlow to express our computation.
+
+And now we don't need to go about computing derivatives ourselves.
+
+We can instead get these frameworks to do it for us. So essentially this is how we're going to think about PyTorch in this course.
+
+It's that it is a framework for defining computations that, uh, provides easy access to derivatives or gradients.
+
+And so we're going to see a very brief crash course in PyTorch here, just to understand the kind of core pieces that,
+
+uh, that go into PyTorch code, um, from the perspective of what we're going to be building.
+
+So, uh, a torch module, uh, is the kind of basic unit of a neural network.
+
+Um, this these things can be, uh, recursive or hierarchical.
+
+So you could wrap other modules which, um, either implement predefined layers or other parts of your network if you wrote them, etc.
+
+So there's two, uh, kind of critical pieces of functionality here.
+
+We have forward, which takes an example, uh, or an input and then computes some kind of result.
+
+So this can represent either again your entire network from feature vector to prediction or uh,
+
+you know, just one layer from, uh, vector of a certain size to another vector of a different size.
+
+And then we have backward. Um, so this typically you do not need to write by hand.
+
+And so the cool thing about PyTorch is that based on what you write in the in forward.
+
+Backward will be automatically instantiated. And we'll do the correct thing, uh, to compute gradients.
+
+Um, the caveat is that if you do some kind of really crazy math in and forward, um, you know,
+
+you might have to define backward yourself if there's some kind of extra, you know, part of the gradient that you need to, like, compute analytically.
+
+Um, and, you know, code that in. Um, but otherwise, you know, if you're using relatively basic mathematical operations or standard neural net tools,
+
+then, um, you know, you'll never need to touch backward.
+
+All right.
+
+So remember that this was our, uh, our kind of basic neural net, starting with features, uh, going to this vector of hidden unit Z and then going to,
+
+uh, an output distribution over classes, uh, with these two weight matrices V and W and one non-linearity.
+
+So one hidden layer here. Let's see how this looks, uh, in PyTorch.
+
+So in PyTorch it's relatively straightforward to define.
+
+So we have first these different layers.
+
+We have uh our weights v and w uh our non-linearity g which in here which in this case is uh hyperbolic tangent.
+
+Um, and we have our softmax at the end, which is going to map from uh, again, the vector of real numbers into a vector of probabilities.
+
+And so these, uh, these linear layers, uh, essentially, you know, you can think of these as just implementing the matrix multiply.
+
+And they have associated parameters with them. Um, so we're calling them V and W.
+
+But basically inside each of these linear layers is the matrix which is actually, uh, implementing that operation.
+
+And the forward then has this fairly simple form, uh, where, uh, you know, we don't actually have to call forward on each of these layers.
+
+Um, we can just use apply. So self dot v of x, you know, multiply by v, apply g, multiply by w apply softmax.
+
+Um and this again you know, you can look up at the math above.
+
+And it was a very direct translation from the way that we've defined this mathematically into this, uh, forward function.
+
+So the. Input to the network is something that we have to, uh.
+
+We have to kind of massage typically. So we've talked about how, you know, we always need to go from raw text into a feature representation.
+
+And so as part of that process, when you're using PyTorch, you additionally need to, uh, convert things into some kind of tensor.
+
+Uh, and whether this is, uh, turning things into integer word indices, which can then get, uh,
+
+embedded using various word embedding layers, that's kind of where we're going next in the course,
+
+uh, or whether you're using real valued vectors, uh, basically you need to convert things into a format that, uh, that torch can understand.
+
+And so the, you know, the usual, uh, you could translate these things to and from numpy arrays fairly easily.
+
+So, uh, if code you have is already structured in terms of numpy, getting it to work with PyTorch is not, uh, too difficult.
+
+The main caveat is that if you do kind of weird stuff, like you're always mapping in and out of torch representations,
+
+um, you can break back propagation if you do this inside the network.
+
+Um, for example, if you go all the way to just like, you know, some bare number, um, and then convert it back,
+
+uh, PyTorch will not necessarily be able to track derivatives through all of those operations.
+
+And so you have to be a little bit careful. Typically you want to, you know, form your inputs uh, to PyTorch and then kind of do everything,
+
+you know, do everything up to the output, uh, all within the torch framework, which is fairly flexible.
+
+Um, and so should not, uh, cause too many issues.
+
+All right. So then in terms of training this network so we can instantiate it.
+
+Uh, again this kind of calls back to what was on a few slides ago showing the the definition of this feed forward network.
+
+So we instantiate it with uh sizes for the input layer, the hidden layer and the output layer.
+
+And then we instantiate an optimizer. So we're going to talk about optimization a little bit more later.
+
+Here we're going to be using an optimizer called Adam,
+
+which is going to operate over the parameters of this network and use a particular learning rate.
+
+All right. So now our loops look like the basic machine learning framework that we've set up so far.
+
+So we have a certain number of epochs that we loop over. Uh, and then here we're just going to loop over uh inputs and labels and the training data.
+
+Uh we'll talk about batching a little bit later as well, doing multiple inputs at the same time.
+
+This gold label. Here we are going to assume is one of these vectors II, which is a one hot vector.
+
+So, uh, it has a one in the position corresponding to the true label, which in this case would be the second class.
+
+Uh, and zero is elsewhere. So the first thing you do is you have to clear out gradient variables, uh, using this zero grad call.
+
+And the reason is because PyTorch caches information about the gradients inside the actual network.
+
+And if you do not do this, you'll kind of keep accumulating gradient information and everything will be messed up.
+
+And this will be a bug that's very hard to find. We do that?
+
+Then we call forward on the input and we get some probabilities as output.
+
+So again we've defined the forward uh, network to go all the way to softmax and give you, uh, real valued probabilities.
+
+Now we need to compute a loss. So this is showing the explicit loss computation.
+
+There's plenty of built in losses in PyTorch um, and loss uh, which kind of implements what's here.
+
+Um, you have to make sure that you pass in the right thing, whether it's log probabilities or logits.
+
+There's a few different ones. Uh, just make sure you check the documentation for whatever you use.
+
+But here what we want to do is we take the negative log of these probabilities, and then we dot it with the gold label.
+
+And again we think of that as a selector operation.
+
+And so that's going to give us the negative log probability of the correct label which is our uh negative log likelihood loss.
+
+And then we called backward on this loss.
+
+And so what this does is this computes the gradient of the loss with respect to all of the, uh, parameters of the network.
+
+And then we take a step with the optimizer.
+
+So now the step. It knows it's kind of responsible for optimizing all the parameters of this network.
+
+And when we call optimizer dot step,
+
+it will use the Adam optimizer based on the gradients that were just computed as part of this last stop backward operation.
+
+Um, and apply our gradient update. So.
+
+The basic, you know, kind of flow of training.
+
+Looks like what we saw on the previous slide. Now, the thing that we have to be careful of is that we initialize everything correctly.
+
+So this is another point that we're going to come back to. But it's very important that we initialize the network parameters to non-zero values.
+
+And this is because it's unlike in the linear classification case we now have a non-convex optimization problem.
+
+And so uh gradient descent can find different optima based on what the initialization of the network is.
+
+And so if you initialize with, uh, zero weights, you kind of get stuck and never learn anything.
+
+Um, and finding good initializers is very important.
+
+All right. So the kind of final just picture of training I'm going to give which we're showing here is we define our modules.
+
+We initialize our weights for them and our optimizer, and then we loop through epochs and data batches.
+
+We zero out the gradient. We compute the loss. And we use backward our automatic differentiation to compute gradients.
+
+And we take a step on the optimizer. And then after each epoch, one thing we might consider doing is check performance on our development set.
+
+So we want to make sure that we're not overfitting, that we're still making good progress, that, you know, everything is kind of set up correctly.
+
+So this is a good thing to get in the habit of doing is to, you know, just periodically have a small set of validation data and check,
+
+uh, performance on that just to make sure, um, you know, to make sure that things are working as intended.
+
+And then finally, once you've gone through, uh, this whole process, uh,
+
+you want to compute your final results, uh, either on your development or test set as appropriate.
+
+So that kind of gives you an overview of how we take the, uh,
+
+network that we had converted into PyTorch code and kind of map all of these elements of the training phase into code.
+
+Uh, and that's it for the segment.
+

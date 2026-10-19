@@ -1,0 +1,211 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about the independence assumptions underlying PCF and why these maybe aren't so good.
+
+So we set up this idea of, uh, building a CFG by estimating a grammar from a tree bank and then parsing with that grammar.
+
+If you do this, it turns out you actually build a pretty bad parser.
+
+And the reason is because context free grammars are too context free.
+
+So what we're showing here is the distribution of rewrite rules for all MPs on the left.
+
+And so 11% of the time they rewrite as a noun phrase followed by a prepositional phrase.
+
+Um, for example, uh, the cake with icing, that would be a kind of big noun phrase that rewrites in this way.
+
+Um, 9% is a determiner and a noun like that cake, uh, and 6% of the time is a personal pronoun.
+
+But when an NP is occurring under the S symbol, meaning that it's probably the subject of a verb in a sentence.
+
+It's 21% of the time going to be a personal pronoun, but the under a verb phrase that's only true 4% of the time.
+
+So this represents the fact that language is really not context free.
+
+These ndps in different positions are like should be handled differently.
+
+So in order to build better grammars, we're going to have to think about how to take our basic CFG and make it a little bit stronger.
+
+And so the way we can capture this is through an idea called what's called vertical marketization.
+
+So this is the basic PCF. This is the basic, uh, tree over a sentence that we're going to read our, uh, read our parser off of.
+
+But what we could do is we can transform this tree.
+
+So what I've done here is I've added a carrot after each symbol and then added the identity of the parent symbol after that carrot.
+
+So this is a then fairly simple preprocessing step that we can apply to our treebank.
+
+We can just go through every tree that you give me and apply this transformation.
+
+And now if we read a grammar off we actually have two different well we have many different types of noun phrases.
+
+But in particular here we have this NP carrot s noun phrase that is going to be able to
+
+capture the distribution of what goes on and noun phrases that occur under the S symbol.
+
+And similarly, VP carrot S can capture the distribution of verb phrases under the S symbol.
+
+So why is this a good idea?
+
+Well, it allows us to greatly increase the size of our grammar, which is maybe a little bit of a problem from a statistical efficiency standpoint,
+
+but it enables us to model these distributions in a much more fine grained way.
+
+There's another type of transformation we can do that deals with Binarization.
+
+So first I'm going to show you another way of doing so-called lossless binarization.
+
+So before we had this idea of underneath the verb phrase, uh, right here,
+
+we basically encoded this like super symbol, uh, with like, everything listed out here.
+
+Now what we're doing is we're only generating the, uh, the yield bit by bit, and we're not doing it all in one go.
+
+But this is actually going to be equivalent to the, uh, original way of doing lossless binarization because of the chain rule of probability.
+
+So we can decompose this rewrite of this complicated, uh, VP rule into a bunch of atomic steps, and we're abusing notation a little bit here.
+
+But basically, you know, what this represents is that the probability of, uh, kind of big, complicated event can be written as the probability of,
+
+you know, the first step and then the second step conditioned on the first, the third step conditioned on the first two, etc.
+
+And that's what this, this different grammar transformation is giving us.
+
+All right, so this enables us to, uh, think about a new way of, uh, transforming trees when we're doing binarization called horizontal Markov ization.
+
+So we have a kind of slider here which controls the amount of information that we remember in the grammar here.
+
+So, uh, if we talked about this idea of lossy binarization just replacing everything with a VP symbol here and that we call h equals zero,
+
+and that's going to be the kind of most compact grammar,
+
+but also the weakest grammar in terms of modeling what actually goes on at these intermediate stages of generation.
+
+H equals one.
+
+What we're going to do is rather than remember all of the, uh, symbols inside this bracketed thing, we're only going to remember the previous one.
+
+And so if we look down at the second, uh, the second symbol, that means we forget about the fact that we had we came from VBS.
+
+All right. And then h equals two. We remember two symbols of context.
+
+Um, and so you've got a kind of trade off here that you can apply.
+
+Um, now there's again there's a fair number of implementation details for this in practice.
+
+In practice you always remember the the head tag meaning the tag.
+
+That's a verb in this case. So you would actually always remember the verbs in this case.
+
+Uh, but this gives you a way of sort of like vertical mark organization controlled the amount of context we paid attention to here.
+
+We're also paying it, you know, controlling the amount of context we pay attention to.
+
+Except this time when dealing with these high arity rules.
+
+All right. So what we do is we.
+
+Typically when pre-processing a treebank we first apply vertical Markov ization like what's on the left here.
+
+And then apply this horizontal mark observation.
+
+And so we can form some fairly complicated structures and symbols in this way.
+
+But we're only going to see a kind of small fraction of the total number of possible symbols.
+
+So even though this kind of theoretically is like an exponential blow up in the size of our grammar,
+
+um, and practice, it blows it up by a good factor, but it doesn't get too out of control.
+
+So this was investigated by Klein and Manning back in 2003.
+
+And what they found was that if you know, you can take a basic parser, um,
+
+v equals one, H equals zero, which can parse to, uh, kind of accuracy of around 70%.
+
+Um, and you can increase that to almost 80% just through these Markov ization tricks.
+
+So this is pretty cool because, uh, it reflects basically needing to, uh, or a reflexive,
+
+reflexive, fairly simple transformation that can improve our performance pretty substantially.
+
+And so now we're going to contrast that with some more complicated approaches that uh, improve performance earlier.
+
+But that can kind of underscore why the simple transformations are sort of nice.
+
+So the dominant paradigm at the time that Klein and Manning were doing this back in 2003 was what's called lexical ization.
+
+Lexical ization captures a different idea, and one that's going to be fairly important,
+
+but, uh, is going to be very hard to implement, at least in constituency grammar.
+
+So we have two examples here of different analyzes for dogs in houses and cats.
+
+So on the left side here, we are saying that there are dogs in houses and there are also cats.
+
+And on the right side, we are saying that there are dogs that are in both houses and cats, which doesn't make sense.
+
+The problem is that even doing all this parent annotation stuff.
+
+Actually, both of these trees still look the same because the rules applied are exactly the same.
+
+In both cases, the difference ends up being the words.
+
+And so in order to understand the fact that dogs and cats is a more likely set of things to conjoin than houses and cats,
+
+we really need to be looking at the words.
+
+And so what lexical parsers do is they annotate each grammar symbol now, not with something about it context, like,
+
+you know, things about its kind of siblings or parents like we were seeing before, but instead with a so-called head word.
+
+Now the head word is the most important word of that constituent.
+
+And so the kind of simple heuristic to think about is like for a verb phrase, the head is a verb.
+
+For a noun phrase, the head is a noun for a sentence.
+
+The head is also a verb, because the idea is that a sentence is fundamentally describing some kind of event.
+
+I mean, of course there are sentences that don't contain verbs. Um, you know, we're not going to go into that.
+
+All right. So what we could do is we can, uh, write down a set of rules that identify these, uh, these these, uh, heads,
+
+for example, in a noun phrase, the last word or the last word before a preposition is typically the head.
+
+So we can extract these head words and kind of annotate our grammar with them.
+
+Right. So now okay, can't we just take our approach, read, uh, grammar off of our treebank and parse with it?
+
+So the answer is no, because the grammar is now way too large to deal with.
+
+And the fact that we've done this lexical ization means that we need a whole bunch more tricks in order to deal with it.
+
+So in the late 90s, uh, my colleagues in Eugene Charney, I built parsers that were parsing to almost 90 F1 on,
+
+uh, the standard English pen treebank with this kind of technique.
+
+Um, and so this evaluation metric looks at basically how many nodes in the parse tree you get.
+
+Right. Uh, and so if we think about getting, you know, almost roughly, we'll say 90% of the nodes.
+
+Correct. That's pretty good. Uh, and it was it was true before, uh, a lot of these kind of fancier machine learning techniques had been developed.
+
+But these parsers are incredibly hard to build.
+
+So what we're going to talk about going forward is a way of capturing some of the same idea as lexical parsers, but much more simply.
+
+And that's why we're going to turn to dependency as a formalism.
+
+Um, but even in constituency, there sort of tricks for, uh, you know, incorporating the words into the parsing process using discriminative parsers.
+
+And so we'll come back to those a little bit later as well.
+
+So what we've seen here is if you want to make a CFG work, you need to do some kind of refinement on it.
+
+Uh, and so we've seen a couple of different ways to do that.
+
+And then we'll talk about uh, kind of what actual parsers look like in a few segments.
+
+That's it for this one.
+

@@ -1,0 +1,233 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about multi-class classification.
+
+So so far we've talked about binary classification where roughly we've kind of looked at uh,
+
+pictures that looked like this, where we have a bunch of points in space that are labeled as either positive or negative.
+
+And now we're going to think about, uh, having, you know.
+
+Basically. Points that might come from multiple classes.
+
+And so this is going to be a generalization of binary classification.
+
+And it's going to be useful for a lot of problems in NLP, um, where there are more than just two classes.
+
+So we're going to define uh, the set of classes as this thing script y here.
+
+Um, we're also going to talk about this sometimes as the output space, um, particularly when we get to structured models.
+
+So there are ways of doing this with binary classification.
+
+Um, so for example, you can have uh, a technique called one versus all where basically you draw,
+
+uh, kind of boundary that separates each class from uh.
+
+You know, all of the other ones. And so this comes about from having and binary classifiers.
+
+Um. But there are. There are times when this doesn't work.
+
+Um, you should be able to convince yourself that, uh, if we've got, uh, something that looks like this.
+
+Um, it's going to be very difficult in.
+
+Well, you would need more than linear classification to, uh, handle the fact that the kind of threes can't be separated from the ones into so easily.
+
+Um, and so we want to kind of avoid the hacks like this and said, just do things the right way.
+
+So instead we're going to think about reformulating the classification techniques we've seen so far,
+
+uh, using uh one of two methods for generalizing them to this multi-class case.
+
+So, uh. These two techniques.
+
+Are going to be as follows. We're either going to have.
+
+One weight vector. Per class.
+
+And we're going to call this the. Different weights.
+
+Or approach. Or we have.
+
+Different features. We're going to call that DF, uh, per class.
+
+So what we're going to see is that these are two more or less equivalent ways of formulating things in the multiclass case,
+
+but different weights is going to look like what we do when we do a lot of neural net stuff and
+
+different features is going to be very useful for thinking about structured classification.
+
+So I do want to set up both of these, even though, uh,
+
+for the algorithms that we're about to see and the kind of basic setting, they're completely equivalent.
+
+So, uh. Under different weights, different weights.
+
+You know, in some ways you can kind of think of it as a little bit like one versus all.
+
+Um, though it's not it's not trained as a bunch of binary classifiers, but the idea is kind of similar.
+
+Uh. We say that the classification decision is the argmax over Y in this set Y.
+
+So previously we thought about a decision boundary. Where is it positive or is it negative.
+
+Now we think about uh okay which value in y.
+
+Let's the following expression takes it take its maximum value.
+
+Um. And the expression is this.
+
+So, uh. What we have here now is this W is now indexed by Y.
+
+And so what we have is we have a fixed set of features. And then we say okay I'm going to hit this with a whole bunch of different weight vectors.
+
+And whichever weight vector, uh has the highest dot product with it.
+
+That's my prediction. All right. The different features version of this looks like the following.
+
+Single weight vector now not indexed by Y. Um, but now the features that we extract do depend on Y.
+
+Um, and so the thing I want to emphasize.
+
+Is that this? Why in here is what we think of as a hypothesized.
+
+Why? So it's not the case that we're like cheating and looking at the gold classification decision.
+
+Instead, what we're doing here is we're scrolling through all of the possible labels that we can have and saying, okay, which one of these actually,
+
+uh, or, you know, instantiate features with each one of these possible labels and then give me the score when I take the dot product here.
+
+So the reason we're not going to use this as much in neural nets is that, uh, basically the way we're going to think about neural networks is,
+
+is like kind of taking the input X and doing a whole bunch of computation on it.
+
+And then at an output layer, we kind of determine what class something falls into.
+
+Um, the different features technique is not so good for that because by injecting the y kind of early into the process,
+
+you would end up having to rerun your neural net end times for doing any classification, which is not something you want to do.
+
+Okay. So we're going to look at an example, uh, of topic classification.
+
+Using these two different frameworks. So we're going to have uh a sentence x.
+
+Too many drug trials. Too few patients.
+
+Um. And why in this case is going to be, uh, health.
+
+Sports. Or science.
+
+Okay. Um. F of X is going to be bag of words.
+
+Uh. Let's say bag of uni.
+
+Um, and we are only going to look at the following unigram.
+
+Drug. Patience.
+
+And baseball. Okay, so, uh, you should be able to convince yourself that, uh, f of x for this example is 110.
+
+We have drug and patients there, but not baseball. All right.
+
+So that's sort of sufficient to think about the different weights version of this.
+
+So in the different weights version version of this we think about um for example the weight vector, we have a w health weight vector which.
+
+Maybe I'm wrong. I'm just going to make up some values here. Um.
+
+Maybe drug and patients both have high weights on under this weight vector.
+
+But baseball has a low weight because typically health articles won't talk about baseball.
+
+And so you know this gives us a score of 7.6.
+
+Um, and just, uh, you know, throw out one for, uh, weights for sports.
+
+Um, you know, maybe drug shows up there sometimes, uh, patients, not so much.
+
+And then baseball obviously is highly, you know, it's going to have a high weight here.
+
+And, uh, this gives -1.9.
+
+Okay. So, uh, you know, we're not going to show uh, for science,
+
+but basically you compute these three dot products and oh, health is going to be the highest.
+
+So that's going to be the classification decision that we pick. So the only difference from before is that we have one weight vector per class.
+
+And, uh, you know, rather than comparing it against zero, we're now saying which of these weight vectors gives us the highest score.
+
+Okay. Now thinking about the different features, perspective, different features is a little bit, uh, is a little bit weirder.
+
+Um. So recall that we're going to define this feature vector f of x comma y.
+
+Um. And what we're going to do is we're going to define this as uh f of x.
+
+Replicated. For each class.
+
+You'll see in a second why this? I said that this is equivalent to what we had before.
+
+Um. Let's see.
+
+Um. So.
+
+What we have here is the f of x comma y equals health.
+
+Is going to have this 110 vector in this first position here, and then it's going to have a whole bunch of zeros after that.
+
+When we have f of x with y equals sports.
+
+Instead what we're going to have is zeros.
+
+And then. Ones in the second.
+
+The feature vector now kind of occupies the second position here.
+
+And then a bunch more zeros.
+
+So the way to think about this is that previously our features were just an indicator of does the sentence x contain this word.
+
+So now it's an indicator of. Sand contains.
+
+You know, uh. Word I and.
+
+Y equals, um, you know.
+
+In this case sports. That's the that's the kind of meaning of the features here.
+
+And so the reasoning behind this is that, uh, you know, we're defining this conjunctive feature that looks at both X and Y.
+
+And now what we can do is we can define a single weight vector w, um, where.
+
+It is a linearization. Of the weights from before.
+
+So now all the weights can live in a single weight vector.
+
+And as you kind of toggle between which y you're hypothesizing, you end up with different, uh, you know,
+
+you end up with different values of this dot product because the features now kind of change in this block structure.
+
+So. The reason I.
+
+The reason I kind of belaboring this point about how these things behave as indicators is that when we get into structured classification,
+
+what we're going to see is that we're going to think about, um, you know, why's that are more complicated.
+
+They're like certain part of speech tags at each point in a sentence or something like that.
+
+And so there it's not going to be practical to think about having one set of weights per, um, you know,
+
+per different class that we're classifying because our classes are going to be these large structured objects like sequences of parties,
+
+parts of speech. And so we're going to have to think about, um, these more complicated feature structures that conjoin properties of the input.
+
+Like what words does a sentence contain with properties of the output.
+
+Like what label are we using here? Um, for now, though, you could think about either of these things as equivalent either, um,
+
+you know, you have this kind of copy paste feature vector structure and one weight vector,
+
+or you have just a single feature vector and then, uh, you know, different weight vectors for each one.
+
+That's the end of the segment.
+

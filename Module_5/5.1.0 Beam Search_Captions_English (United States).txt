@@ -1,0 +1,159 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about beam search and more generally other decoding strategies for producing language out of language models.
+
+So the decoding strategy is we're going to talk about are going to apply to two types of models that we think about in this class.
+
+The first is language models uh just placing distributions over the next word.
+
+And the second are sequence to sequence models placing next word distributions over an output y conditioned on an input x.
+
+So for in both of these cases at the end of the day we have this model and we give the system some input either a prefix of y's or an x or you know,
+
+we just wanted to straight up generate a story or generate something for us.
+
+So how do we actually do this generation. So one option is just greedy search.
+
+So we just take the most likely next word at each step.
+
+And we kind of repeat this and just crank out a sequence.
+
+That's one approach. Uh, it's going to be the sort of worst of all possible worlds, but it actually works pretty well in practice.
+
+So, uh, it does get used. Um, the one we're going to talk about right now is using beam search,
+
+which is going to be a kind of improved version of greedy search that's going to allocate a little bit more computation,
+
+but ideally find something with even higher probability.
+
+Um, and the third option, which we're going to talk about a little bit later is uh drawing samples from the model.
+
+So rather than getting the most likely thing instead draw a random thing.
+
+So let's dive into beam search. So, uh, we're going to assume that we have.
+
+Uh, vocabulary of size V.
+
+And a sequence of length n that we're going to generate.
+
+So at the first time step, we can think about basically the probability distribution over the first word.
+
+And I'm just going to, you know, make up some words and some probabilities here.
+
+Um, blah blah blah. And uh, each of these things, you know, has a pretty low probability.
+
+The model doesn't really know what it's supposed to say, um, etc.
+
+So. There v a vs.
+
+So there are a lot of different words that we have to consider here.
+
+And then if we think about what happens at the second time step, each of these has a number of different things that can kind of produce.
+
+Right. So we could say the dog, the cat.
+
+The fish, etc. Right?
+
+Uh, and each of these gets a probability. And these are going to be even smaller now, uh, because we are sort of multiplying.
+
+You know, small number after small number together. Uh, and.
+
+There are generally V continuations. Uh.
+
+Of each of these. And so we end up with these squared hypotheses here.
+
+Size of v squared hypotheses. Uh, and at the end of the day we are going to end up with size of v to the n.
+
+Uh. Total sequences. Um, so, I mean, uh, I think we're kind of familiar with exponentials being bad.
+
+So the fact that this is exponential and, and, and you might want to generate something potentially very long is a problem.
+
+So what this is, uh, this is the kind of exhaustive search mechanism that's going to enable us to find a,
+
+uh, highest probability sequence, but we're going to do something better with an approximation.
+
+So. Beam search.
+
+Is going to approximate exhaustive. Search, um, but with less compute.
+
+And basically the idea is keep the top k.
+
+Hypotheses. At each step.
+
+So, um, if we kind of go back to the, uh, this lattice of options we were building above, we're going to kind of revisit it and.
+
+Let's say. Let's say k equals three.
+
+Then what we're going to do is we're going to cut the model off here and ignore all of the rest of the options that come afterwards.
+
+All right. And then each of these still generates a whole bunch of possible, uh, possible next words.
+
+Right. So we get the dog. Um, you know, all these all these things, and we generally end up with, uh, k times V of these.
+
+Okay. But once again, we're going to chop off most of that.
+
+We're only going to keep around the top things, which are maybe the dog the cat, and let's say uh.
+
+Cat or something like that. So we end up with a relatively small number of options at each time step.
+
+And then, uh, you know, there's an expensive process of checking all the stuff that comes next.
+
+Uh, but then we always prune back down to this small set.
+
+So. The runtime here.
+
+We can kind of think about it in terms of several different mechanisms.
+
+We're not really going to talk about runtime of data structures,
+
+like you need to maintain some kind of heap or priority queue or something like that, uh, to actually manage all of these items.
+
+But like that overhead is so small compared to the overhead of running big neural nets that we're not even going to think about it.
+
+Um, instead, the kind of relevant things are that, uh, we're going to have k times n transformer calls.
+
+In the sense that we think about just how many times do we need to run the transformer and get a distribution over the next words?
+
+Well, it happens kind of once that the first time step, and then it happens three times or k times, uh, for each subsequent time step,
+
+because you need to consider each of the things in your beam, run the transformer over it, get the distribution over the next words.
+
+Um, and we consider. K times v times n.
+
+Hypotheses ultimately. So, um, it's much smaller than, uh, v to the n.
+
+Um, you know, we're just not thinking about that many items.
+
+Uh, but it still allows us to explore the space in a way that kind of scales with.
+
+Okay, essentially. Okay.
+
+So, uh, beam search, you're going to see.
+
+Used most frequently in sequence to sequence conditional generation settings like machine translation,
+
+uh, where you really want to get a high probability thing and you know that.
+
+Okay, greedy is going to find me something, but then beam search is going to find something of even higher probability than greedy.
+
+Well, um, greedy can get kind of derailed down some path and pick some word that I'm going to lead to some low probability stuff later in beam search.
+
+Might avoid that. That can lead to like, better translations.
+
+Um, but we'll see later that for certain types of applications, beam search is not what you want.
+
+And it's also the case that once you get bigger and bigger transformer models,
+
+the beam search becomes less crucial because these models already do a little bit of kind of not explicit planning ahead,
+
+but the modeling of the distribution of the next word already accounts for, um, the fact that, um, more stuff is going to be generated later.
+
+So, um, you know, there's less of a need to use this with the kind of latest and greatest models.
+
+And it's also very expensive, which when you have a model that's already kind of breaking the bank in terms of compute,
+
+you probably don't want to use this.
+
+Um, however, it's an important search technique to be aware of and, uh, sort of an important, uh, way of producing hypotheses out of these models.
+
+That's the end of the segment.
+

@@ -1,0 +1,283 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about some considerations when training and optimizing neural networks.
+
+So these are just going to be a few kind of practical techniques that are uh,
+
+going to be useful for the kinds of networks we're going to see in this course.
+
+And we're not going to go too, too deep on it.
+
+So the first, uh, thing that, you know, essentially always, uh, is something you're going to use is what's called batching.
+
+So batching is where you process multiple data points in parallel.
+
+And, you know, one of the main reasons to think about doing this is it can speed up your, uh, you know,
+
+basically the amount of it could reduce the amount of time that a single epoch takes pretty substantially,
+
+because you can do, uh, more efficient matrix operations and achieve higher parallelism by operating over, uh, a group of points at a time.
+
+Uh, and so this does actually require making the computation graph be able to take not just one data point, but actually a whole bunch of them.
+
+However, this is not too difficult in PyTorch because of the way that everything is structured in terms of tensors.
+
+So. Instead of thinking about an input, which is just a number of features and a gold label,
+
+which is just like a number of classes, and these are both vectors.
+
+Now we're going to think about these as matrices where we have an extra dimension which reflects the batch size.
+
+And it turns out that the forward.
+
+Implementation for this network does not need to change at all.
+
+Everything that exists in the running example we have so far generalizes seamlessly to this case.
+
+And what happens now is the probabilities that we get out are now a matrix where, um, each row is a different example in the batch.
+
+Uh, the one place that things need to change here is that when we're thinking about the loss,
+
+we need to actually accumulate that down into one number.
+
+So we do need to sum these negative log probabilities across the batch.
+
+Um, but that's not too onerous. And again, because the other operations are all kind of naturally defined in terms of tensors,
+
+we don't need to do other modification here in order to batch.
+
+Ah, uh, and, you know, in order to implement batching in our network.
+
+So this is very nice, uh, in that you should be able to get code working for a single instance and then generalize it without too much difficulty.
+
+In terms of batch sizes, uh, it's hard to give a kind of range, uh, that is universal for all problems.
+
+Uh, you know, anywhere between 1 and 100, usually.
+
+Uh, it the story changes pretty substantially when you're dealing with pre-trained models.
+
+Uh, and a lot of times when you're training more sophisticated networks, batching is very important,
+
+not just from a standpoint of speed, but also from a standpoint of, uh, kind of optimization and getting to a good, uh, optimum.
+
+So, uh, using a batch size, uh, kind of moderate batch size of like 16 or 24, especially when you have a, uh, a decent sized GPU is often a good idea.
+
+Um, but on a lot of simpler cases, like training, a very basic seek to seek model, um,
+
+batch size one kind of works just fine from the standpoint of, uh, you know, what you actually converge to.
+
+Okay. So the basic framework is that we have a batch, we compute gradients on it.
+
+And then we use one of these, uh first order optimization techniques that just need access to gradients.
+
+So the main questions we're going to try to answer here are initialization regularization and optimization.
+
+And again there is you know, there's such deep theory behind all of these things that, uh, there's no way we can cover it.
+
+So, uh, there's entire courses you could take to try to understand these things more.
+
+But here we're going to talk about this mostly from a practical standpoint of what settings of hyperparameters you all typically want to use.
+
+All right. So here is our basic feed forward network. And so to think about initialization.
+
+Well we want to start out with is thinking about v and w here and how we initialize them and what consequences it has.
+
+So. This is a non-convex problem, so the initialization matters.
+
+In particular if you initialize v here to zero.
+
+You can think about what might happen. What happens is that with either of the choices for G listed here, you end up with Z.
+
+That is all zero all the time. And what happens then is that the model never gets off the ground with respect to learning,
+
+because essentially logistic regression, the last layer is just seeing a vector of all zeros.
+
+It has no idea, uh, kind of which of these features might be useful because none of them can convey any information.
+
+And so the gradients just end up being zero and nothing gets learned.
+
+So. We need to initialize to some non-zero value for the early layers of our network in order to be able to break symmetry between,
+
+uh, different, uh, hidden units and kind of get learning off the ground.
+
+Now, how does the fact that this model is nonlinear affect things?
+
+So here we're showing hyperbolic tangent. And when we go out to the edges of, uh, the curve here.
+
+We start to see that the slope of hyperbolic tangent gets pretty flat.
+
+And this corresponds to a phenomenon called saturation of gradients.
+
+So imagine that the inputs to this network, um, are or the inputs to this layer, let's say,
+
+are always going to be very large or very, you know, very large positive or very large negative.
+
+So we're always getting 5 or -5 or something on that order.
+
+It turns out that then the model doesn't.
+
+Then try to change those inputs very much because the gradient is so flat here.
+
+It looks at this and says, okay, well even if I were to change the input, it won't actually change the output that much.
+
+So like why bother? Right. So you're all the way out at five, kind of saturated over here.
+
+And the model doesn't even want to think about bringing it back towards the origin.
+
+And so it's very hard for learning to happen because you're going to pass back a very small gradient through this layer.
+
+Um, so this is one reason to consider using, uh, rectified linear units or values, these kind of hinge shape things in green here.
+
+Uh. These can produce larger values.
+
+Um, but they have a similar sort of problem, which is that if everything ends up being negative somehow,
+
+um, you know, you can also get a little bit stuck.
+
+Um, so again, you have to think about the right way to initialize, uh, in order to avoid these things happening.
+
+Uh. And so, you know, we don't want to just initialize to all zeros.
+
+We don't want to initialize too large.
+
+So there's been a lot of thought put into what the right, uh, technique for initializing is both from a distribution standpoint and also the scale.
+
+Uh, so one initializer is due to Xavier Guerrero,
+
+and it looks like a uniform distribution between this funky expression here that is based on the so-called fan in and fan out of a layer.
+
+That's just a fancy term for, uh, the number of inputs to that layer and the number of outputs.
+
+And the reason we we kind of scale things and do this funky thing is that we want the
+
+variance of the inputs and then the gradients for each layer to be about the same.
+
+So, you know, we might have some layers in our network which are like 100 dimensions and in 50
+
+dimensions how we might have others which are 1000 dimensions in and 500 dimensions out.
+
+And these are on very different scales.
+
+And so we need the right initializer that balances things.
+
+So a single gradient update with a single step size can can do something reasonable.
+
+Um, there's a more sophisticated take on this sort of idea.
+
+Not for initialization, but, um, during learning something called batch normalization,
+
+where what we do is we take each layer's activations and we shift and rescale them across a batch.
+
+So that means zero and variance one. Uh, this is not going to show up that much in this course.
+
+It's much more of a consideration in computer vision where, uh, if you have very deep networks, you need to think about,
+
+uh, again, how to kind of balance these, uh, basically how to balance the optimization across these different layers.
+
+All right. So that's that's kind of what we're going to say about initialization.
+
+Um, there's various sort of pre-construction schemes that you can use,
+
+but it is important to use something and not just initialized to zero for dropout.
+
+Uh, we can. Zero out parts of the network during training to prevent overfitting.
+
+That's the basic idea behind dropout. And then at test time, we are going to use the entire network.
+
+So the sort of idea here is that, uh.
+
+We don't want like one of the ways you can get overfitting in a classification model is if,
+
+uh, you have two features that are highly correlated but maybe differ on one example,
+
+and then, you know, those features in aggregate should give a score of like plus one most of the time.
+
+But what you do is you set one feature to plus ten and another feature to minus nine,
+
+because now it lets you really fit that one example where they do something different,
+
+and then most of the time they just cancel out and give you one. So this is a kind of stochastic way to enforce that.
+
+Something like that is not happening.
+
+And the reason is because when you drop out sort of random chunks of your network, you prevent these, uh, different neurons or activation,
+
+uh, or, you know, cells in the layers from learning to, uh, you know, this kind of highly co-evolved behavior.
+
+Another way to think about this is is connected to Ensembling.
+
+Basically, what you're saying is I want any random subnetwork to be able to do well at this problem.
+
+And so then at test time when I take the whole network, that's like having an ensemble of a whole bunch of subnetworks.
+
+And so, you know, even if some signal is kind of missing from the input or whatever, um,
+
+you know, we've got other parts of the ensemble that can maybe pick up the slack here.
+
+And, uh, you know, this should roughly still be able to do the right thing.
+
+Um, so this is a this is a relatively easy thing to add.
+
+You can just add a layer that allows you to do it.
+
+Um, I will say that, uh, setting dropout rates to high, like, uh, is a good way of actually getting bad performance.
+
+Um, and, uh, usually this doesn't matter as much as you might think it does.
+
+So it can be a nice thing to add that can give a little bit of performance increase, but uh, is generally not too important.
+
+All right. The last thing we're going to talk about is the choice of optimizer.
+
+So one good choice is an optimizer called Adam.
+
+This is very widely used especially in NLP.
+
+And it combines two ideas. Um, one is the notion of an adaptive step size.
+
+So this looks like basically for each coordinate, we uh,
+
+think about essentially what the size of the gradient updates we've seen for that coordinate is and we rescale it appropriately.
+
+And then momentum is the other, uh, trick.
+
+This this incorporates meaning that we basically use an exponentially weighted average of, uh, the past few gradient updates.
+
+And you know, when you make an update that that update will then inform the next few updates as well.
+
+That's kind of why it feels like momentum now.
+
+And these are both these are both effective techniques. There's lots of, uh, methods that balance these two things.
+
+But, uh, Adam is one that's pretty widely used. That seems to work well for a lot of NLP problems.
+
+There are some results, uh, due to Aisha Wilson at all from NeurIPS 2017,
+
+showing that these methods actually might not be the best thing for test time.
+
+Um, so on the top, uh, Adam is fitting the data really well.
+
+Um, but on the bottom, uh, Adam doesn't actually generalize as well as, uh,
+
+SGD with, like, carefully tuned learning rates and momentum and things like that.
+
+So, uh, it's sort of an open question.
+
+Um, Adam is going to work well for a lot of what we do in this course.
+
+And so that's the that's kind of recommended, one that just kind of works out of the box most of the time.
+
+And the final thing, uh, that is important from optimism and optimization standpoint, especially with uh, more complex models, is gradient clipping.
+
+Uh, basically you don't let the gradient exceed some max value.
+
+And this just, uh, kind of ensures that it doesn't go too off the rails during learning.
+
+So we've talked now about some different considerations for initialization, regularization and optimization.
+
+And so uh, you can refer back to this or use this as a resource for uh, thinking about what values of hyperparameters to use, etc.
+
+But, uh, you know, we've given you here the basic template, I guess,
+
+for most of what we're going to use in this course from an implementation standpoint.
+
+That's it for this segment.
+

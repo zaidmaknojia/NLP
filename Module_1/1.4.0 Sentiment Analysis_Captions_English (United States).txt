@@ -1,0 +1,115 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about sentiment analysis.
+
+Um, we've already talked about this as an instance of a binary classification problem.
+
+And we've seen, uh, some kind of basics about how we might deal with it with bag of Words features.
+
+Um, but we can think about it a little bit more, uh, kind of rigorously here.
+
+So we've looked at examples like this. The movie was great, would watch again and we talked about how, uh,
+
+having these bag of having bag of words features on unigram or single words lets you capture things like great as positive sentiment,
+
+um, and things like bigrams, uh, a lot or pairs of words in our feature space allow us to capture pairs like watch again.
+
+Um, and so if we think about other, uh, kind of examples, this works out well sometimes.
+
+Uh, but sometimes not so great. So, for example, the movie was gross and overwrought, but I liked it.
+
+Uh, in this case, we have two negative sentiment words gross and overwrought.
+
+But the person then says, but. And that sort of negates everything that came before, right?
+
+Uh, or the movie was not really very enjoyable. Bag of words model.
+
+Uh, especially with unigram might say. Oh, enjoyable looks great.
+
+Um, but in fact, again, this is in a negated context here.
+
+So bag of words models don't seem sufficient.
+
+Uh, from the perspective of handling this kind of discourse structure and negation phenomena that we're seeing in these examples.
+
+Um, but, you know, getting around this and actually operationalizing this to do a lot better is a little bit tricky.
+
+Um, so in the world of bigram features, you could do things like when you see a not basically broadcast that not to every word that follows it.
+
+So extracts not really not very not enjoyable.
+
+And now you kind of get all of the, uh, you know, you get the idea that all of these pairs are being negated,
+
+though, without some kind of syntactic analysis like a parser.
+
+You're going to have a hard time doing this totally reliably. Okay, so turning the clock back to 2002.
+
+Um, some of the first work on using, uh, classifiers for sentiment analysis like this, um, was done, was done, uh, uh, by a team at Cornell.
+
+And the rough conclusions they found were that these simple feature sets that we've looked at so far can actually do pretty well.
+
+Uh, and so their best performing models here were, uh, these unigram and unigram plus bigram, uh, features.
+
+So frequency or presence, what that column means is are they taking this count based version of bag of words,
+
+where if a word occurs twice, it gets a value of two,
+
+or just presence or absence, where if a word occurs once or twice or five times, uh, it only still gets a value of one in the feature vector.
+
+Um, and so uh, and b is Naive Bayes uh, classification framework.
+
+We haven't really talked about em. Uh, maximum entropy is just another term for logistic regression.
+
+Um, and then SVMs.
+
+Uh, again, another classifier we haven't talked about much, but which is more or less similar to logistic regression from our standpoint.
+
+So we see that these, uh, you know, these simple feature sets do fairly well, and it's actually kind of hard to beat this.
+
+Um, so there is some work.
+
+Uh, ten years down the road, uh, Siedah Wang and Chris Manning from Stanford, uh, revisited the bag of words, classifiers versus other methods.
+
+And, uh, the what they found is that, uh, a modified version of Naive Bayes, uh,
+
+actually could do basically, as well as this ra ra pre-train method, uh, with an orange rectangle here.
+
+Um, this was, uh, kind of a neural network model, uh, this recursive autoencoder model, a fairly sophisticated model.
+
+Um, and they were sort of harkening back to, uh, those results on the previous slide from, uh, Bob Hong and Lillian Lee and found that, uh, the,
+
+you know, essentially, like they were able to take modified versions of those earlier techniques and kind of beat the neural nets from 2012.
+
+Um, now, of course, this was before neural nets really exploded in NLP.
+
+And so, uh, you know, just a couple of years later, uh, Yoon Kim with, uh,
+
+his work on using CNNs for this, uh, was able to beat these results fairly substantially.
+
+So if we look at where we are today, um, this is from, uh, a website called NLP progress,
+
+which tracks basically state of the art progress on a number of different data sets.
+
+And this looks at a slightly different data set than those previous two, uh, works.
+
+This looks at the Stanford sentiment Treebank uh, data set for classification.
+
+The best systems now use these big pre-trained models.
+
+And so, uh, you know, we have results up here from Bert, uh, from Excel and that, uh, stuff that we're going to talk about later in the course.
+
+Uh, and these have really pushed the performance pretty substantially.
+
+Um, so we've gone from, uh, at the bottom here by LSTMs getting a performance of around 90 to,
+
+uh, the kind of best state of the art pre-trained models getting a performance of almost 97.
+
+Uh, so this kind of underscores, you know, I guess two things.
+
+One is how far you can get with basic classifiers that we've already learned about so far.
+
+And two, how much this idea of pre-training, which again,
+
+we'll come back to later in the course once we've set up all the neural machinery to deal with it.
+
+Uh, how much that's going to buy us. That's it for this segment.
+

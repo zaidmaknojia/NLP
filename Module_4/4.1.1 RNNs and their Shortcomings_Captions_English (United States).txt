@@ -1,0 +1,135 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment,
+
+we're going to talk about recurrent neural networks and why they might be a good idea for language modeling and classification and things like that.
+
+And as a bit of a spoiler, we're also then going to talk about sort of some of the thorns with them and why we're not going to focus on them as much,
+
+and instead going to use a different architecture called transformers.
+
+So feedforward neural networks, as we've seen, they don't do a good job of handling variable length inputs.
+
+And there's some reasons that are purely practical.
+
+But uh, sort of conceptual. One is that, uh, they assign each position in their feature vectors a fixed semantics.
+
+So suppose we take four words. The movie was great. And we can cat need those for, uh, word embeddings into a single feature vector.
+
+Now if we learn some parameters,
+
+there's going to be a certain set of parameters associated with position four in this vector that are going to learn to model the fourth word here.
+
+Then if I get a new sentence like that was great, this great is kind of in a completely different position in the vector than the other great.
+
+Uh, sort of. Technically these are in orthogonal subspaces of the vector space,
+
+and so the model is not actually going to share any parameters related to these two usages of.
+
+Great. And that's not what we want.
+
+Instead what we want to do is we want to kind of process all of these words somewhat uniformly, right.
+
+If we're doing something like sentiment analysis or even language modeling, knowing that the word great is in the context somewhere is kind of useful.
+
+And it would be nice to be able to do that without having to, like, observe it in every single position.
+
+But we still want to make the, uh, function that we're using context dependent.
+
+We don't want to go as far as a deep averaging network in terms of just erasing all notions of position.
+
+So RNNs are, uh, theoretical way to do this.
+
+So an RNN is defined in terms of a cell that takes an input x, which you can think about as a word.
+
+And the cell has a state which we're going to call H.
+
+There's a previous state that's kind of coming in from the history of the RNN,
+
+and the RNN is going to do some computation and produce an output Y and an updated version of the state H based on the input in the previous state.
+
+Um, now sometimes you'll also see, uh, other variables like C for cell state, which are used in architectures like the long short term memory network.
+
+Um, so I'm going to just kind of optionally put that here in the graph. Okay, so what's the sort of benefit of this?
+
+Well, we can instantiate this architecture over.
+
+This sentence here. And it kind of consumes each of these words and then produces an output.
+
+And. Basically, if we want to know that this output is positive,
+
+which here we're going to denote by blue, then the model will see the word great at some point.
+
+And it can kind of flip a bit in its representation and produce an output that's aware of the fact that the word great showed up here.
+
+And when I talk about this model also being able to use context, uh, we can feed in a sentence like this.
+
+And the word not here.
+
+The model can kind of recognize that, oh, okay, I'm going to change something in my context because I just saw not that one I see.
+
+Great. I know not to sort of go blue that that's not positive.
+
+Um, but I'm going to, uh, I'm kind of in a negative, uh, sentiment sort of state still.
+
+So theoretically, if the model had seen great in two different positions, it would do the right thing.
+
+But it's also able to account for the fact that not is here. All right.
+
+So. The issues with RNNs that I mentioned stemmed from a problem called the vanishing gradient problem.
+
+So I've listed here a formula for computing the updated, uh,
+
+hidden state representation based on the input X and the previous hidden state HT minus one.
+
+Um, and B is just a bias term. So we're not going to go through this formula in detail.
+
+But the really key thing here is that there's a tan H involved.
+
+And what that looks like is this. And what that means is that when you're trying to do backpropagation,
+
+if the input to the tan H is kind of very far out on either end of the spectrum, the tan function is very flat.
+
+And so if you are doing backpropagation and if your values for the tan H are kind of out towards these extreme ends of the spectrum,
+
+then the gradient is going to be kind of very diminished as you go back through the network.
+
+And this is going to be a problem for learning how to remember pieces of information over many timesteps.
+
+There's another problem here, which is that if you just sort of ignore the tan H and you look at what's going on with the H's,
+
+we have h t equals ten h, ignoring that of v times h t minus one.
+
+So over time, as you scroll through a sentence, you're repeatedly multiplying by this v matrix many times.
+
+So what that can do is that can either cause H to kind of blow up or shrink,
+
+depending on what the eigenvalues of VR that's also going to cause problems.
+
+And so we have kind of multiple reasons why it's going to be hard to have
+
+gradients kind of give us information over long timescales of these networks.
+
+Now this was uh, part of the, uh,
+
+sort of observation that led to the development of architectures like long short term memory networks that do better at this,
+
+but they really don't still don't help enough.
+
+It's still hard to learn over a thousand word, uh, kind of time scales of information for things like language modeling.
+
+And RNNs are also slow, and they're kind of slow in a bad way, which is they don't parallelize.
+
+Well, uh, if you're going to encode a sequence, you have to fundamentally go through order n kind of steps that don't parallelize,
+
+because you have to read each word in and update the hidden state accordingly.
+
+What we're going to see is that transformers solve both of these problems.
+
+They kind of index into the context very effectively, and they also parallelize very effectively.
+
+So we're not going to have these, uh, kind of long sequential, uh, chains in our computation graph that are going to cause things to be slow.
+
+So we're going to kind of put RNNs to bed here and turn our attention to Transformers for the rest of this course.
+
+That's the end of the segment.
+

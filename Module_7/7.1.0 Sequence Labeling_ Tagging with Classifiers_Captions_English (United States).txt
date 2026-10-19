@@ -1,0 +1,251 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about how to approach the problem of part of speech tagging.
+
+We're going to define, uh, it as a sequence labeling problem.
+
+And we're going to talk about how to use basic classifiers like we've seen so far in order to do this.
+
+So the idea behind sequence labeling is that we have an input, uh, which we are going to represent as x here.
+
+Um, and we're going to think of this as a sequence of.
+
+What in our case is going to be words x one through x n.
+
+So previously when we thought about, uh, you know, when we thought about extracting features and things like that,
+
+uh, you know, we didn't necessarily think about the words as the sequentially structured object.
+
+Now we're going to think about them in this way. And our output.
+
+Why? Is going to be the same length as the input now.
+
+So previously we always thought about Y as some kind of, uh, binary or multi-class prediction.
+
+Right. Some single discrete label associated with a document or a sentence or whatever.
+
+Now we're going to think about it as one prediction per.
+
+Per word. And so this is an example of what's called structured classification.
+
+And the reason it's structured is because these y's are not somehow just like a bag of independent predictions,
+
+but they actually have this sequence associated with them where like y2 comes after Y1 and comes,
+
+you know, a certain number of positions before y and. All right.
+
+So what we can try to do, I think, is instruct.
+
+It's instructive to think about how to do this with the current tools that we've built up so far.
+
+So, uh. So let's try to predict.
+
+Each why I. Independently.
+
+With. Logistic regression.
+
+So. That's going to be something that looks like this.
+
+Now, uh, over on the left here, we have y equals y.
+
+So we're going to use y to reflect the kind of, uh, I guess part of speech tag or whatever that we're thinking about predicting here.
+
+Um, and. We are going to need to, uh, and we're thinking about assigning that, uh uh uh uh uh,
+
+position y I and notice we're conditioning on two things on the right side.
+
+We're conditioning both on the input sequence. And that was how we kind of normally did it in logistic regression.
+
+And also on this index I. Um.
+
+And here's why that's going to be important.
+
+So previously we had Bag of Words features and we said okay, you know when we extract features like F of x,
+
+uh, actually I'm going to use the um the different features notation here.
+
+Um, this is because this is really where that stuff kind of comes into play here.
+
+Um, you know, if we are thinking about assigning a, uh, label y to, uh, you know, to a,
+
+uh, an example that we're going to associate with a particular bag of words feature set.
+
+Well, the the kind of basic bag of words features might look something like, you know, this where you have, you know.
+
+Blah blah blah. Where you have a one for fed or one for raises.
+
+Um, you know, and then other, uh, you know, other kind of ones in there as well.
+
+All right. So, you know, let's say we want to make this, uh, prediction here.
+
+We want to say, okay, what's the probability that, uh, you know, and we're going to think about let's say I equals three.
+
+Um, so we're going to think about, uh.
+
+It's kind of making a prediction associated with the third word. And, you know, maybe the tag we're going to think about here is an.
+
+Then what we get, remember, is this kind of block, structured thing where, uh,
+
+we have this f of x vector, um, and we have a bunch of different copies of it.
+
+And we're going to get the ones. Uh, associated with the KNN tag.
+
+And then we're going to have zeros elsewhere there and we're gonna have zeros. Zeros kind of everywhere else.
+
+Okay. The big problem. From our perspective is that this is independent.
+
+Of I. So.
+
+This model is, or rather, the set of extracted features just looks at the sentence and the part of speech tag.
+
+It doesn't look at the word that we're actually trying to tag here.
+
+And so that's kind of a problem from the perspective of tagging, right, in that we're not making use of that information.
+
+We're just going to predict like the same tag distribution everywhere.
+
+Um, and this is generally not going to work as a tagging model.
+
+Instead, what we need is, uh, kind of positional.
+
+View of our features. We need to look at X.
+
+We need to look at the fact that the label that we're thinking about is an.
+
+And we need to think about the position. So, uh.
+
+One way to do this, one very simple way is to just have a single feature.
+
+On the current word. Here.
+
+Let me let me write the example up here. Fed.
+
+Raises. Interest rates 0.5%.
+
+So when I say a single feature on the current word, what I mean is that, uh,
+
+we are going to have a vector where, uh, you know, again, we're going to have all zeros, um, except.
+
+In this end segment. So zeros everywhere else, and we're just going to have a one associated with interest.
+
+And everything else is going to be zeros. All right.
+
+So basically what we've done is we've taken this, we've taken our bag of words and sort of masked it out.
+
+Right. Um, we've said okay, we're only going to look at the current word.
+
+And so this is at least a little bit better, right? In that, uh, we can now say, okay, we're predicting a part of speech associated with interest.
+
+And so, uh, you know, we're at least going to get the, uh, uh,
+
+we're at least going to have some notion of what the word we're currently looking at is and what and what part of speech it might have.
+
+We could do better than this, though. Um. And here's what's that that's going to look like.
+
+All right. So. What we have is we have our big, uh, block structured feature vector where, um.
+
+We've got, you know, the VBS tag over here.
+
+Um, and then we're going to leave ourselves plenty of room for the name tag.
+
+And then we have all the other tags. Right. Okay.
+
+And then within the KNN tag. What we could do is we could say, okay, we're going to have one set of positions.
+
+That correspond to. The current word.
+
+And then we have one set of positions. That correspond to the previous word.
+
+Um, so in this case the indicator here would be about raises.
+
+And then we can have the next word as well. Um.
+
+And, uh. This word is rates.
+
+So the way we can think about each position in this vector space.
+
+Is as a conjunction of several properties.
+
+Uh, and we, we we call this an indicator.
+
+And in this case, it's an indicator that the current word.
+
+You know, which is defined with respect to this position, I equals three, right?
+
+Current word equals interest. Um, and.
+
+The tag. Equals and n here.
+
+All right. And so the tag information, remember, came from, uh, you know, came from kind of where we are in this big block structure thing,
+
+the current word that came from the smaller block structure within that.
+
+And then, um, interest was associated with this particular position in the vector space.
+
+So it turns out we can we can avoid having to deal with this whole big, you know,
+
+block kind of block feature vector idea just by saying, okay, um, we are going to treat.
+
+This as a word.
+
+In a bag of words. Space.
+
+Essentially, we think about our feature space now as talking about properties of, uh, the classification instance.
+
+And in our conventional bag of words, the property was just is this word included?
+
+Or in some cases, how many times was this word included? Now we're thinking about this sort of more complex set of properties.
+
+In this case, this position has the associated property cur word equals interest and tag equals.
+
+And remember, the feature function, you know, depends on y in this case, um,
+
+and so that kind of word lights up and uh gives us a one in this whole big feature space.
+
+So we don't have to think, we don't have to actually think about kind of managing this block structure.
+
+We can again, just kind of sort of throw these things in a big index and, uh, access them later.
+
+Okay, so if we take, uh. So we can take these indicators.
+
+And feed them into a classifier. Um, and so, uh, we can, we can basically take a labeled data set of part of speech instances,
+
+treat each position in every sentence as a example, and feed that and train on that and produce a classifier.
+
+All right. So what goes wrong. The kind of problem.
+
+Is that we're not making use of the output structure at all.
+
+So for example, we had different possibilities for raises, uh, and interest rates.
+
+Right. And it turns out that some of the edges that we kind of considered here are not good.
+
+Like, for example, we're not typically going to have a plural noun followed by a noun.
+
+Um, we're also not typically going to have a VBS followed by a VP VP.
+
+And so the the predictions. Of a classifier.
+
+May be incoherent. Uh, meaning kind of locally.
+
+Each prediction looks reasonable, right? But the overall structure doesn't kind of add up to be the thing that we want.
+
+And so this is going to lead us into our idea of sequence modeling.
+
+Um, and we're going to think about two models.
+
+Hidden Markov models. And conditional random fields.
+
+These are going to be two things that we're going to spend some time, uh, unpacking, uh, throughout the next section of the class.
+
+And essentially these are going to be two kind of contrasting ideas for, uh, how to deal with this.
+
+Hidden Markov models are going to be our first example of a generative model.
+
+Um, and the they're going to look a little bit different from other things we've done, but they have some attractive properties.
+
+Uh, conditional random fields are going to look a little bit more like building off of this classifier view of,
+
+uh, tagging, but uh, making the output predictions coherent.
+
+That's the end of the segment.
+

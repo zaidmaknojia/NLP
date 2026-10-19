@@ -1,0 +1,275 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about what the Bert model actually looks like and how it gets applied to downstream tasks.
+
+So though there were two versions of the Bert model presented in the original paper, both are transformer models.
+
+So following the architecture that we discussed before and these are big models,
+
+Bert Base has 12 layers and Bert Large has 24 layers, um, each of which has the dimensions listed here.
+
+So for Bert Large, a thousand dimensional uh embeddings for each word piece,
+
+token 16 attention heads at each layer, uh, and that gives a total number of parameters of 340 million.
+
+So a very large number of parameters compared to the past neural models that we've seen.
+
+So, uh, one other aspect of transformers we discussed was the need to represent position in them somehow,
+
+because by default, the self-attention mechanism doesn't.
+
+It sort of treats the input as a bag of words.
+
+You don't have any notion that these two words occur next to each other, um, which is important for dealing with sentences.
+
+And so what they did was they had, uh, an additional set of encodings,
+
+one set that captured position by basically just embedding an integer index that represents where the word is in the sequence.
+
+And then they also had what they called segment embeddings, uh, which we'll come back to in a minute.
+
+So this model is the one that they first pre-train on a large corpus, using the masked language modeling objective that we talked about before.
+
+Then the question is how do we apply it to other tasks and what can we actually do with that?
+
+So one other important thing about Bert is the presence of the CLS token at the beginning,
+
+which, uh, was used to do the next sentence prediction tasks that we discussed earlier.
+
+This the basically the vector at the end that you get associated with the CLS token is the vector that you typically use for doing classification.
+
+And Bert. So what you'll do is you'll put, uh, you'll use Bert as uh,
+
+kind of black box to encode your sentence and produce the single vector associated with the CLS token.
+
+And then you take that, you feed it into whatever classification layer or maybe, uh,
+
+sort of small feed forward network to do your final prediction for whatever task you're doing.
+
+So the nice thing about Bert, and one of the big advantages compared to prior work was that it could really do sentence pair tasks a lot better.
+
+So what this means is a task like paraphrase detection.
+
+Can you tell whether these two sentences are paraphrases of each other?
+
+And the way this works is you just kind of ram these sentences together and feed them into Bert.
+
+And again use this class embedding to do classification.
+
+Uh, and then finally Bert can do tagging as well. Uh, similar to what we saw for LSTMs.
+
+You know, any model that can produce a contextual embedding of each token, you can take that embedding and map it into something like an Na tag here.
+
+Okay, so why is it so good at these kind of sentence pair tasks?
+
+Well, one reason is that transformers are pretty good at taking.
+
+So the seemingly independent chunks of chunks of the input, and using the self-attention mechanism to figure out an alignment between them.
+
+And so they capture interaction between these two sentences.
+
+And I'll emphasize that most of this happens during fine tuning, even though there was this next sentence prediction or NSP objective.
+
+That's not really all that important for performance.
+
+Mostly, it's just the fact that, uh, when you have two sentences like this, self-attention allows you to really figure out,
+
+okay, which parts of each of these sentences is kind of supported by the other one.
+
+Uh, and then if we want to predict entailment, for example, does the first sentence imply the second one,
+
+that mapping between pieces is something that the model can sort of figure out somewhere in these,
+
+uh, you know, 12 layers and however many attention heads there are.
+
+All right, so bird seems great. One thing it cannot do well is generate text.
+
+Uh, the only way you can do this is basically populate a whole sequence up to this point.
+
+Stick a mask token on the end and then say, okay, fill in this mask token.
+
+Uh, the problem is that this ends up being sort of order n squared and the length of what you want to generate,
+
+because then as soon as you fill in that mask token, you need to rerun the whole computation with another mask token on the end.
+
+Uh, and, you know, you might be able to generate multiple, uh, you know, fillers at a time, but then you don't know whether,
+
+like, this filler and this filler are really going to be coherent once you actually, you know, take the real words there.
+
+So these models were not intended for text generation.
+
+They were intended for these sorts of analysis tasks like, uh, sentiment classification and things like that.
+
+So that's okay. And this is, uh, kind of feature of how they were designed.
+
+All right. So the general procedure is that once we have this pre-trained model,
+
+we have to do this fine tuning step of continuing to train it on whatever our actual task is.
+
+So, uh, the model is pre-trained on the masked language modeling objective.
+
+And then when we have our sentiment data, we say, okay, we want the class label and whatever, um, matrix of like output,
+
+uh, basically mapping into the, uh, mapping into the actual prediction space for our downstream task.
+
+We want to train that matrix now and fine tune the rest of Bert.
+
+So the way you do this is you run gradient descent on your new data set,
+
+typically for a small number of epochs, and also with a very small learning rate.
+
+And so kind of graphically, the way we can think about what happens is that, like I said,
+
+the the next sentence prediction loss isn't actually all that impactful for Bert.
+
+And so the CLS embedding, one of the main things that the fine tuning process does is it kind of rewires the last
+
+step of self-attention here to try to feed the useful information into the CLS token.
+
+So the way I'm kind of drawing this is that there's big changes here at the top.
+
+We fine tuning, we change the the parameters closer to the output of the network a lot and then kind of less as we go back through it.
+
+That's where the more sort of pre-trained part kicks in.
+
+So the, you know, with the with these smaller changes, that means that the weights aren't changing as much.
+
+And as a result, we're going to be able to keep the benefits of pre-training and the kind of, you know, general language understanding capabilities.
+
+Let's say, that's put into this model by the mass language modeling objective.
+
+All right. And so the, the, you know, the, the the way in which you find to invert is, is very complex.
+
+There's a lot of different schemes for this using various optimizers,
+
+kind of weird learning rate tricks like warm up where you start with a very small learning rate, you increase it and then you decrease it again.
+
+Uh, and, you know, sometimes you do that multiple times.
+
+So there's a lot of sort of black magic here. Most of the libraries that implement this stuff will, uh, kind of walk you through that, I guess.
+
+All right. And so this is very different than how we talked about Alamo.
+
+So we talked about this uh, we talked about this table which showed that back propagating into the Alamo parameters was generally not a good idea.
+
+Uh, that's shown in the, uh, kind of fourth row down here where we see this delta between the fine tuned,
+
+which is the fire and the frozen Alamo embeddings, which is the ice, uh, is negative, meaning that fine tuning actually hurts Alamo.
+
+But this is flipped around for Bert. So, Bert, you almost you rarely want to use it as a source of pretrained embeddings.
+
+You almost always want to fine tune that as your network for whatever task you're doing.
+
+So like I said, that's a big difference in paradigm.
+
+And, uh, most approaches these days follow the Birt paradigm where, uh, both fine tuning is encouraged and also, of course, works better.
+
+All right. So they evaluated it across this range of tasks.
+
+Um, a slightly more formal benchmark than just the collection of tasks in Elmo.
+
+Um, and this benchmark was called glue. And it captures, uh, a range of different types of, uh, mostly sort of semantic inference tasks,
+
+um, with either single sentence input or a pair of sentences as input.
+
+And most of the outputs are categorical and, you know, it sort of classification tasks like are these things paraphrases or not, etc.
+
+So the impressive thing about this was just how well it worked.
+
+So, uh, the pre OpenAI, uh, Sota at the top,
+
+this is basically the kind of best systems that people had put together with neural models for each task independently.
+
+And so this reflected in some cases, like, for example,
+
+two years of work on this particular data set and many research papers optimizing architectures for that particular,
+
+you know, sentiment classification task. And then you can see that, uh, uh, Elmo and GPT kind of were doing on par with this stuff,
+
+and that was impressive, given that they were able to do it with a uniform architecture.
+
+But then Bert, especially Bert Large, just blew these things out of the water.
+
+Um, the gains on this are really quite substantial.
+
+And, uh, again, a lot of that comes from dealing with better with these settings pair tasks.
+
+So in terms of what Burton is doing, it's very hard to say.
+
+And I mean, we'll get some functional understanding of how Bert works going forward.
+
+Um, but there was some work, uh, due to Clark et al, which looked at visualizing some of what's going on inside the attention heads.
+
+And so there's, there's some interesting different behaviors, behaviors.
+
+You get some of the heads, like the second one we're seeing here attend locally, like for example,
+
+they look at the next to the previous word uh, to inform a word about its context.
+
+Um, there's also a sort of weird interplay between some of the, uh, placeholder tokens like SAP or,
+
+you know, tokens that normally don't mean a whole lot like periods to end sentences.
+
+Um, typically not that useful for text classification problems.
+
+Uh, there's a weird sort of interaction where these tokens sometimes attend very broadly,
+
+and maybe the model is using these to kind of store information about an entire sentence in one place.
+
+The other analysis they looked at, which is pretty informative, was tying this to notions of dependency parsing like we established earlier.
+
+So, for example, one thing you might expect is that if you have a word, it should attend to things that are syntactically relevant for it.
+
+And in the dependency formalism, we were able to directly say, okay, this word is either a parent or a child of the other word.
+
+And what they found was that, uh, there was there were some heads that could do things like for,
+
+uh, verbs, pick out their direct objects or for nouns pick out their modifiers.
+
+And, you know, the the results from this aren't like better than supervised passers by any stretch of the imagination.
+
+But this is learned in a totally unsupervised way internal to the model.
+
+So it's very cool to see it discovering these useful notions of syntax for what it's doing.
+
+So the final thing I'll say about Bert is that there are now better variants.
+
+I mean, Bert is still relatively commonly used, but probably one of the most common replacements is called Roberta for robustly optimized Bert.
+
+Um, largely the improvements are not conceptually very, uh, you know, it's not conceptually different from what we've looked at before.
+
+They have about ten times the amount of data,
+
+rather than masking the same words in each sentence as you do multiple passes through the data, they mask different words.
+
+Um, which is, you know, something that just kind of makes sense.
+
+Um, and uh, another, another thing which, which helps these models as whole word masking.
+
+So rather, if you have a word that's multiple word pieces,
+
+rather than masking just one word piece and leaving the others instead mask out all the word pieces.
+
+Um, so that's an improvement that's even been pushed into the original Bert at this point.
+
+Um, and so there's libraries that allow you to access all this stuff.
+
+Um, Huggingface is a company that maintains a fairly well known Transformers library,
+
+with all of the pre-trained models and a bunch more contributed by the community.
+
+Um, and Fair seek, uh, maintained by Facebook, also has, uh, some of this stuff, uh, in particular Roberta.
+
+So there's plenty of libraries for that that help you use these things and kind of
+
+give you access to the latest and greatest in terms of pre-trained weights here.
+
+So generally, what we what we've seen is that we can take these different, uh,
+
+you know, these architectures like Bert, and use them for a wide variety of tasks.
+
+And as we go forward in the course, we'll talk about and see basically that almost all the best systems are now using this stuff.
+
+So it's an important ingredient to be aware of and something that you're definitely going to want to consider.
+
+Um, if you're building, uh, kind of real applications and care a lot about the performance, that's the end of the segment.
+

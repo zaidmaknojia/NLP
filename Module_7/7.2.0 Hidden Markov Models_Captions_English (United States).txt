@@ -1,0 +1,185 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about Hidden Markov Models.
+
+We're just going to set up the basic definitions and see how this model is defined, what its parameters are and what it can do.
+
+So Hidden Markov models are a generative.
+
+Sequence model. That is going to allow us to, uh, represent, uh, tasks like, uh, well,
+
+particularly tagging tasks like part of speech tagging, um, in a nice, uh, kind of modeling framework.
+
+So, uh, first we have, uh.
+
+So we have, we have basically two types of objects here.
+
+Um, we have, uh, tags.
+
+Why I which we're going to say are in this, uh, this tag set.
+
+And we have words. Uh. Z, which are in a vocabulary.
+
+All right. So the definition of a hidden Markov model is the following.
+
+Well, this is this is kind of one way. Well, this is there are there are a couple of slight things that that might differ between definitions.
+
+But, uh, this is basically the, the kind of standard form of these.
+
+Okay. So what's going on here. So let's look at this graphically uh, using uh Bayes net notation.
+
+So we start off by sampling a tag y1.
+
+And then based on that tag. Uh, we sample a word x1.
+
+So when we decompose the probability in this particular way.
+
+Um, one what one kind of term that's used for this is the generative story of the model.
+
+And so the generative story of this model is saying that.
+
+All right, we have some distribution over tags that can start a sentence y1.
+
+And then conditioned on that tag we generate a word which is going to be the first word of the sentence.
+
+And then, uh, we generate a second tag y2.
+
+And then uh, the second word x2 conditioned only on that tag y2.
+
+Um, and then we kind of continue until we have y and.
+
+Which gives accent and then stop. Okay.
+
+So this is a this is a model that makes, uh, certain independence assumptions.
+
+And essentially the reason it's called a hidden Markov model, um, is because the Ys.
+
+For. A Markov process.
+
+Um, meaning, uh, why I.
+
+Depends. Uh, or I'll say this formally is.
+
+Conditionally. Independent.
+
+Of y1 through y I minus two.
+
+Given y I minus one. So it's not right to say that it's completely independent of the, uh, the kind of earlier states in the process,
+
+because the earlier states in the process influence what, uh, y I minus one is.
+
+But if we know what y I minus one is, then, uh, kind of that fully determines the distribution over y I.
+
+And so the kind of idea here is that the part of speech tags themselves are giving us this sort of syntactic skeleton of a sentence, right?
+
+Like, okay, you're going to have a maybe if you have a determiner and then you're going to have a noun,
+
+and then maybe there's some chance of having a verb after that. Right.
+
+And then after a verb, it doesn't matter that there was a noun before that.
+
+You know, we're probably going to have a noun afterwards, or maybe a preposition.
+
+And then after a preposition, okay, now we're going to get the object of that preposition, etc.
+
+And then the other assumption here is that the words are kind of conditionally independent of each other given the tags.
+
+So x2 doesn't depend on x1, um, but instead is only going to depend on y2.
+
+So this is not necessarily a good assumption because if we have x1 and x2 as uh,
+
+for example, New York, the fact that we have, you know, a kind of proper noun phrase,
+
+or maybe San Francisco is a slightly better example, you know, given that we see San,
+
+there's only, you know, not that many words in English that are going to come after that.
+
+And, uh, but but right now we're just saying, okay, we have a, we have a proper noun and then a proper noun.
+
+And, you know, San Francisco, you know, that's possibility.
+
+That's a possibility. But San York or New Francisco, these are also possibilities.
+
+So these are assumptions that the model is making.
+
+Um, and the reason you make these kinds of assumptions in generative models is for uh, is for tractability, basically, um,
+
+so that you're not having to deal with, um, you know, conditioning and thinking about a whole bunch of different variables at the same time.
+
+Okay. So. Well, we also want to think about are the parameters of this model.
+
+So. We have p of y1, which is called the initial distribution.
+
+And so I'm just going to draw that like this. Uh, we're going to call that this s and this is a, uh.
+
+This is a. T length vector. So it's going to it is a probability distribution.
+
+So unlike a lot of the other models we've seen like bag of words models where the parameters can be any real valued uh or any real number.
+
+Here the parameters have to be, uh, real numbers between 0 and 1 that sum to one here.
+
+Right. Because they're probabilities. And this is a distribution over what the possible starting tags are.
+
+So then we have, uh, these y given y minus one terms.
+
+Uh, these this is, these are called transitions. And so the way that's going to be represented is by T.
+
+Um, so we're going to use the kind of square T here for the transition matrix.
+
+Um, and the, you know, tower squiggly T for the, uh, the set of tags.
+
+And. We could think of that, uh, as a.
+
+T by t uh, matrix here where, uh, essentially the value of a particular cell is telling us,
+
+uh, what is the probability of y I give it of, uh, the, let's say, tag?
+
+Uh, well, actually, let me change this a little bit.
+
+Um, I'm going to write, uh, y.
+
+Ker. And why next? Um, so it's going to tell us what is the probability of the y next tag given the y car tag.
+
+And so these transitions are independent of the positions in the sentence.
+
+So that there's there's no dependance on I or anything there.
+
+It is just a matrix of these probabilities defined over, um, every pair of tags.
+
+All right. And then we have these p z given y terms.
+
+And these are called emissions. And the parameters here.
+
+I'm going to draw a long, kind of long matrix here. Uh.
+
+We'll call it y cur. And ex Kerr.
+
+Uh, and we're going to call this thing E. And is going to be t by.
+
+V. Uh, again, a matrix.
+
+And again, uh, it's it's just encoding the probability of a given tag, say.
+
+And then, um, you know, I'll draw kind of a slice here.
+
+It says okay, given tag. And what is the probability of seeing each word in the vocabulary?
+
+And so we do make an assumption that there is a fixed vocabulary.
+
+Here we're placing a distribution over words in that vocabulary.
+
+Uh and so given tag. And then we need each word to have some probability.
+
+And those probabilities need to sum to one. Okay.
+
+So, uh. There's two steps that we need to take in order to use this model.
+
+Um, the first is parameter estimation.
+
+Um, you know, given data, how do we get values for these parameters?
+
+And the second is inference. Um, so given this model, uh, how do we actually use it to part of speech tag a sentence.
+
+And so these are the two topics that we're going to talk about next.
+
+And that's the end of the segment.
+

@@ -1,0 +1,129 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about sampling strategies for generating text from language models.
+
+So previously we talked about how there are some strategies around taking the most likely next token.
+
+And then subsequently we looked at using beam search to find an even higher probability sequence.
+
+But the third option that we outlined before was to draw a random sample from the model.
+
+Now you might think, why would you want to do that?
+
+Well, for an application like machine translation where you really want all like high quality translation.
+
+You probably want to use something like beam search. But if you're using a language model for some sort of open ended generation task,
+
+like let's say you're trying to generate a story, there may not be one right answer and you may be okay with more variety.
+
+So this was one of the capabilities that started to arise with the GPT series of models and particularly GPT two.
+
+So I one of the kind of headline examples that they had back when they released that work was, uh, the ability to continue stories like this one.
+
+In a shocking finding, scientists discovered a herd of unicorns living in a remote, previously unexplored valley in the Andes Mountains.
+
+Even more surprising to the researchers was the fact that the unicorn spoke perfect English.
+
+So then we might say, okay, what is the language model like to sort of say next?
+
+Can it continue the story and beam search eventually gets stuck in this very interesting
+
+loop where it just keeps repeating the name of this university again and again.
+
+So this is exactly the kind of case where, uh, we might say, okay, this is somehow not random enough, right?
+
+So then we can consider sampling. And if you do sampling from the model's distribution, you end up with stuff that ends up looking quite weird.
+
+Uh, like they live in a remote desert and are uninterrupted by town, and there's lots of grammatical errors in this.
+
+So what's going on here? So this phenomenon with beam search is called degeneration.
+
+And this arises from the structure of the language model that we're using.
+
+So let's like think about how this string actually gets generated here.
+
+So first we uh let's say we kind of work going along.
+
+And then we ran into uh, universidad as a token.
+
+And it might be the case that the probability of Nacional given Universidad is high.
+
+That's fine. And then Autonoma maybe coming after that is also high.
+
+De México also high probabilities.
+
+And then the model is kind of at this choice point where it then start sort of puts a slash and then keeps continuing things.
+
+These might be low probability things, but once you start looping here, ultimately the probability of this entire sequence looks pretty high, right.
+
+Like it's found this, uh, sort of name that it can generate with high probability.
+
+And then it's just going to keep looping this. And beam search is going to think this is great.
+
+So these words are likely given the previous words but the whole sequence is unlikely.
+
+Um there's a separate set of models called the globally normalized models um,
+
+which include things like energy based models that can be used to judge this.
+
+We're not really going to talk about them in this class so much. Uh, they're sort of computationally hard to use.
+
+But basically I, you know, we want to do something more random than name search.
+
+We don't want to just find this like highest probability thing that's kind of degenerate.
+
+Okay. But then there's sort of Goldilocks styled sampling is then too far in the other direction.
+
+It's too random. So what happens here if we say the distribution over the next word given they live in a remote desert uninterrupted by blank?
+
+Well, there might be a whole bunch of different options here, uninterrupted by roads, towns,
+
+people, civilization, etc. and maybe town is here, but it's a little bit less likely.
+
+So in general, there's going to be a lot of options and maybe the top, you know, most of the probability mass, uh, accounts for these.
+
+But then there's going to be a long tail. And let's assume that this long tail has 10% of the mass.
+
+Well, then what happens is that on average, every ten words you sample, you're going to get something from this 10% tail.
+
+And if you think about if you're going to sample a hundred words in expectation, you'll get something from the 1% tail.
+
+So like even rarer stuff.
+
+And if you're going to generate a story, you don't really want it, like going completely off the rails every ten words or every 100 words.
+
+So nuclear sampling is this idea to correct for this.
+
+And what it is, is basically chopping the distribution, truncating it after p percent of the probability mass.
+
+If you sort the tokens from high probability to low probability, then you just renormalize and sample from the distribution that's left.
+
+So it's a relatively simple technique to implement.
+
+Uh, all you need to do is have your options and sort them and then truncate them.
+
+And it turns out it works pretty well. So in the paper by Ari Holtzman at all that presented this, they compared the,
+
+uh, stories generated through various different methods across several metrics.
+
+Um, first is perplexity. We see that nuclear sampling achieves like decent perplexity, not as low as greedy, greedy or beam search um,
+
+but greedy and beam search achieve very high self blue and very high repetition,
+
+which basically means that they're falling into these loops and repeating themselves.
+
+Uh, and then this last column, he uses this kind of human in the loop scoring function that nuclear sampling also does quite well on.
+
+So it seems to be able to balance, uh, the sort of naturalness of the story while still maintaining,
+
+uh, you know, quality and reasonably, uh, good likelihood from the perspective of perplexity.
+
+You see, it's much lower than the perplexity from pure sampling.
+
+So when we talk about decoding strategies from language models, we're often going to think about these three,
+
+uh, max decoding or greedy decoding beam search and then nuclear sampling.
+
+And if you use uh, a large language model API like ChatGPT, uh, the outputs are very often come from an approach like nuclear sampling.
+
+That's the end of the segment.
+

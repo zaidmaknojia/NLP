@@ -1,0 +1,299 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about syntax. So we're moving from thinking about language as a sequentially structured object in
+
+terms of things like part of speech tag sequences or sequences of named entity chunks.
+
+And now we're going to think about it as a tree structured object.
+
+So the study of syntax is basically the study of word order and how words form sentences.
+
+And this is an old discipline of linguistics, uh, that basically tries to explain why we're able to say certain things and not other things,
+
+and why we view certain constructions as grammatical or correct and others.
+
+It's not grammatical. So from the perspective of NLP, why do we care about syntax?
+
+So there's several reasons. The first kind of calls back to some of the examples we saw early in the course where, uh,
+
+we have to resolve ambiguities about whether things are, for example, nouns or verbs.
+
+Now, that can be done at the part of speech tag layer.
+
+Or sometimes it really needs to be resolved, uh, syntactically at a higher level, because it's about how things are kind of combining together.
+
+So we saw this example very early on, ban on nude dancing on governor's desk.
+
+And the question is, is the ban on the governor's desk or is the nude dancing on the governor's desk?
+
+And that's exactly what syntax is going to allow us to answer.
+
+Syntax is also going to be a gateway towards thinking about things like verb argument structures.
+
+So if we want to extract information out of text, one kind of shallow thing we want to we might be interested in looking at is just like,
+
+okay, what are the events going on and who's doing what to whom.
+
+And in order to identify that, well, we could use like a whole bunch of regular expressions or something, but that doesn't necessarily scale.
+
+Instead of syntactic parser is going to tell us, okay, here's a syntactic analysis of the sentence.
+
+Here's the verb, here's the subject of that verb. Here's the object.
+
+Now you have a more direct view into what's going on. And finally, it just provides us a higher level of abstraction beyond words.
+
+Uh, so for something like machine translation,
+
+if we're translating from a language that subject verb object into a language that's verb subject object or subject object verb,
+
+the language does fundamentally different word order. Parsing can help us recognize and kind of canonical the representation between these languages,
+
+rather than just seeing these big surface strings and not knowing what to do with them.
+
+So the place we're going to start in terms of syntactic formalisms is what's called constituency parsing.
+
+So this is just one parsing formalism out of many.
+
+There's many ways to diagram syntax. We're going to see another one dependency parsing a little bit later.
+
+Um but this is one of the most common ones in NLP.
+
+And so it's a natural starting point in terms of thinking about what these syntactic structures look like.
+
+So constituency trees give us a tree structured analysis of sentences, uh, in terms of their constituents.
+
+And so, uh, we see on the right here an example of a sentence with several different constituent types.
+
+So at the very top we have sentence below that we have NP noun phrase VP verb phrase.
+
+Further down we have prepositional phrase pb. And you know, there's those kind of other types that show up in other trees as well.
+
+Uh, the bottom layer of these trees, uh, always consists of part of speech tags.
+
+So the tags at the very bottom here are going to be exactly the same as the tags that we were dealing with.
+
+And part of speech tagging. Throughout this, uh, you know, throughout the, the segments, the examples will primarily be in English.
+
+And what I'll say about constituency with respect to different languages is that there are a lot of languages that it does make sense for.
+
+There are some that it doesn't. In particular, there are languages that have much freer word order.
+
+You can kind of put things in different places, and the way you inflect the words,
+
+like kind of suffixes and things like that tell you, uh, the grammatical function of those words.
+
+So those words, it makes much less sense to use this kind of rigid tree structure.
+
+And the dependency grammars that we're going to talk about later are better at handling that.
+
+Okay, let me show you a little bit of a more involved example, just so you can see a little bit more of what's going on here.
+
+Um, so what do we have the sentence here? Uh, she told me that I would never amount to anything.
+
+We have a what's called sentential complement. Here's bar.
+
+Um, she told me that something that gives us a whole.
+
+There's a whole sentence actually kind of embedded inside this other sentence.
+
+So this kind of indicates the level of complexity that we might end up dealing with here,
+
+when we can kind of recursively get whole sentences inside other sentences.
+
+Um, we have a few things that we haven't seen before. We have an adverbial phrase, um, and we have here what's called a unary rule.
+
+Uh, we'll come back to these in a little bit, but the idea is that this is a rule that,
+
+uh, only has one child, so the PNP only has one child, which is here.
+
+Personal pronoun. Um, and finally we have this ternary rule here.
+
+So these trees are not necessarily binary trees. Uh, the nodes can have any arity.
+
+Binary is fairly common, but, uh, that's not a hard constraint.
+
+The other thing that this shows is that English is typically right branching,
+
+meaning that the tree doesn't look like some kind of balanced binary tree,
+
+but instead kind of goes off to the right in a in a right branching fashion.
+
+Okay, let's take a look at one more example just to kind of understand, uh, a little bit of the level of complexity here.
+
+So this whole. Uh, phrase here.
+
+It's going to end up being a noun phrase, a refund that the court estimated.
+
+Fundamentally, we're talking about a refund here. All right.
+
+So within that, we have a smaller noun phrase over a refund.
+
+And I'm just going to draw this triangle to indicate that there's some other structure here that I'm not going to write out,
+
+like the part of speech tags and stuff like that. Um, so we're just going to use that to kind of ignore or ignore what's going on there.
+
+Um, and then under this noun phrase is again one of these s bar things.
+
+Uh, and within that we have an embedded sentence s and what's going on in that's,
+
+is that we have, uh, this the court noun phrase, and we have a verb phrase.
+
+Uh, and, you know, I'm not going to draw the structure here, but, um, we have the star dash.
+
+One thing that ends up being a noun phrase.
+
+And the. Question is what's this star one doing?
+
+Well, so it turns out the way we think about this, that. Is we label it in the following way.
+
+Um, we label it as this one.
+
+Um, and what that tells us is that that this, this kind of, that argument is the thing that the court is estimating.
+
+So this is something called Co indexation where we are saying that, uh, okay,
+
+you know, the court has to estimate something the court can't just estimate.
+
+So in reality there's some kind of hidden word there that is being the object of the verb estimated.
+
+But what is that? Well, it kind of gets extracted here into this, that, um, I mean, what's being estimated really is the refund here.
+
+But this kind of structure here actually kind of breaks the tree structure assumption in that, you know,
+
+essentially what we've got going on is we have this edge here connecting these two parts of the tree.
+
+So these structures, as much as we talk about the mystery structures, really could be thought of as graph structures.
+
+We're not really going to talk about this level of complexity in parsing much more.
+
+Typically, this is pretty hard to deal with.
+
+Uh, and it's not necessarily clear what dealing with this correctly necessarily gives you from the perspective of downstream applications.
+
+But this kind of shows the level of depth that syntactic analysis can go to.
+
+Um, we you know, we're not just kind of chunking up things into trees, but we're really thinking about,
+
+okay, what's going on with each of these arguments, how do they link up, etc.
+
+All right. So what's hard about parsing.
+
+So we've seen that these analyzes can be complicated,
+
+but we don't necessarily know why this is going to be hard from the perspective of uh NLP system.
+
+So this is a classic example, uh, of prepositional phrase attachment.
+
+So we have two analyzes of the same sentence here. The children ate the cake with a spoon.
+
+And what I want you to do is I want you to look at these and try to decide which one.
+
+Or rather, what meaning each of these corresponds to.
+
+And I'll give you a hint, which is that, uh, on the right here, we have a noun phrase that corresponds to the cake with a spoon.
+
+And on the left. We don't have that.
+
+We instead have a verb phrase and a prepositional phrase. Ate the cake with a spoon.
+
+Okay. So the.
+
+Kind of kicker here is that, uh, by changing the structure, we change how we are viewing what's going on with this cake and this spoon on the left,
+
+we have with a spoon the prepositional phrase combining with the cake, a verb phrase.
+
+And so this eating event is happening with a spoon. On the right we have a noun phrase which is the cake with the spoon.
+
+And this is the same parts that we would have for the sentence I ate the cake with some icing,
+
+uh, meaning that, you know, there's icing on the cake, right? So this indicates that the spoons are somehow like a property of the cake.
+
+I mean, this doesn't actually make a whole lot of sense, but, you know,
+
+if it was like you had a little spoon made out of fondant sitting on the cake and you were eating the cake with a spoon as opposed to the,
+
+you know, chocolate cake. Um, you know, this this might be something you would say.
+
+The key thing is, even though we think that the one on the left is much more likely,
+
+it's much harder for NLP systems to have these same sorts of priors, because they need to know about cakes and spoons in order to figure this out.
+
+So this is why even pretty good automatic systems are going to have a hard time resolving ambiguities like this.
+
+All right, I'll show you a few other ambiguities.
+
+Uh. Modifier scope. Um, we have two different passes here of plastic cup holder.
+
+Is it a holder for plastic cups on the left, or is it a holder?
+
+That or is it a holder for cups that is made out of plastic?
+
+Uh, on the right here. Uh, compliments.
+
+Uh, the students complained to the professor that they didn't understand.
+
+Are they complaining to? Uh. You know, there's a professor that they do understand that that there's a there's a professor that they don't understand,
+
+that they're complaining to the one professor and not the other, or do they have a complaint for the professor?
+
+And the complaint is that they don't understand. And then finally coordination scope.
+
+So, uh, the man picked up his hammer and saw, uh, is he picking up a hammer and picking up a saw?
+
+Or is he picking up a hammer and then seeing something?
+
+So the kind of comparison here is if he picked up his hammer and swung, we would know that he's picking up the hammer and doing something with it.
+
+But, uh, yeah. So the the ambiguity here is, is kind of where the end is attaching and it's tied up with this, uh, ambiguity about saw.
+
+Okay, so the last thing we can kind of say about this constituency formalism is how do we know what constituents are like?
+
+How did how did linguists kind of decide what these units should be?
+
+Um, and the answer is that there are a bunch of so-called constituency tests that let us kind of reason through it.
+
+And I encourage you to think about these just from the standpoint of increasing your own understanding about why kind of this,
+
+these syntactic structures are the way they are. One is called substitution by pro form um,
+
+and a pro form is either something like a pronoun or just any kind of general way of abstracting a phrase away.
+
+So for example, if we said they ate the cake with the spoon,
+
+the fact that we can replace the children with vay indicates that the children is probably a meaningful unit here.
+
+Or we could say the children did so with a spoon. That indicates that this ate the cake is a meaningful phrase here.
+
+There's kind of other constructions like clefts. We can say it was with a spoon that the children ate the cake.
+
+The fact that we can extract this with a spoon piece tells us something.
+
+Um, and we can also think about this in terms of question answering.
+
+What did they eat? The cake. How? With a spoon.
+
+Again, it tells us something about the structure of these different units.
+
+This is not always clear and there are places where constituency starts to break down.
+
+So I don't want to portray this as too clean or the perfect formalism.
+
+She went to and bought food at the store.
+
+Um, if we said she went to the store and bought food at the store, that that would be a kind of nicely formed constituency structure.
+
+But, uh, you have this very weird thing where there's this proposition two that kind of really wants this argument,
+
+but they've been kind of bundled up with, uh, and bought food at.
+
+And so the store is, is kind of doing double duty here.
+
+Um, and so understanding constituency in this case gets a little bit more complicated.
+
+So the general takeaway here is that this is a formalism that we can do syntactic analysis with.
+
+It looks like it's kind of identifying these tree structures over language.
+
+And uh, generally this is going to enable us to do some interesting stuff going forward.
+
+That's the end of the segment.
+

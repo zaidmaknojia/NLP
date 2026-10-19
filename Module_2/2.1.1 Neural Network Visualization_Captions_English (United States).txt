@@ -1,0 +1,85 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to look at some visualizations of feedforward neural networks.
+
+So we have here the basic equations which I've rewritten in a slightly different form.
+
+Uh so we could think about uh, a feed forward network as producing this latent feature representation Z,
+
+um, via a combination of a few different operations.
+
+So we take our input features f of x, we multiply them by this matrix V, uh, which we can think of as warping the underlying feature space.
+
+Then we apply a shift uh, or bias, which, you know, we've generally ignored, uh,
+
+and then put this whole thing through a nonlinear transformation G like, uh, teenager value.
+
+Um, then the final classification happens, uh, via, uh, kind of linear classifier layer on top of this.
+
+So the way we can think about how this works, uh, is shown in this animation here,
+
+which is, uh, courtesy of Chris Ola, who has a great blog post showing,
+
+uh, in kind of more detail, uh, unpacking some of the, um, uh, kind of, I guess, visual intuition beside behind what neural nets are doing.
+
+And so what we see here is the three stages of this transformation process.
+
+So first we have this warped space operation, then a shift, then a nonlinear transformation.
+
+And so um, the warping space is happening right now.
+
+This is the kind of turning it into parallelograms. The shift is the translation where these things shift over.
+
+And then finally the nonlinear transformation, uh, squashes the entire space, uh, into this -1 to 1 square.
+
+And this is using hyperbolic tangent, which, uh, again, maps kind of the whole realign into that range.
+
+So the way the, the kind of interesting.
+
+Uh, I guess connection here is that, uh, we can think of graphically, sort of what's happening to the underlying F of X,
+
+at least when you have a low dimensional space, it's kind of, you know, tractable to think about what these transformations might be doing.
+
+Um, and again, we're, we're basically ignoring this, uh, this shift term, um,
+
+because we could just fold that into the underlying feature space, which is normally going to be much higher dimensional than just two.
+
+Um, so, you know, we wouldn't be able to visualize it anyway. So the reason you might want to do this is, uh, if you have two, uh,
+
+sets of points which here are shown on these two, uh, these red and, uh, blue curves.
+
+When we want to separate them. A linear classifier can't do it, but a neural net can.
+
+And one way to think about this is because once we apply those transformations to the curves,
+
+we suddenly map them into a space where now these two curves are linearly separable.
+
+So again, this kind of motivates the idea of coming up with this latent feature space Z and then just using linear classification in that space.
+
+So we could kind of stack this up further and.
+
+Take, uh, a number of different layers on top of each other.
+
+Um, so this is the kind of classic idea or one of the things that make deep networks
+
+so powerful is the fact that we can just iterate these transformations,
+
+learn the entire thing with backpropagation, and not have to, uh, you know,
+
+try to kind of hand design, um, you know, any additional transformations or things like that.
+
+We can just plug all of these pieces together. Um, and so to get an idea of what that looks like, we can repeat those operations.
+
+We saw two slides ago, these, uh, kind of warping, shifting, uh,
+
+and non-linearity and these two spirals that were deeply entangled with each other and kind of not linearly separable at all.
+
+Now, uh, through this series of operations, we can really kind of pull them apart, and you can see how warped the original space gets.
+
+You know, recall that there's a grid there to start with.
+
+And now, uh, it ends up being this, uh, this, like, totally mashed up, you know, sort of loon surface thing.
+
+Uh, so this indicates kind of how powerful these techniques are and why they're going to enable us to learn such sophisticated classification models.
+
+And that's the end of the segment.
+

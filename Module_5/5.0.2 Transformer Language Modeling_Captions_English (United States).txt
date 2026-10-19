@@ -1,0 +1,191 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're finally going to see how to use Transformers for language modeling.
+
+We've seen all the details of the transformer architecture and how transformers can kind of be used in the abstract.
+
+And now we're going to bring it back around to the task that we started with.
+
+So we have an input sequence of words here I saw the dog which we embed and feed into a transformer.
+
+And our goal in language modeling again is to predict the next word.
+
+So we're going to do that based on the contextualized representation of the word dog here, which occurs at the end of the sequence.
+
+And then, like we've talked about, you can bolt on a sort of classification head,
+
+basically multiplying by a matrix and doing a softmax in order to get probabilities of next words here.
+
+So we can write that in a couple of ways. We can write a probability of the next word being w, given the context as uh,
+
+exponential of a w dot y where uh, this bold w is uh, kind of word embedding for word w.
+
+And then we normalize by the sum over all, uh, possible words in our vocabulary v.
+
+We can also write this as the probability of the next word given the context is just the softmax of a big matrix W times high.
+
+Uh, so this matrix W again is as a standard linear layer for classification.
+
+It's uh kind of num classes, which is vocab size by hidden size here.
+
+Uh, and the kind of cool thing about this matrix is it actually can be interpreted as word embeddings,
+
+which is one reason I wrote the, uh, form I did up above as well.
+
+Um, so we're basically learning kind of which words is this high representation compatible with.
+
+And let's put high probability mass on those from our language model.
+
+So the, uh, that's the sort of computation process of the model.
+
+How do we train this thing.
+
+So effectively what I showed on the previous slide was talking about taking four words and then just predicting one next word as the output.
+
+However, in reality when we're training, we can kind of take a sequence and slice and dice it however we want.
+
+And what we're going to do is we're going to take every single prefix of that sequence and simultaneously,
+
+at every point, predict what the next word is going to be.
+
+So starting with the start of sequence token at the bottom left here we want to first predict that the word AI comes next.
+
+And then uh, you know from start of sequence and I, we want to predict that sort comes next from start a sequence.
+
+I saw we want to predict the etc. So we think of this as a model that takes the as sequence of words as inputs.
+
+And then the target is basically those words shifted over by one.
+
+So, uh, you know, based on each prefix, you're trying to predict the next token.
+
+So this is nice because it's going to enable us to efficiently train on this entire sequence at once,
+
+rather than saying, okay, I'm going to do all this computation and then predict one next word,
+
+we're going to predict all these next words, and then get all this nice gradient signal to update our parameters kind of simultaneously.
+
+So it's the same idea as batching. But I want to be a little bit careful here.
+
+Because when we talk about batching in language models we mean something a little bit different, which I'm going to come back to in a minute.
+
+Okay.
+
+So in terms of actually the kind of mathematics of it, the model places a probability distribution over the next word given the context at each point.
+
+And we can turn that into a loss by computing the minus log probability of the actual next word.
+
+So the that happens at each point independently, and then we can get a total loss value by just summing up all of these negative log probabilities,
+
+um, which is that sort of log of the product of probability.
+
+So it's exactly what you would want to optimize for log likelihood.
+
+If we want to compute this, uh, efficiently in PyTorch, we can use this loss function called NLL loss.
+
+And what this allows us to do is it allows us to take a, uh, matrix of probabilities, which is sequence length by a number of output classes.
+
+So basically all of these blue vectors, um, kind of stacked up, um, into a sequence length by vocab size matrix.
+
+And then, uh, this output tensor is just a sequence length list of the ground truth word indices for the next word at each time step.
+
+So if basically you don't need to worry about oh, I need the minus log of the thing at this index and then some all these up like this.
+
+We'll just do all of that for you. Um, the one warning I will give you, uh, if you use this, is that batching becomes a little bit tricky because, uh,
+
+you can't just feed in something that's, uh, three tensor of batch size by sequence length by num classes into this.
+
+Um, you actually need to collapse it down, um, and merge the batch size and sequence length, uh, dimensions here.
+
+Okay, so I said I would come back to batching and say, explain what I meant when I said that we weren't really batching yet.
+
+Batching in, uh, language model training looks sort of exactly like batching in most other classification tasks.
+
+We just have a bunch of independent examples, and we're going to do computation on them in parallel.
+
+Now in this case, we've taken one sentence and kind of chunked it up into three different chunks.
+
+But given each of these chunks, we can treat each one as a language modeling example and just train on them independently.
+
+Now notice that this is a little bit different from training on one sequence of length 15,
+
+because the transformers here actually only see five tokens at once.
+
+Um, so this is kind of important because if you're using, for example,
+
+your positional encodings, they're only going to know that there's five tokens in this input.
+
+And the transformer may not learn to attend to things that are very far away.
+
+Uh, so it's different from just training over all 15 tokens at once.
+
+Uh, but it's the kind of default way of parallelizing LM training is you form your sort of sequences and then, um,
+
+as many of those as you want to train on simultaneously, just kind of stack them up and, uh, you know, you can batch your computation up that way.
+
+Um. So this batch dimension is sort of what I'm showing going into the screen for you.
+
+And, uh, we have both multiple sequences that we're training over and multiple time steps, uh, per sequence.
+
+Okay, so as we've described it so far, this all sounds great.
+
+Uh, and mostly it all just works.
+
+But there's one problem, which is that the transformer language model that we've described so far is going to get perfect accuracy.
+
+I'll give you a minute to think about why that is, and then I'll, uh, kind of reveal the answer.
+
+So the reason for this is because of the nature of the attention mechanism that we've been using so far.
+
+Uh, there's no reason or there's nothing prohibiting.
+
+The word I hear from attending to the word sore. And so the model is just going to say, oh, okay, I'm going to learn to look at what the next word is.
+
+You know, and using position encodings, it's very easy for it to figure that out and then propagate that information up here.
+
+And it's like, aha, the next word is going to be saw. And now the model is not really doing what it's supposed to do.
+
+Right. Like if you see I saw the blank, you're supposed to model the distribution of things that you can see, right?
+
+You're not just supposed to like look at the next word. This is just this is not language modeling anymore.
+
+So we need to make sure that this doesn't happen. And this is going to use an idea that I've alluded to a little bit,
+
+which is the idea of a causal mask or a causal transformer or a transformer that only looks back into the past.
+
+So essentially, if we think about our queries and our keys,
+
+what we want to prohibit is we want to prohibit the word soft from seeing var and dog in the self-attention.
+
+Right. So I can see itself I and beginning of sequence.
+
+But we don't want it to see the and we don't want it to see dog.
+
+So we end up with this kind of triangular mask where we want these red values to be prohibited.
+
+And we basically want the model not to, um, you know, be doing any attention there or assigning that any probability mass.
+
+Uh, so again, this is called a causal mask.
+
+And part of the reason is because there's like this sort of time process where only things in the past can influence the present.
+
+Um, so it's not really causality in the like, Judea Pearl sense of it.
+
+It's not when people talk about causal machine learning, uh, this is not what they're talking about.
+
+Uh, but basically, this is a way of making the kind of information in a transformer really flow in kind of one direction.
+
+Um, and so if you want to, uh, kind of implement this, uh, there is a way of passing in these sorts of masks to, uh, transformer encoders in PyTorch.
+
+And, uh, you could do that with, uh, mask that has the form here,
+
+basically this upper triangular matrix of ones that gets multiplied by negative infinity.
+
+Um, and then the transformer encoder is called with that particular mask.
+
+And it'll mask out that in the attention computation. So, uh, this is one kind of way to get around that.
+
+So that shows us how we form the model for language modeling, how we train it, how we do batching,
+
+and the finally, this last little detail about, uh, masking needed to make it actually, uh, valid language model.
+
+That's the end of the segment.
+

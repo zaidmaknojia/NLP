@@ -1,0 +1,289 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to introduce the concept of part of speech tagging.
+
+So a lot of what we've talked about so far has been uh, things like bag of words techniques and particularly for various classification problems.
+
+So this is a, you know, fairly effective way to do a lot of classification if we want to, uh,
+
+you know, if we want to predict things like sentiment and do so with, uh, and then neural networks.
+
+But if we want to start to build up towards more structured linguistic abstractions, we need to start thinking about how to represent, uh.
+
+Basically how to represent what words and language mean and how they function in a slightly deeper way.
+
+And so part of speech tagging is going to be our first step towards doing this.
+
+We're going to look at language as kind of the sequence of, uh, syntactic abstractions over the words and see what that allows us to do.
+
+So the reason we might want to do this. Is the following.
+
+Let's say we have this word and we want to feed this into a system.
+
+Now what should TSA? So there's two ways to pronounce this.
+
+It's either record or record. Uh, and we can thank the English language for being weird in this regard.
+
+Uh, but basically, in order to determine this, we need to know whether this is a noun or a verb.
+
+Right. Are we recording something or are we putting on a record to listen to?
+
+So another another thing we might, uh, kind of be interested in is let's say we're doing some kind of information extraction.
+
+Um, and we're going to take the example of arms. So is this a.
+
+Now. Or a verb? Are we talking about arming people?
+
+Or are we talking about, you know, either our arms or weapons or something like that?
+
+And so the you know, obviously there's kind of deeper questions that we want to be able to answer here.
+
+For example, if we do have, uh, a noun form of arms, what kind of arms are we talking about?
+
+But this is a first step towards, uh, at least getting some idea as to, uh, what's going on, you know, deeper than the surface structure,
+
+deeper than just the sequence of, uh, characters associated with each of these, uh, associated with each of these words.
+
+And the other. The last thing that this is going to really be is it's going to be, uh, of kind of first stage towards, uh,
+
+thinking about syntactic parsing and parsing is going to let us take large and complicated sentences and,
+
+uh, you know, turn them and basically start to unpack their structure.
+
+And so this is going to be a building block towards allowing us to do that.
+
+Okay. So we have to think about, uh.
+
+What? The part of speech tags. Are and what they mean,
+
+and we're going to kind of go through a crash course in that so that we understand
+
+the kinds of linguistic abstractions we're dealing with going forward.
+
+So there are going to be two rough categories here. Um, we are going to have what are called open class tags.
+
+And roughly these are ones where, you know, you can imagine like you know.
+
+New words. Uh, can join these categories.
+
+Um. And so. You know, an example of an open class, uh, part of speech tag are the nouns.
+
+Uh, so we have both proper. Nouns like, you know, IBM.
+
+Italy and also what we call common nouns. Um, things like cat or snow.
+
+And so the reason this is open class is because we're inventing new devices all the time, right?
+
+You know, computers didn't exist, and then they did, um, you know, sort of new proper nouns for associated with companies and things like that.
+
+There's always new words joining this class. Um, verbs.
+
+This is another. Uh. Another one.
+
+Uh. Adjectives. Uh.
+
+And. Adverbs. Um. You know, things like swiftly that are that are kind of modifying verbs here.
+
+All right. So. In terms of closed class tags.
+
+We have, uh, a few more categories that are typically related more to kind of function words.
+
+And uh, these you might be less familiar with.
+
+So the first one we have here are determiners, um, which are going to be the sum and other words like this.
+
+So this includes articles and basically uh, these are words that uh can modify nouns as part of noun phrases.
+
+And so what they allow us to do is say, you know, the cat versus a cat,
+
+the choice of article or determiner there is going to change how we, uh, interpret that.
+
+Now, those each of those noun phrases, um, whether we think that we're talking about some generic cat or,
+
+you know, a cat that's already in the discourse or something else.
+
+Conjunctions. All right. Another one.
+
+And or. Um. Pronouns.
+
+Um. And then we have a couple of verbal categories here like auxiliaries.
+
+Um, for example had. Well, it's followed by a verb.
+
+So, um, you know, just saying, like, I had three apples, uh, is not an auxiliary,
+
+but I had gone to the store when blah, blah, blah, that that is an example of it as an auxiliary.
+
+Um, and then also modals, which, uh, you know, our words like, could, like I could have gone to the store.
+
+That implies, uh, a certain modality of the, uh, uh, you know, about the statement, you know, your ability to do it in this case.
+
+So, uh, these are both, uh, these are both sort of types of verbs that typically get tagged and a different, um, and in a different fashion.
+
+And, uh, you know, they're closed class because we're not we're not always coming up with, uh,
+
+new constructions basically surrounding, uh, different types of modality are different ways of expressing tense and things like that.
+
+Uh. And then the last two. Uh, list.
+
+Here are prepositions, um, things like, uh.
+
+And to um, so for example, when you say like hike up a mountain.
+
+You know that's a preposition. There's also a notion of what are called particles, um, which overlap heavily with the prepositions.
+
+Um, but these are going to be, uh, used in a slightly different way.
+
+So for example, when we say we I made up the story, um, this is what's called a verb particle construction.
+
+And you, there's sort of like one way to think about it is there's not really a kind of spatial aspect associated with making up a story.
+
+Right? Um, it's really this, uh, this word that's kind of combining with the verb in order to get it semantics.
+
+And, uh, so in contrast with the preposition, it's, it's behaving a little bit differently, but the words that actually get used to overlap there.
+
+And so, uh, this is an example of why things are kind of ambiguous from a part of speech perspective beyond things we've already seen before.
+
+Okay. So these are examples.
+
+This is kind of a crash course in some of the basic, uh, syntactic, uh, part of speech categories that we're going to see.
+
+Now let's look at an example. And.
+
+This example is going to help us think about what kinds of ambiguities show up, and why.
+
+This task of trying to take a sentence and analyzing what part of speech, uh, each word falls into might be difficult for, uh, an automatic system.
+
+So. Fed raises interest rates 0.5%.
+
+So a lot of the examples, a lot of the early, uh, work on uh,
+
+syntax and NLP for English was done on this data set called the Penn Treebank, taken from the Wall Street Journal.
+
+So there's a lot of, uh, a lot of kind of financial text in here.
+
+So. What you could do is take a minute and think about what are the different possible
+
+part of speech tags that might be associated with each of the words in this sentence?
+
+So if you if you look at it and kind of think about each word in isolation, you should be able to come up with, uh, a kind of set of possibilities.
+
+And so I encourage you to do that, you know. But now I'm going to tell you what, uh, what they are.
+
+So I'm going to use part of speech tags that correspond to the categories on the previous slide, but are actually a little bit more refined.
+
+These are the actual, um, categories in the pen Treebank data that you, uh, are going to see some throughout this course.
+
+You're not expected to have, uh, kind of encyclopedic knowledge of these all kind of define them as we go.
+
+So. Said the, you know, in the canonical way that we're interpreting the sentences, the sentence, um, you know, the, uh.
+
+You know, we are we are using this as a proper noun. Uh, so.
+
+That that gets the tag NP. Um, two other possibilities.
+
+Are two different types of verbs.
+
+So what is the difference between these things?
+
+Um, so when I say like I fed. Someone something that's, uh.
+
+Vibed. That's just like past tense. If you said I had fed.
+
+There we get this participle usage of it, and, uh, it's even in that case.
+
+Okay. So actually for that word, which, you know, the first time I showed you the sentence, you probably had no trouble understanding.
+
+There's actually three different tags and three different interpretations for it.
+
+All right. Raises. Um, this is a this is a plural noun.
+
+Um, that's what ness means. Um, but the other possibility is it can be a verb, right?
+
+Um, like, he, you know, raises up the his hand.
+
+Interest. Uh, again, this can be a noun, um, or two different types of verbs.
+
+For example. Uh. I interest you.
+
+In NLP. Hopefully that's uh, VPI.
+
+Um or. I want to interest.
+
+You. And this is the. This is the infinitive form of the verb.
+
+Um, so that's that's just this, this, this kind of bare VB here.
+
+All right. Rates. Again.
+
+Plural noun or verb. Uh, and then point five and percent uh each only have one interpretation.
+
+Okay. But even setting aside all of the kind of crazy tags that can't show up in the sense we actually get a whole,
+
+you know, pretty large number of different interpretations, right?
+
+Um, so the number of paths to the sentence, if we think about it, uh, is three times, two times, three times two, which is 36.
+
+So we're going to need a model that can look at all of these 36 paths and decide what is actually reasonable.
+
+Now, another thing I want you to think about is what are the reasonable paths to this sentence?
+
+So which one corresponds to the kind of correct intended interpretation?
+
+And are there others which. Correspond to some interpretation that that might be true, even if it's a little bit weird.
+
+So the correct interpretation. Is this one?
+
+The fed raises, uh, where the fed.
+
+Fed as a noun raises as a verb, and then the interest rates.
+
+Uh, is this noun? Noun compound?
+
+Um, now notice, you know, we're often going to see cases where like, two nouns get like jammed together into a noun phrase.
+
+That's okay. It doesn't. Interest is not an adjective in this case.
+
+Um, it's okay to have two nouns, uh, kind of combining in this way.
+
+All right. There is another interpretation, though, which I want you to see if you can spot.
+
+Another interpretation that you can get for this sentence is the following.
+
+So roughly what we have here is we have an idea of fed raises as both nouns.
+
+And then interest becomes the verb. And then.
+
+Rates and, uh, you know, rates as a noun again.
+
+So, uh, you know, thinking about this sentence, for example.
+
+Um, what we what we sort of have going on here is we have this idea of fed raises.
+
+And they are interesting to the rates that are causing rates to be interested rates in this case,
+
+or some sort of animate thing that can express interest. Um, and they're, they're interesting them a little bit.
+
+They're, they're interesting them half a percent. Okay.
+
+So this is a little bit kind of nonsensical here. Um, you know, it sort of doesn't we can't really think of why someone would say this,
+
+but, uh, you know, if you stretch your brain a little bit, this, you know,
+
+the sort of an Alice in Wonderland way where there's rates that are kind of running around the like,
+
+you can contort yourself to believe in this interpretation.
+
+And in particular, this is going to be something that's very easy for a part of speech tagger or later syntactic parsers to produce,
+
+because, you know, we're really using our kind of world knowledge about the fact that, like, rates are inanimate and so blah, blah, blah.
+
+But like syntactically this is completely valid. So this kind of illustrates two things here.
+
+One is it gives you some practice thinking about what part of speech tags we have here, how they interact, etc.
+
+Um, and it also shows you an example of the kinds of ambiguity that we're going to
+
+need to be dealing with and how challenging it is to to part a speech tag,
+
+even a relatively simple sentence like this one. That's the end of this segment.
+

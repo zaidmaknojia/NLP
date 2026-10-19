@@ -1,0 +1,163 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about some examples of multi-class classification problems that show up in NLP.
+
+The first one we're going to start off with is text classification.
+
+There are a number of different data sets, ranging from things like, uh, collections of news articles to uh,
+
+postings on news groups online and more, uh, where the basic task is to figure out which topic or rough category, uh, piece of text falls into.
+
+And this is a task that, uh, is often studied as a benchmark for multi-class classification.
+
+Um, but it's only kind of sometimes useful.
+
+A lot of these data sets are, were really kind of constructed more for the purpose of driving academic research and serving as benchmarks,
+
+rather than corresponding to a real world problem. Uh, another data set or setting that people look at is, uh, what's called textual entailment.
+
+This we can think of as a three class classification task. And it deals with sentence pairs.
+
+So for example, if we have the statement a soccer game with multiple males playing,
+
+and then a second statement which we call a hypothesis, some men are playing a sport.
+
+The first statement about the soccer game entails the hypothesis, meaning the hypothesis implied to be true on the basis of that first statement.
+
+You can also have relationships like contradiction.
+
+A black car starts up in front of a crowd of people, which contradicts a man is driving down a lonely road.
+
+These statements are not about the same thing, and they actually can't be about the same thing.
+
+Uh, and then you can have other statements like the one on the bottom here which are unrelated,
+
+or you can't tell the relationship either entailment or contradiction based on these statements alone.
+
+So this is a task that we're going to return to later.
+
+Uh, right now with the tools that we've built up so far, like Bag of Words features,
+
+it's very not obvious how to build systems that can do well at this.
+
+And in the history of textual entailment, systems were not doing very well until, uh, neural networks came along.
+
+And, you know, arguably there's still some challenges, uh, here trying to handle this task and its full generality.
+
+Another example of a task is entity disambiguation or entity linking.
+
+Suppose we see the following chunk of text. Although he originally won the event,
+
+the United States Anti-Doping agency announced in August 2012 that they had disqualified Armstrong from his seven consecutive tour de France wins.
+
+Now. We know that when we see Armstrong here, we can infer that this is talking about Lance Armstrong, the cyclist.
+
+But if we just kind of naively approach this from the perspective of, all right,
+
+I'm going to try to find out which real world entity represented by a Wikipedia article this refers to.
+
+There's lots of other possibilities. For example, I could refer to Armstrong County in Pennsylvania, right?
+
+Now, in this case, of course, clearly we all can tell that it refers to Lance Armstrong because of the context.
+
+It's clearly a person that's talking about cycling, etc.
+
+Um, but in order to actually do this task, which consists of linking this so-called mention of Armstrong to, uh, an entity, an article on Wikipedia,
+
+uh, we need to think about what the features are that might help us associate this mention in that context with the article.
+
+And the challenge here is that it's you could think of it as multi-class classification, but there's 4.5 million classes.
+
+You know, it could be any article on Wikipedia. Now in practice, we can prune that down to, you know,
+
+anything that has Armstrong in the title at least or use heuristics like that, but that still leaves a number of options.
+
+And compared to what we've seen so far, we're going to need a very different structure for the features.
+
+We're not going to be able to get away with, uh, this idea of conjoining indicators about the input with an indicator of the class label.
+
+We need something a little bit more complex. The last example which I'll dig into here is authorship attribution.
+
+Uh, so this is an old problem in that, uh, people have been using statistical methods for authorship attribution,
+
+um, going back to the early 20th century. And the idea here is that if you have texts and you don't know who wrote them,
+
+some of the information which we typically throw out from the perspective of text classification can actually be pretty useful here.
+
+Things like stop word frequencies, there's lots of information about, uh,
+
+kind of someone's writing style and their use and frequency of different function words and things like that.
+
+Um, and the reason this has been a historic task is just because there are some
+
+very famous examples of works that we want to attribute to different authors.
+
+For example, there's questions about whether Shakespeare wrote all of his plays, um, or they're in some of the Federalist Papers.
+
+They're disputes about whether, uh, Alexander Hamilton or James Madison wrote them.
+
+So the form of this we're going to talk a little bit more about is, uh,
+
+Twitter authorship attribution, given a whole bunch of tweets, can we figure out who wrote them?
+
+Uh, and so, uh, Roy Schwartz at all looked at, took a data set of 500 million tweets, and they took a thousand users with at least 1000 tweets each.
+
+So this is again, uh, you know,
+
+a sort of artificial task here and that we're assuming we have a fair amount of number of examples of what each of these people is writing.
+
+And moreover, were, you know, looking at Twitter data, where if you just had the sort of raw Twitter dump,
+
+you would know, uh, that at least the kind of, uh, username of the user who wrote things.
+
+Um, but it's an interesting question that if we have, you know,
+
+a thousand different people who could have written something and we have held out tweet and we don't know who wrote,
+
+it is actually enough kind of information in that tweet to tell us.
+
+So, uh, the model they used is relatively straightforward.
+
+A support vector machine with character four grams and word two through five grams,
+
+meaning their features look at pairs of words, triples of words, quadruplets and quintuplets.
+
+And so I'm going to just show here, uh, a snippet of the results from the 50 author classification task.
+
+So, um, and rather than 1 in 1000, it's kind of 1 in 50.
+
+But the accuracies here are actually surprisingly high.
+
+Um, their fall model, which is in the blue line here, gets to around 70% accuracy when it's trained on a thousand tweets from each author.
+
+Uh, and even when you start out with only 50 or 100, uh, you're still doing reasonably well.
+
+And so, you know, this might be kind of surprising because it's like, okay, with 50 people, you know,
+
+you might be hard pressed to look at a tweet and figure out, okay, what's actually the kind of distinctive content that might tell me who wrote this.
+
+And the interesting thing they found was that this notion of what they called a k signature, and this is an n gram.
+
+Here I'm showing some examples of character n grams that appear in k percent of the author's tweets, but not in anyone else's.
+
+And so, for example, uh, in the top here we see this particular example of uh kind of emoji here the with this carrot,
+
+these carrots and this underscore which uh is not common.
+
+Not a lot of people use this, but uh, this author decided to use it a fair amount.
+
+Um, and we can do the same analysis of the word level as well, uh, and find little kind of distinctive signatures used by different people.
+
+Um, so. This.
+
+This kind of shows why bag of words, methods, and basic linear classifiers can do this task, which otherwise seems fairly challenging.
+
+So this is just to give you some examples of what multi-class classification can be used for.
+
+And we'll be coming back to these ideas throughout the rest of the course.
+
+Uh, in particular, when we get the part of speech tagging, uh, that sort of looks like a word by word multi-class classification task.
+
+So but this could show you some examples of how to apply what we've talked about already.
+
+That's the end of the segment.
+

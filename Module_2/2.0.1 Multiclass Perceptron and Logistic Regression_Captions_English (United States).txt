@@ -1,0 +1,285 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about the multi-class generalizations of perceptron and logistic regression.
+
+These algorithms are going to look roughly similar as before.
+
+But now we're going to have to deal with the fact that there are these multiple possible classes that we can, uh, predict.
+
+And there's sort of many different types of mistakes that we can make.
+
+Um, so we're going to dive into multi-class perceptron.
+
+Um, and then we're going to see an example of it. Uh, so the outer loop.
+
+We're going to iterate through epochs and data and.
+
+Now the prediction, uh, is going to.
+
+Follow the multi-class scheme.
+
+Um, and so this is going to use the different weights.
+
+Idea. Um. And so. Again, we index our weight vectors by y.
+
+Um, so we have the weight vector associated with the width class.
+
+And then we take the dot product of that weight vector with uh, the features uh f of x.
+
+All right. And so then again, uh, we're only going to make an update if y pred is not equal to y, I, um.
+
+And the. Update we actually make now has two parts.
+
+What we have to do is we have to tell the model, okay, why pred was wrong.
+
+Um, we want to kind of kick down the value of the dot product of widespread with, uh, f of x,
+
+because that wasn't, uh, you know, that wasn't the right, um, class to be predicting here.
+
+And then similarly, we want to boost, uh, the value of y.
+
+So we add in f of x here.
+
+And uh, we'll, we'll put in the step size alpha here as well.
+
+Okay, so the general kind of idea here is the same as before,
+
+which is that we want to take a step towards making the models dot product with the correct class or the score of the correct class,
+
+let's say be higher and the incorrect class be lower.
+
+Previously, that just amounted to one update which brought us towards positive away from negative or towards negative away from positive.
+
+Um, now we have to juggle these two different classes.
+
+There's kind of the bad one and the good one. Okay.
+
+So let's see how this works out. Uh, in an example.
+
+Um, so we're going to take our, uh.
+
+Example from before. Um.
+
+Where the sentence here was too many drug trials.
+
+Too few patients. Um, and then we're going to throw in another example here.
+
+Um with label y equals two for sports.
+
+Um, and just to kind of invent a story for this one.
+
+We'll say baseball. Players.
+
+Taking. Drugs.
+
+That's the headline now. Okay.
+
+So, uh. Assume that.
+
+Assume that the default. Uh.
+
+Prediction. Is y equals three.
+
+And by that I mean, um, assume that when everything is tied, uh, the model is going to return y equals three.
+
+So, um, our output space, I guess I'll define um, up here is, uh, you know,
+
+1 to 3, um, and uh, so what's going to happen when we execute this algorithm?
+
+Well, we start off with, uh, a set of weight vectors, and I'm just going to write them all kind of in a line here.
+
+Um, so again, kind of different features and different weights sort of looks similar.
+
+So uh, the way I'm going to do this is I'm going to write WY1, um, WY2 and WY3, um, are here and it's going to start off with all zeros.
+
+All right. So if the so the quote unquote default prediction is y three, then what happens is we have uh, when we come to the first example here.
+
+Um, so we're going to uh. You know.
+
+Update on this 110 comma one example.
+
+Um. What happens. Well so we have y z equals three and y equals one.
+
+These are not equal. So we need to make an update. And that update.
+
+Uh you know again we're going to take alpha to be one. That update consists of adding the features for uh.
+
+The correct value of why so? That gives us this.
+
+And then, uh, subtracting the features for the other values of for, for the incorrect value of y.
+
+So that gives us this.
+
+Um, and then we have zeros in the middle here. I mean, I'm going to just kind of put a squiggle in the middle here, um,
+
+to indicate that these aren't really in the same vector, but I'm just kind of writing them that way.
+
+Um, graphically. All right.
+
+And then when you go to the second example, um, what happens is that, uh, the model prediction.
+
+We can think about what this should be. If you do the computation.
+
+You could see that it's going to predict y pred equals one.
+
+And the reason for that is because 101 the dot product with um y1 is going to be one, and that's higher than the other two dot products.
+
+Um, and so in this case y y y is equal to two.
+
+Um, I'll, I'll write y here just to make it clear that that's the gold one.
+
+Um, and then, uh, when we make our update, uh, we have to subtract off.
+
+F of x from the from the y pred weight vector.
+
+Um, so that gives us this.
+
+It sort of kicked it down now by 101. Um, and we have to boost the correct one.
+
+So that gives us 101 in the middle here. And then uh, minus one minus one zero.
+
+The last position remains unchanged. Okay.
+
+So this kind of gives you a sense, I think, of how the algorithm goes.
+
+You're always kind of dealing with two classes, the one that you predicted and the true one.
+
+Um, unless of course you make the correct prediction, in which case the zip statement actually not even really necessary.
+
+Because if these things are equal, then the two updates just cancel out.
+
+But I think, you know, it's a little bit easier to think about it in terms of, uh, you know, making it update whenever you make a mistake.
+
+Okay. And I'm not going to bother to write out the, uh, form of this in, uh, different features fully.
+
+Um, I guess I'll just replace, uh, I'll just say, uh, when you have different features.
+
+The last line here, for example, um, becomes the following.
+
+Uh, actually. Yeah.
+
+So in different features, there's only one weight vector now.
+
+Um, so what happens is you what the, the term that you end up adding is alpha times f of x, uh, associated with y.
+
+Um, so that's what this last line would be. Um, and the other lines kind of change similarly where instead of having uh,
+
+y be associated with the weights, um, now it kind of lives inside this, this feature function.
+
+But, uh, otherwise, you know, everything kind of proceeds as before.
+
+Okay. So. That's multi-class perceptron.
+
+Um, so, uh, again, the algorithm looks similar as before, but with, uh, a little bit of modification and multi-class logistic regression.
+
+Uh, looks the same way. Um, so we're going to write down, uh, just the definition, uh, and the gradient.
+
+Um, and, and kind of not go through the whole update.
+
+And just for, uh, variety, we'll do it in the different features formulation.
+
+Okay. So what's going on in this definition. So we're computing the probability that y equals y hat.
+
+And so I'm using y hat here to kind of denote the um you know the class that we're actively computing the probability for.
+
+Um, and so the numerator plugs that into f of x comma y.
+
+Um, again if you are doing different weights you would have w of y hat.
+
+Um and then the denominator sums over all of the y's in the output space.
+
+So this looks different from before. Um what we had before was remember we had one plus e to the w transpose f of x.
+
+Um, now instead we are summing over all of the possible output values.
+
+And um, again, you know, you should be able to motivate this for yourself from the standpoint of this, uh, probability distribution has to sum to one.
+
+Um, so. You know what the numerator kind of being.
+
+This e to the w transpose f of x comma y hat thing.
+
+Um, the only way to get that to normalize is by having the denominator effectively reflect the sum over all those possible values.
+
+Um, and another way, another way to think about this is, uh, in.
+
+Binary logistic regression. We kind of do have another class.
+
+So when you have y equals plus one um we're basically saying that that's.
+
+Associated with this score.
+
+And when you have y equals minus one, that is you know that we're basically calling, uh, you know, assigning the value of one, um,
+
+which we could think of as e to the W transpose, uh, times the zero vector, right where, uh, we, you know, again, e to the zero is one.
+
+And so there's sort of an implicit feature vector for the negative class in binary logistic regression, um, which,
+
+uh, you know, which just kind of cancels out that exponential term and gives you, uh, and gives you a value of one.
+
+So that's, that's kind of, I think, a nice way to see this as a generalization of binary logistic regression,
+
+even though you've, we've kind of moved away from the logistic function. And now we're doing this, um, exponential over sum of exponentials thing.
+
+All right. And, um, again, we're not going to kind of belabor what the law says.
+
+Um, but, uh. We can use.
+
+We could define, uh, the log likelihood of the data in the same way as before.
+
+Um, so, uh, again, you know, we were just talking about the probability of Y taking on the correct value for each data point.
+
+Um, we can log it, um, you know, whatever. And, uh, it turns out the gradient, um, of that has the following form.
+
+All right. And again we're we're sticking with different features here. All right.
+
+So intuitively this actually has some kind of nice properties.
+
+Um, so again we can think about when p of, uh, you know, why I given X is very close to one.
+
+What happens? Well, uh, we have, uh, this minus f of x comma y term over here.
+
+And then plus, um, something that we're going to say is approximately equal to f of x, y I.
+
+And then this, uh, you know, gives us zero. We don't make much of a gradient update.
+
+If instead we have p of, let's say y, uh, I'm just going to call it y bad.
+
+Um. Then we have minus f of x.
+
+Y plus, uh, f of x.
+
+Why, uh, why bad here? All right.
+
+And then remember that in, uh, SGD we subtract off alpha times the gradient.
+
+And if you, uh, kind of unpack what's going on here, um,
+
+it turns out we're going to subtract alpha times the features of x comma y bad, which looks like an multi-class perceptron.
+
+Again, kind of kicking down the value of y. Uh, you know, the weights associated with y bad.
+
+Um, and then we are going to add, uh, alpha times f of x, y I that's boosting the correct thing.
+
+Um, so again, we see this kind of close connection here where, you know,
+
+if your probabilities are close to zero or close to one, you end up with an update that looks very similar.
+
+Um, when they're in the middle, you get a kind of soft form of the update here, um, where you're summing over.
+
+I should have defined this explicitly, but we were summing over the, uh, all the y's in the output space.
+
+And so, um, if you're putting a uniform distribution over on them, you're kind of, uh, you know,
+
+kicking all those other classes down a little bit and then, uh, uploading, uh, the correct one here.
+
+So these are the kind of generalizations of perceptron in logistic regression to these multiclass cases here.
+
+Um, these are going to be algorithms that we're going to kind of come back to, uh, throughout the course going forward.
+
+Um, and we're going to revisit this when we come to neural networks.
+
+Um, and, you know, kind of embrace the different weights version there.
+
+Um, and kind of embrace different features when we think about structured prediction.
+
+That's the end of the segment.
+

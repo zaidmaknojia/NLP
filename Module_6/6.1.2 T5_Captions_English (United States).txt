@@ -1,0 +1,97 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about T5, which is another sequence to sequence pre-training scheme similar to Bart.
+
+Uh, in fact, they were developed basically at the same time where T5 was developed at Google and Bart was developed at meta,
+
+or at the time, Facebook and T5.
+
+Pre-training objective is very, very similar to Bart.
+
+So it doesn't have as many of the bells and whistles, but it has the kind of important component,
+
+which is that we take, uh, original text, we mask out pieces of it.
+
+We have that as our input, and then we feed that into a transformer and in a classic fashion, attempt to predict the targets here.
+
+Now, one key difference from Bart is that unlike in Bart,
+
+where we predict the entire original text as the output, here we only predict these masked sequences.
+
+So it's a slightly different shape for the output, and it leads to T5 being slightly better than Bart at some tasks and slightly worse at others.
+
+Bart, for example, was used a lot more for summarization,
+
+partially because it's possible that the pre-training on to produce entire grammatical
+
+outputs uh was a little bit more compatible with fine tuning on summarization,
+
+but largely these models do the same thing, and T5 was also shown to work well at a lot of tasks where sequence to sequence models were standard uh,
+
+in particular English to German, English to French, and English to Romanian.
+
+Translation numbers here were given, and this was one of the first, uh, uses of big pre-trained models in machine translation.
+
+Now, one of the other things that the T5 paper started looking at,
+
+which has since become a very important aspect in all of pre-training, is the data that gets used.
+
+So they tried to collect the basically biggest data set they could, called the colossal cleaned Common crawl or C4.
+
+And they looked at how much actually having all of this data was important for pre-training.
+
+So across these different rows of the table, they look at basically make taking smaller amounts of the data,
+
+but then copying and pasting it so you end up with the same total size of data set.
+
+So you'll train for the same amount of time, but it's just repeated more.
+
+And we see that actually having more unique data here does lead to improvement.
+
+And it doesn't really seem like we've necessarily hit the limit of that yet.
+
+Uh, which is going to come up later when we talk about the bigger, more modern pre-trained models.
+
+The other thing that T5 introduced was a big focus on actually multitasking between the fine tuning tasks themselves.
+
+Part of the idea was that we would learn one model that would not just be pre-trained on this data,
+
+but would also be fine tuned on a bunch of data sets and be able to do different things as a result.
+
+So this wasn't really delivered on. I follow in the T5 paper, but there's a nice example of it, uh, from a year later from Kajabi at all.
+
+Uh, a system called unified QA,
+
+where they took a big set of QA problems and tackled them all with a single T5 model that was fine tuned on a bunch of existing data sets.
+
+So, for example, the squad question answering data set has these inputs that look like these paragraphs.
+
+And then the outputs are selections from that paragraph.
+
+But we could just call that a seek to seek problem. Right. We could just take this input and then say hey the model needs to generate this output.
+
+We can do the same with question answer data sets where the output does not appear in the input.
+
+We tell the model you need to generate a new string as output, but that's fine.
+
+Uh, it's kind of within the capabilities of the model. Whether it'll work well or not is another question.
+
+Uh, so the model can be fine tuned over this type of data set and what we saw previously, kind of at the same time.
+
+And in fact, they unified it with a couple other for, uh, formats as well,
+
+like multiple choice question answering where you're given a set of options and you need to return one of those options and boolean.
+
+Yes. No question answering. So they took a model and trained it over all of these data sets at once.
+
+And this big T5 model ended up doing quite well in all of them.
+
+So I'm not going to walk through the results of this specifically,
+
+but it shows the idea and the flexibility of these kinds of pre-trained sequence to sequence models.
+
+You can take them and throw them at a lot of tasks and start to build these kind of generalist models,
+
+which started to pave the way for the capabilities of things like ChatGPT.
+
+That's the end of the segment.
+

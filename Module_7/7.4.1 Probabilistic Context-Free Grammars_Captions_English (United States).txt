@@ -1,0 +1,203 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about probabilistic context free grammars.
+
+So we're going to start off by talking about non probabilistic context free grammars or CFG.
+
+So a CFG is defined by a four tuple.
+
+And TSR. Which consists of non terminals.
+
+Terminals. A start.
+
+Symbol and rules. So if we think about the constituency grammars that we've seen so far and kind of cast them into this terminology, uh,
+
+the non terminals consist of these symbols we were seeing like S and p, VP p p as well as the part of speech tags that we had and then BBD in.
+
+Ness, and we're going to kind of build up a little grammar here. So these POS tags are what we're going to call pre terminals.
+
+Um, and this is kind of special terminology for uh constituency grammars in particular,
+
+where we think about the layer before the terminals as being something special.
+
+Okay. Then the terminals are going to be our words.
+
+So they're going to be the. Children.
+
+A. Cake. Um.
+
+You know. With. Spoon, etc. like, you know, basically we just have some kind of vocabulary and that's our terminals.
+
+All right. The start symbol is S. And the rules are going to consist of two types.
+
+We're going to have binary rules, uh, which we think of.
+
+You know, like this. So we write the source symbol on the left and then the yield on the right.
+
+Uh, so. We can have generally a bunch of different productions for each, uh, for each non-terminal symbol.
+
+And these are the. So like I like I said, these are binary rules because each, uh, symbol rewrites into two symbols.
+
+We also have. What we call unary rules, which are going to fall into two types.
+
+We can have unary rules involving non terminals like this.
+
+Or we can have what's called our lexicon uh which is basically the last layer of.
+
+The tree where part of speech tags rewrite as.
+
+Words. All right.
+
+So we've got a grammar here. So what we can do is we can start with the start simple S, and we can just iteratively apply these rules.
+
+So maybe our only option here is to rewrite this as NP.
+
+Then for this NP we can decide what rule we want to apply maybe and then um, and then you know the only rules we can apply are well,
+
+we can apply that, we can get the from PT and then we either get cake or spoon here we pick one, etc.
+
+We can generate a sentence this way. Okay, so what's a probabilistic context free grammar.
+
+So a pcf fg. Is the same thing as before, but rules have probabilities.
+
+Okay. And the. Probabilities sum to one.
+
+Per parent. So what I mean by this is if we think about attaching probabilities to these rules above, um,
+
+you know, maybe we have a probability of one half, one half associated with these two rules about NP.
+
+And so these these are constrained to sum to one because we need to have a probability distribution uh, basically p of rule given parent of rule.
+
+And so. All the rules that rewrite from NP have to sum to one.
+
+So in this case, uh, VP goes to VP and NP.
+
+You know, maybe this one would have probability of one fourth.
+
+And our unary rule here would have probability three fourths.
+
+These are our two rules that involve VP's. Uh, and this s rule has to have probability one because there's only one rule for us here.
+
+All right. So. The probability of a tree.
+
+It's simply the product over the rules in that tree.
+
+Of the probability of the rule given. Its parent.
+
+Uh, so if I show you a pass, you can just multiply the probability of each production together in order to get the, uh.
+
+Uh, in order to get the probability of the whole tree. So the question is where do these probabilities come from?
+
+Uh, so we actually need, uh, a few.
+
+Steps before we can think about taking our, uh, probabilistic, context free grammar and doing parsing with it.
+
+Okay, so the first thing we need, uh, is, well, okay, so so first, typically what we think about being given is we are given a treebank.
+
+Of sentences. Labeled with trees.
+
+And we want to go from this tree bank. We want to extract a grammar from this tree bank.
+
+And then we want to be able to parse with this grammar. So the first step of this process is going to be what we call binarization.
+
+Um, and this is going to be turning the trees into trees consisting of binary and unary productions.
+
+Uh, rather than kind of higher order, uh, unary productions.
+
+The second step. Is going to be estimation.
+
+Of. Rule probabilities.
+
+All right. This step is going to be very easy. It's going to just consist of counting and normalizing occurrences of different rules.
+
+So for example, if we see noun phrase rewriting as this rule three times and this rule four times,
+
+you got probability 3/7 with the one rule and 4/7 with the other rule.
+
+And this falls out of the fact that this is the same kind of generative count,
+
+the same sort of generative multinomial model as we had for hidden Markov models.
+
+And so the way that maximizing the likelihood of the data.
+
+Works out, uh, ends up being the same. Uh, so this process exactly corresponds to maximum likelihood estimation.
+
+All right. And then the third piece here, uh, is inference.
+
+So that's asking about the most likely the most likely tree given a sentence.
+
+So I give you a new sentence and uh, we ask, okay, what is the tree that most likely generated this sentence.
+
+And so again this is going to look like, uh, kind of similar to, uh, Hidden Markov models in the way that the probability computation works out.
+
+And again, we're going to have a dynamic program that allows us to do it.
+
+All right, so that's where we're going here. The one piece of this I'm going to talk about before finishing out this segment is Binarization.
+
+Uh. And binarization is the process of.
+
+As I said, turning trees into, uh, binary or unary, uh, trees consisting of only binary or unary productions.
+
+So for example. We can have fairly high arity productions like sold the book to her for $3.
+
+This is a verb phrase. But what we don't want to have these four way branching rules.
+
+And the reason is that when we try to do well, first of all, it's going to make estimation of rule probabilities more fragile,
+
+because we're going to have all these like really big involved rules that don't work so well.
+
+And then, uh, when we do inference, uh, these are going to cause a kind of computational blow up.
+
+Uh, it's going to it turns out that our inference is going to scale, uh, with a kind of exponent in the,
+
+uh, corresponding to the highest arity rule that you have in your grammar.
+
+So. What we need to do is we need to turn this into a binary tree.
+
+So this looks roughly like, uh, the idea of turning a grammar into Chomsky normal form, if you've seen that before.
+
+Um, we are actually not turning our trees into Chomsky normal form because like I said,
+
+we're going to still allow unary rules that don't just happen at the terminal layer.
+
+So there's a couple of ways to do this. Um, this is the correct one.
+
+So what have we done here? We have taken our rule and split it up into three different rules and introduced these intermediate symbols.
+
+So the and what we're doing is we want to assign probability p to this particular rule.
+
+And then we have probability one associated with the next two rules.
+
+And the reason those are probability one is because the rules themselves encode what should come out of them.
+
+Basically we are making the entire decision at the first step.
+
+But then when we get we, you know, when we get down to the subsequent steps, we've already encoded the yield of the rule in the grammar symbol itself.
+
+And so then the, the parser can just kind of spit out these, uh, it can just kind of spit out these symbols.
+
+Okay. So this is what we call lossless binarization. Um, and we can also have so-called lossy binarization.
+
+Where, let's say we were to just say, okay, we're not going to bother trying to do this crazy rule encoding.
+
+We're just going to put VP's all the way down here. All right.
+
+This is this does not preserve the semantics of the PCF, because now all these VP's are kind of competing for the same probability mass.
+
+And in particular, this is not actually a great assumption to make for a context free grammar,
+
+because you're going to have some probability of now any VP you rewrite is going to just want to spit out prepositional phrases,
+
+which is not the right thing for a VP to be doing.
+
+So it's really important to think about the binarization and what intermediate symbols get introduced.
+
+Now, normally people do something in between one. We'll talk about that in a later segment here.
+
+But what we've seen so far is basically we can take, uh, a treebank we can binaries it,
+
+turn it into this set of trees that are binary, and then we just read a CFG off of that.
+
+So we estimate these probabilities through counting. And that's going to equip us with uh CFG that we're then going to be able to parse with.
+
+And that's the end of the segment.
+

@@ -1,0 +1,147 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about positional encodings. These are going to be a key new feature of self-attention multi-head self-attention.
+
+That's going to let us really deliver on what we want these layers to do.
+
+And let them let us integrate them into a transformer architecture that's going to work well.
+
+So if we're trying to do language modeling and predict what comes next here, we need to look back at the context as we've been discussing.
+
+But one kind of key problem that we're will run into if we implement what we've discussed so far,
+
+is that we don't actually know where this blank is sitting.
+
+Remember that we instantiated all these keys, all these queries.
+
+But. From the perspective of a query on this blank visited an eight actually look like the same thing, right?
+
+Because we have no notion of position in these in this model so far.
+
+So we're going to use a family of schemes called positional encoding that are going
+
+to provide this kind of information to transformers so that they're going to know,
+
+okay, you need a word here. That is something that you eat rather than something that you visit.
+
+All right. So here's the most basic version of this called absolute positional encodings.
+
+And it's so kind of a I think it's in some sense almost so simple that it's counterintuitive.
+
+What you do is you take the embeddings of each of your words and you add to them a
+
+separate embedding of an integer that represents that word's position in the sequence.
+
+So if we think about the word embeddings as a big table associating the word the with some vector movie with some vector,
+
+we're going to have another table of independent embeddings that associate the word one with some vector, the word two with some vector.
+
+And these are kind of fake words, right? And then we just add these vectors together.
+
+This is what's the sort of thing that's stipulated in the attention is all you need paper.
+
+You just mix this information into the vectors at the input layer and then you kind of keep you
+
+do you do your computation in the rest of your network and you let things attend to each other.
+
+And ideally, what the model is going to learn is that, okay,
+
+I need to make embedding one and embedding to sort of drive the model to make these things attend to each other.
+
+But maybe embedding one and embedding 50 don't need to care as much about each other's value.
+
+So during the learning process,
+
+we've kind of given the model enough parameters to say these are the words that should pay attention to each other, and these ones shouldn't.
+
+But, uh, you know, we've infused this model, this information, and maybe a very simple way.
+
+So there are a few drawbacks of this. I'm going to let you kind of think about those and, uh, ask a question after the segment.
+
+This is a little bit different than what's stipulated in the Vaswani at all paper.
+
+Uh, but I think it's a lot simpler. And it's also much more standard.
+
+For example, like GPT three, uh, uses the kind of embeddings we just saw.
+
+But in the original paper, Vaswani, it all derived this way of producing positional encodings,
+
+which are still vectors that are still going to get mixed in with the words,
+
+but they instead, instead of using parameters, actually use this kind of fixed, uh representation based on sines and cosines of different frequencies.
+
+So what we have on the y axis here are basically the indices of words in the sentence.
+
+And then on the x axis we have the value for the corresponding embedding dimension.
+
+So basically the first row here is like a vector that's going to be the positional encoding for the first token in any sequence that you're given.
+
+And this is computed based on the formulas below which are these kind of crazy sine and cosine formulas that basically,
+
+uh, kind of move up as you increase the position.
+
+And they also, uh, depend on the index in the embedding dimension, which is going to basically make it so that,
+
+uh, some of these embedding dimensions move through the sine and cosine with a kind of higher period.
+
+This is in some sense a sort of basis like. And what it does is it makes it so that word one and word two are almost identical.
+
+They're very, very similar. And only these very high frequency components of the representation are changing.
+
+But when you compare word one and word 20, let's say you can see that the vectors actually look pretty different.
+
+And so the dot product representations,
+
+the dot product of these representations are going to reflect the fact that some of
+
+these words like are closer together and then probably should get a higher dot product.
+
+All right. So that's another way to do it. Uh, it's been a little bit set aside in the literature more recently.
+
+I'm just going to mention a couple of, uh, more recent variants here, uh, of these mechanisms.
+
+One is called relative position encoding, uh,
+
+which is used in the T5 model that we'll talk about later in the semester, which, uh, uses self-attention.
+
+And in that computation, it actually injects the uh, position encoding directly into the, uh,
+
+kind of query times key matrix computation by modeling the distance between any two tokens.
+
+So it doesn't, uh, capture absolute position, but instead, how far apart are these two things?
+
+There's also a form of this called attention with linear biases, which, uh, is also attractive in that it reduces the number of parameters of this,
+
+uh, kind of dramatically rather than trying to model, uh, you know, each position as a vector of learnable parameters.
+
+Instead we just say, all right, we are going to add a single.
+
+Uh, constant m times the distance between the tokens that we're looking at.
+
+So it's also a kind of relative position scheme. And this is just going to prefer attending to things that are farther and farther back.
+
+It's kind of pushing down the self-attention weight by M for each token that you go further back in the sequence.
+
+And as a kind of key thing here, they take each attention head and they give each attention head in the model a different value of M.
+
+So the different heads of self-attention will learn to either prefer things that are closer by, or be a little more uniform over the whole sequence.
+
+And then finally, uh, in 2023, there was a result looking at just not using positional encodings at all.
+
+Now this is on a slightly modified version of the transformer. From what we're seeing so far, that only attends to things that are in the past.
+
+And this is really important because, uh, if you only look at the past,
+
+you can sort of learn to count up tokens and figure out where you are organically without having been told that information.
+
+If your self-attention mechanism lets you look in both directions, this is totally not going to work.
+
+Um, but many of the modern models like ChatGPT do use this causal looking into the past self-attention variant,
+
+uh, which we're going to come to a little bit later. And, uh, kind of surprisingly, this seems to work okay even without positional encoding.
+
+That said, using one of these positional encoding schemes is still quite standard in models today,
+
+and it's important to know how to inject this kind of information about position into transformer representations.
+
+That's the end of the segment.
+

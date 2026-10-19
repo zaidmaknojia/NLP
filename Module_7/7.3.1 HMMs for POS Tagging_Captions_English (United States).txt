@@ -1,0 +1,265 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to come back to the task of part of speech tagging,
+
+now armed with HMMs and see how they can actually do on real data and kind of compare them to other approaches.
+
+So to start off with, we're going to talk about the version of, uh, hmm's that actually works well for part of speech tagging.
+
+So what we've talked about so far is what I'm going to call a quote unquote, bigram hmhm, where the states here are just single tags.
+
+Now, recall that HMMs make this Markov assumption, which is that the next step depends only on, uh, the current state and not anything in the past.
+
+And it turns out that this is a little bit too aggressive of an independence assumption.
+
+Instead, what we want to do is we want to be able to condition on stuff that's a little bit farther in the past.
+
+But kind of modifying the actual. Hmm. Uh, model.
+
+And an algorithm is a little bit, uh, annoying. So instead,
+
+the way we can do this is we can think about changing our state space to
+
+actually be a pair of tags consisting of the current tag and the previous tag.
+
+So corresponding to this fed raises example above.
+
+Now the state for Y1 is going to capture this, uh, this uh, kind of bracket s start of sentence symbol.
+
+And for y2 it's going to remember that an NP was the previous symbol here.
+
+So these transition probabilities are now these more complicated things that look at, uh,
+
+you know, the look at basically transitioning to a pair of tags from a pair of tags.
+
+But one of these tags is always shared, right. Like it's an NP in the second position at the current time step.
+
+Then at the next time step it, you know, it has to have NP in the history here.
+
+So the transitions become more complicated. And there are certain optimizations that you might want to think about when, uh,
+
+actually implementing this because only some of these transitions are legal now.
+
+But uh, from the perspective of the rest of the algorithm, you know,
+
+even though we have this more complicated state, uh, everything else can kind of proceed as before.
+
+In particular, the emissions now condition on both, uh, on on kind of both of these tags, you know, the tag and its kind of history.
+
+Um, and that's useful. So we could go farther.
+
+We could try to incorporate more of a history. It turns out trigrams are kind of the sweet spot for HMMs.
+
+Okay, so taking our existing tagger, um, we can apply this to the Penn Treebank, uh, data set, which,
+
+uh, is one of the earliest data sets that was created for large scale English part of speech tagging.
+
+Now they're part of speech data sets for a lot of languages. Now we'll come back to those a little bit at the end of the segment.
+
+Um, but the Pine Tree Bank data set has 44 tags in it.
+
+It turns out the baseline of just assigning each word.
+
+Its most frequent tag seen in the training data actually does very well on the test set.
+
+It gets around 90% accuracy. And the reason is, I think I mentioned before that we have tags for things like period in there.
+
+And then there's plenty of words like the and a determiners that never show up with any other tag.
+
+So you're always going to get these right. They're just totally unambiguous.
+
+Regardless, there are still a number of ambiguities, right?
+
+I mean, 10%, uh, kind of 90% accuracy means that one in every ten words is wrong.
+
+And so what that means is, if we imagine a 20 word sentence, which is a fairly standard length sentence in a news news article,
+
+we're going to have about two errors in that sentence is what we would expect.
+
+So our trigram atm can cut that error rate in half. It can take the accuracy to 95%.
+
+And in particular, it can get 55% accuracy on words that don't show up in the training set.
+
+Now, these are hard words because, uh, you know, recall that for this baseline, uh, it actually wouldn't be able to say anything about those words.
+
+Right. But the trigram. Hmm. Knows about the context.
+
+And so even though the emissions, uh, aren't useful for determining the tag of that word, it still can do something reasonable.
+
+So, uh, a kind of souped up version of this system due to Thorsten Brandt's, uh, gets,
+
+you know, slightly higher accuracy overall, but much higher accuracy on, uh, unknown words.
+
+Um, Christina to to Nova and Chris Manning uh, created uh maximum entropy tagger.
+
+So again, maximum entropy is kind of a synonym for logistic regression.
+
+And this is going to be more or less doable once we see CRF.
+
+So we're going to understand we're going to look at named entity recognition.
+
+But it's going to be more or less the same kind of system as they built here.
+
+Um and that does even a bit better. And this is actually not too far behind the state of the art.
+
+If you do kind of crazy stuff with, uh, you know, via Lstm, CRF or Bert, you actually don't even get that much higher than this.
+
+Um, you got around 97.5% and you got higher performance on unknown words.
+
+So let's take a look at what some of the errors in these systems look like. So this is from the two two Nova in Manning uh work.
+
+And what they have here is a confusion matrix uh, showing basically uh, which pairs of tags tend to get confused between goals and predictions.
+
+Um, so for example, what this cell up here means is that the correct tag was Jay adjective.
+
+So that's what's on the, um, you know, the kind of left side here.
+
+And then the column means the erroneous tag that was predicted.
+
+So in this case nouns.
+
+Uh, and the kind of the reason that adjectives and nouns can get mixed up is cases like official knowledge, um, where official can either be a,
+
+uh, an adjective meaning that, uh, yeah, well, it can be an adjective, or it can be a noun, like, for example, a government official.
+
+And you might think, okay, why or why would you ever have a noun in this context?
+
+Well, there's actually a lot of noun noun compounds that have a similar structure.
+
+For example, tax cut, art gallery, um, tax and art can't be adjectives.
+
+Um, tax can be a verb. But, uh, you know, in these cases you would want now noun as the analysis.
+
+But here it's the knowledge has the property of being official.
+
+It's not like associated with like a government official or something.
+
+Here's another example. So this is a verb particle error like made up the story.
+
+Uh, what is happening here? Is that up again is not a preposition.
+
+Uh, it's a particle. And made up is kind of this unit that, uh, kind of goes together and up,
+
+does not really have the spatial semantics that it normally does when its associated with, uh, being a preposition.
+
+And so, uh, in this case it gets analyzed as a particle.
+
+But of course, uh, it's fairly challenging for a model to know that.
+
+Uh, and then a final case here is recently sold shares.
+
+Uh, they're kind of without seeing more context.
+
+You actually don't know which of these two tags it is. Um, if I said I recently sold shares, that's VB.
+
+That's, uh, just the straight up past tense of the verb.
+
+Um, but if I said, you know, he has 50 recently sold shares, that means these shares were recently sold.
+
+We don't know by who. Uh, and that's a participle usage of sold.
+
+So again, those those so you can see that these errors can get kind of tricky here.
+
+And so Chris Manning, in 2011, um, wrote a paper called Part of Speech Tagging from 97% to 100%.
+
+Is it time for some linguistics? And looked at the remaining errors, uh, in part of speech data.
+
+So one of the one of the tricky cases that we've talked about is when you have a word that, uh, words that aren't seen.
+
+But another tricky case is where you have a word that has been seen, but it shows up with a new tag in the test set.
+
+Right?
+
+And this is very hard to generalize to because generally you're going to assume that, okay, we've seen this word before and we've seen it as a verb.
+
+You know, most likely it is going to be a verb. So that's accounts accounts for around 5% of the errors.
+
+Um, unknown words are also around 5%. Uh, in his analysis, around 15% of the things were, uh, models.
+
+They were errors that models could get right. Maybe you would need a better model, but it's at least doable.
+
+20%, he said, had quote unquote, difficult linguistics.
+
+And so here's an example of that. They set up absurd situations detached from reality.
+
+Uh, the tags here differ whether on whether set is past tense or present tense.
+
+And you don't know without seeing more of the context whether this happened in the past or the present.
+
+And so, uh, you know, we would have to think about models that go beyond a single sentence.
+
+That's much tougher. And so, you know, we're not going to do that.
+
+The. And then what he found was that 60% of the remaining errors were things that were either under specified or unclear in the text,
+
+or the gold standard was inconsistent or wrong.
+
+Um, and so here's an example of the of the kind of unclear case, uh, a $10 million fourth quarter charge against discontinued operations.
+
+Um, this is a case of a participle usage versus an adjective to the operations have the property of being discontinued.
+
+Or are we saying that, like, these operations were discontinued?
+
+It's it's almost difficult to describe what the semantic difference between these two cases is because in order for something to be discontinued now,
+
+it had to have been discontinued sometime in the past, right?
+
+So this is the kind of ambiguity that you writing this or someone reading it may not even resolve for themselves.
+
+And so, uh, how can we expect a model to necessarily come to a decision about one of these tags to use here?
+
+Okay. So I'm going to switch gears a little bit and talk about, uh, a different way of producing part of speech tags,
+
+which is coming back to using neural nets here and in particular feedforward neural networks.
+
+So rather than appeal to part of speech of these like hmhm taggers,
+
+we can instead go back to this idea of using something that looks more like a classifier.
+
+We can take, uh, these words around, uh, the word that we're tagging here.
+
+So we look at the previous word, the current, where the next word. We embed them into vectors.
+
+We can cabinet those into a feature vector here.
+
+And then we're going to put that into a neural network.
+
+Uh, and so again, what we're doing here is we're being very careful to capture this positional position, sensitive information.
+
+We're looking at the previous word, the current word and the next word.
+
+We're not using some kind of bag of words thing or that deep averaging network where you like add everything together.
+
+Here we're concatenating these three vectors.
+
+Uh, and so John Barth Butthat, uh, looked at this for a number of NLP tasks, and they did something a little bit more clever, which was they also,
+
+uh, looked at, uh, bigram and, uh, character bigrams and trigrams and had a way of incorporating those into the model as well.
+
+Um, and then that all gets kind of mixed together in a hidden layer.
+
+And then, uh, the model makes some sort of prediction. And this actually turns out to work pretty well across a whole range of languages.
+
+So they compared it to previous work that was doing recurrent neural networks and found that it was it was better than that work.
+
+And you can see on the right here that, uh, across a whole bunch of different languages,
+
+the accuracies are, you know, at least above 90% in all cases.
+
+Um, again, the kind of error, you know, the error rates differ a bit.
+
+And, uh, this isn't comparable to the other data that we were seeing because it's, uh, it's a new data set in a different part of speech tag set.
+
+But, uh, the kind of general principle here is that these kind of models that we've built up so far can be used for lots of different languages.
+
+And, uh, you know, kind of using this feed forward neural network version of them can be fairly effective.
+
+So that gives you a sense of what a few models for doing.
+
+Uh, part of speech tagging are that work basically, as well as the fancier stuff that we're going to come to later in the course,
+
+uh, things like recurrent neural networks and Bert.
+
+So, uh, you know, now you kind of understand where the state of the art is in this area and what some of the strong models are doing.
+
+That's the end of this segment.
+

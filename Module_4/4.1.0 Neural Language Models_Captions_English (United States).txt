@@ -1,0 +1,109 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about neural language models.
+
+So from the definition we had before, we can define the probability of a sequence of words as uh,
+
+the probability of the first word times the probability of the second given the first, etc. and so on and so forth.
+
+For n-gram language modeling, we made the assumption that only the n minus the kind of previous n minus one words matter.
+
+We're not going to make that assumption anymore.
+
+Instead, what we're going to say is how can we model this distribution p of n given w one through n minus one in a smarter way?
+
+In particular, rather than using these uh relative frequency counts based on, uh, you know, that we had in the n gram models,
+
+can we use a neural net to predict the next word, conditioned on maybe more of the context and we were able to use before?
+
+So the reason that, uh, the reason, by the way,
+
+that people didn't explore this for a long time in the literature was just because when you have a very large corpus,
+
+this kind of training gets very slow. Um, so this idea has been around for a long time,
+
+but wasn't necessarily explored because it didn't scale as well as the counting and normalizing scheme and n-gram models.
+
+All right. So. We'll start with.
+
+A very basic, uh. Nurul LM.
+
+And this should look familiar. Basically, the probability of a word given.
+
+A previous word. So we are appealing to something that looks like the skip gram model, where we have a vector for the current word y,
+
+uh, and a vector for uh, let's say a context vector associated with, uh, the, the word at position I minus one.
+
+And in the denominator, we, uh, have to sum over all the possible words we could be generating at this point.
+
+So this kind of gives you an idea of, uh, the way we might approach this.
+
+So Skip gram obviously only uses one word of context.
+
+And in general, skip gram is about modeling, uh, you know, words that are possibly larger distances away or both sides.
+
+Uh, so this would be a specialization of skip gram to this particular setting.
+
+So but this gives you an idea of the kind of way we can approach this.
+
+And so more generally. The way we can parameterize this is like p y given w1 through w I minus one might be a softmax of.
+
+I'm going to write, uh, you y here.
+
+Dotted with some function of w1 through y minus one.
+
+So. What? This this function f.
+
+Could be a neural net to embed.
+
+The context. So there's a couple of choices for ways that we could do this.
+
+Uh, so from what we've seen so far, we could have f.
+
+Be something like a deep averaging network. The nice thing about this is deep averaging networks for tasks like sentiment analysis work very well.
+
+Um, but the problem is that this ignores the order.
+
+Of the words in the context, it's going to be minus one and one the same because it just sums everything together.
+
+And so this is not going to do a good job of capturing the idea that probably the word
+
+that's immediately before Y has a kind of highly constraining effect on what we should be.
+
+And the word that's, you know, 15 positions back has a much less strong effect.
+
+We could also explore using a feedforward neural network.
+
+And so, uh, what this looks like is let's say our context is.
+
+I saw the dog. Uh, we have, you know, some sort of, uh, neural net here that embeds this into a vector.
+
+Uh, and then we put through a.
+
+Final matrix. Multiply and softmax. And that yields the probability of y given w1 through uh w I minus one.
+
+All right. And so, uh. This has been explored in prior work by many and Hinton and, uh, quite a while ago, back in 2003.
+
+The problem with this is that it also has the same problem as N-gram language models, in that it doesn't necessarily scale to long contexts.
+
+Um, so if we, for example, have uh, if, if we want to include 20 words of context, suddenly we need a very large neural network in order to do that.
+
+Um, and the number of parameters sort of grows in the amount of context that we want to use.
+
+So these are both viable approaches for, uh, for building neural language models.
+
+But where we're going next is to look at how recurrent neural networks can solve this problem.
+
+What recurrent neural networks are going to allow us to do is they're going to
+
+allow us to break away from this dependance on a number of parameters that,
+
+like, has to scale with the amount of the input that you're looking at or the amount of, let's say, context for the language modeling problem.
+
+And so that's going to be very, very useful here because we're going to be able to build models that can just look at arbitrarily long contexts.
+
+It may not use all the context, but that's okay. It at least theoretically scales to be able to use it all without running into the computational
+
+problems that gram LMS and these sorts of feedforward neural network based LMS give.
+
+That's the end of this segment.
+

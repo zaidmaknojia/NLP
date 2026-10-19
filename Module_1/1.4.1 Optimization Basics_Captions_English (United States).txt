@@ -1,0 +1,237 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about how to optimize things.
+
+And this is going to introduce this concept of optimization that's going to come up going forward throughout the course.
+
+Now this is not a course on optimization. So this is going to be an extremely abbreviated treatment.
+
+There's a lot more there to unpack. But we're just going to look at what we need to understand what we want to do in NLP.
+
+Um. So. The basic idea.
+
+Um. Of optimization is that we have some kind of loss function, and we are finding a setting of weights to minimize that loss.
+
+So this is we could think of as a search.
+
+Over. The space of parameters.
+
+W. And again, our loss, um, which we're going to start writing as, uh, this script out here, um, is defined with respect to, uh, training set.
+
+Like this. Uh, and, uh, with respect to a training set and also our weight vector.
+
+And what we said was that all of the lost functions we're going to look at, um,
+
+basically we are going to think of as, uh, this linear sum over the training examples.
+
+And so what we're thinking about this, uh, right now, as is as a function of W, right.
+
+So we're searching for a w that's going to minimize this thing.
+
+And so we kind of treat the training data. Uh.
+
+We're going to treat the training data as fixed.
+
+And W is, uh, sort of the variable that we're going to be changing to try to find a good value of this loss function.
+
+Um, so. So in stochastic gradient descent, the idea was we, uh, repeatedly.
+
+Heck. An example I and then apply this update.
+
+Okay, so I'm abbreviating here. Uh. This is lost on I.
+
+Example. Um. I will put in, uh.
+
+I will put it in here just to make that extra clear. So we pick an example I.
+
+We compute the gradient of, uh, the loss on that example with respect to the weight.
+
+And then we subtract off alpha times that.
+
+And again because we're minimizing things um, subtracting the gradient is the way to kind of go in the right direction.
+
+So the part that we haven't kind of talked about how to deal with, and which is what makes this whole process pretty tricky, is the step size.
+
+So. Let's see a little example of why step size matters.
+
+So. Suppose.
+
+This equals w squared. Um.
+
+And there's just one. Feature here.
+
+So again, basically, uh, w is just a single, uh, vector with a single coordinate w in it.
+
+Um, and let's suppose further that, uh, w equals minus one is sort of our initial starting point here.
+
+Um. Okay. So the gradient of.
+
+L with respect to W, uh, is just two W.
+
+All right. So. Now the minimum value of W here, uh, is is zero.
+
+This is, uh, this is a quadratic function, right? I guess I'll just draw that little cartoon here.
+
+Um, and. What happens with SGD?
+
+If alpha equals one. So let's apply this.
+
+So, uh, we have our weight.
+
+Current weight w which we said is minus one. And then we subtract off alpha which is one times the gradient which is two w which is uh.
+
+Two times minus one. Um, and so that gives us an updated value of w which is equal to to one now.
+
+So. What happened was.
+
+We started out here. And the gradient, uh, kind of told us to go towards the origin.
+
+And then what we did was we ended up over here.
+
+And if, uh. If you keep alpha equal to one, what happens is that this oscillates.
+
+This will never converge to the true minimum, which is that equals zero.
+
+Instead it just kind of bounces back and forth here. Instead.
+
+If alpha equals a half. Um, you should be able to convince yourself that w, uh, you know, kind of immediately jumps to the right answer.
+
+Uh, zero. And so even with the same gradient as before, the fact that we had a step size.
+
+Now the the kind of correct step size allowed us to get to the optimum.
+
+So that kind of indicates how important the step size parameter might be and that, uh, you know,
+
+it makes the difference between not converging and converging, um, with the same algorithm.
+
+Uh. Okay.
+
+So. How did you step size?
+
+Uh, I mean, it's not much of an exaggeration to say that there's, um, you know, hundreds of papers published at NeurIPS or icMl,
+
+which, um, basically kind of amount to this question from an optimization standpoint.
+
+Uh, so the answer is from the perspective of SGD are going to be the following.
+
+Um. Try them out.
+
+Uh, so, you know, we we a lot of times, maybe we want to try, uh.
+
+Just a range of different orders of magnitude.
+
+If you don't know too much about the function that you're optimizing, you're not even really sure what scale you should be searching on here.
+
+And a lot of neural models, you need pretty small step sizes.
+
+For example, uh, you know, one e minus four, one E minus five things like that, depending on how big the model is.
+
+Um, another. Thing that's pretty common, um, is to start with a larger step size and go to a smaller step size.
+
+Um, so, uh. So something like one over t um for epoch t.
+
+Um, or one over the square root of T, something like that.
+
+Um. Similar. So? So that's kind of a fixed schedule.
+
+Um. Or you can decrease.
+
+Step size. When, uh, performance stagnates.
+
+On held out data. Um, so you basically kind of, uh, you know, look, look at when you're no longer making progress on your validation set,
+
+um, or a development set, uh, both terms get used, and then you, you turn down the step size.
+
+Okay. So these are, these are sort of course techniques.
+
+And it's a little bit hard to find. Uh, exactly the right, uh, the right value for this thing.
+
+And it's actually not even clear that this is the right way to go about it,
+
+because what it does is it treats all of the positions of your weight vector equally.
+
+Um, but not all the positions of your weight vector are equal.
+
+Um, when you're dealing with, uh, you know, when you're dealing with neural nets,
+
+they might reflect different kind of layers of the architecture that might have very different sizes or different behavior.
+
+Um, and when you're dealing with feature based models, they can reflect different,
+
+like, you know, one might be a very common feature, like, uh, you know,
+
+a bag of words feature on said or a common word like that, um, versus, you know,
+
+a feature that occurs one time in your entire training data because it's someone's name.
+
+So what we want to do is we want to be a little bit smarter about this.
+
+Um. So.
+
+We're not going to discuss it in too much detail. Um, but the the kind of smarter thing to do here, um, is something called Newton's method.
+
+Um. Okay.
+
+So, uh, basically this is something called the inverse Hessian.
+
+Um. And the idea here is that we use the curvature of the space to, to, uh, or of the objective function to figure out what the right step size is.
+
+Um, and so one way to think about this is it's like a second order Taylor approximation where, uh, if you are optimizing a quadratic,
+
+what this will allow you to do is it'll allow you to take, uh, your gradient, which is kind of locally going uphill on the quadratic.
+
+And it'll tell you, okay, you know, based on the gradient here and the kind of second derivative,
+
+the curvature, like we can immediately jump to, uh, the optimum here.
+
+Um, the problem is that this is. This is very expensive.
+
+To compute um, it's quadratic in the number of features.
+
+And so in big neural models or even in uh linear models which are going to have, you know,
+
+once you start to get into hundreds of thousands of features, um, it starts to become, you know, totally infeasible to do this.
+
+Um, so there's a whole bunch of methods, uh.
+
+Adagrad. Add a delta. Adam.
+
+Uh, these are, uh, so-called adaptive methods.
+
+And a lot of them are motivated as approximations.
+
+To the inverse Hessian. Um, but they're but they're going to be linear.
+
+In the number of features. So these are going to be techniques that are kind of useful for deep learning.
+
+And we're not going to talk about them a ton. Um, but Adam is definitely one, uh, that we are going to revisit when we get to deep learning.
+
+And so we're going to talk about, uh, you know, we're going to talk about it and its hyperparameters a little bit more there.
+
+Um, and the last thing I'll say about optimization before we close out is, uh, on the subject of regularization.
+
+Um, which we.
+
+I've got to say, don't really use. Um, so in classical statistics, what we would say is that actually fully optimizing the value of the loss is bad.
+
+Um, there's this notion of a bias variance tradeoff where what we want to do is not actually fully optimize it.
+
+And in doing so, reduce the kind of variance of our estimator and do better on new data.
+
+Uh, the idea of regularization is useful, but we're typically not going to explicitly add in regularization to our objective.
+
+Instead, what we're going to do is we're going to benefit from, uh, either early stopping, just not running as many iterations.
+
+Um, the fact that our optimization is not going to be perfect at optimizing this function.
+
+Um, and other kind of ad hoc tricks for deep learning, uh, things like dropout that are going to allow us to, uh,
+
+get the same benefits of regularization in terms of not overfitting the data without explicitly incorporating it.
+
+So, uh, the the kind of main thing you'll need to know for the first portion of this course is simply
+
+the step size and the fact that these kind of different optimization techniques exist.
+
+Uh, and then we'll revisit some of these concepts when we come to, uh, optimization and deep learning later.
+
+That's it for this segment.
+

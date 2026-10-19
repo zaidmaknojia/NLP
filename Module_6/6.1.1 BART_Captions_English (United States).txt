@@ -1,0 +1,101 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about pretraining methods for sequence to sequence models and in particular a technique called Bart.
+
+So we've talked about standard language models which have this, uh distribution they place over sequences and our trained,
+
+uh, kind of unit directionally, where they just generate the next word based on the previous words.
+
+Then we talked about masked language models, which have, uh,
+
+a kind of bidirectional nature to them and use masking to avoid the kind of cheating problem.
+
+So if we think about tasks which have the form p of y given x, things like machine translation,
+
+how can we pre-train a model that's going to be good at these?
+
+It doesn't feel quite like these other problems somehow. So we can think a little bit about why Bert and its variants were effective.
+
+And one reason is that this, the kind of way that we did masking, required some kind of understanding.
+
+Right? Like if we said, you know, John visited.
+
+Blank. And saw.
+
+Parrots. Then like making a prediction here required, uh, the model to kind of understand what kinds of places you visit.
+
+And you might see parents, and we could think about the same kind of skills from the perspective of the sequence prediction.
+
+So if we're thinking about something like machine translation, really what we want to do is we want to have, uh, a kind of gap here.
+
+And then we're trying to, let's say, generate the output, which is uh, maybe,
+
+uh, translated into another language or summarized or something like that.
+
+Um, but we want to be able to kind of make inferences about the content in the input that was missing.
+
+So this is exactly going to be the motivation behind the pre-training schemes that get used for sequence to sequence models.
+
+So in particular the Bart paper from Mike Lewis said I'll introduce several different methods
+
+where you effectively treat your model that you're pre-training as a kind of denoising function.
+
+And so what you're going to do is you're going to feed in, uh, various masked versions of your sequence or,
+
+uh, kind of sequences of words or documents that have had transformations applied to them.
+
+Like, for example, you either, uh, kind of block out big chunks of the input or you permute stuff around,
+
+and now you're trying to predict the UN permuted order. So these are all various pretraining tasks, kind of akin to the masking in Bert,
+
+that are going to ideally enable our models to learn good operations for transduced sequences.
+
+Right. Uh, so basically the model is going to copy some stuff from the input, but then also make inferences about certain tokens.
+
+So how does this work architecturally? Well, what we do is we take a seek to seek transformer.
+
+So the kind of full version of the transformer architecture and we feed in into the encoder, that's Noised version of the input.
+
+And then the decoder needs to produce the clean version as output.
+
+So if we compare this to Bert, Bert in some sense only has this encoder going on right?
+
+It uses a bidirectional transformer over the encoder and fills in these masks.
+
+Bart also has that, but Bart also has this decoder.
+
+Uh, and the encoder doesn't isn't actually responsible for mask prediction.
+
+Instead, that happens in the decoder.
+
+But theoretically, Bart is sort of a superset of Bert, and that you could take the encoder and use it for any task where you are going to use Bert.
+
+But now instead, you also have this, uh, kind of seek to seek transformer that is going to be able to do other tasks for you.
+
+And as an example of what it can do. One of the headline results in the Bart paper was on text summarization.
+
+So just to kind of go through the data steps of how this works, we pre-train the model on the Bart task.
+
+So these random chunks of text that are noised according to what we described a few slides ago, and then you try to produce the clean text,
+
+and then you fine tune that model on a data set of human written summaries, basically a news article.
+
+And then, uh, summary that an editor wrote of that article and the kind of thing it will produce looks like this.
+
+So it can take this, uh, article about Iliad.
+
+Kipchoge running a marathon in less than two hours and produce a summary that kind of summarizes this succinctly.
+
+Now, this kind of suggests why the Bart objectives might be a good idea, because if you,
+
+uh, kind of mask out some information from the input and then force the model to infer it.
+
+That's kind of the same as being able to consider a bunch of stuff from the input and be able to infer, oh, okay.
+
+The important thing here is that he ran a marathon in less than two hours.
+
+So this kind of special pre-training technique, the fact that it's fit to the summarization task, uh,
+
+is helpful and kind of suggests why some of these seek to seek approaches are going to be effective for some of these tasks,
+
+an idea which we'll come back to later. That's the end of the segment.
+

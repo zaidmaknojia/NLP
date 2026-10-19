@@ -1,0 +1,189 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about attention.
+
+And that's going to be our jumping off point to kind of getting into the transformer architecture.
+
+So the transformer the paper that introduced transformers by Zani et al.
+
+What's called attention is all you need. And so I think that kind of appropriately situates the importance of attention for how these models work.
+
+And kind of more generally in NLP, how much of a change they made.
+
+So attention is going to be a mechanism for accessing information in the context to be able to make predictions.
+
+And this is kind of the problem that we've been wrestling with as we've looked at feedforward networks, dans uh, RNNs, things like that.
+
+And here we're going to talk about how attention can impact language modeling and how it can be used there.
+
+And we're going to do that via a running example. Uh, that's going to be kind of cooked up to show you what it can do.
+
+So we're going to consider these fixed length sequences of A's and B's, uh, that look like this.
+
+And our goal here is to predict the last letter in this sequence.
+
+Now I've constructed these according to the following rule. If it's all A's for the first six characters, then the last one is going to be an A.
+
+If there's any B anywhere in the sequence, then the last one is going to be a b.
+
+So the reason that we need something like attention is because it's going to allow us to
+
+go arbitrarily far back in the context from where we are trying to make a prediction.
+
+And that's going to help us answer this question of basically, is there a B anywhere?
+
+So I know I said they would be fixed length sequences, but just as a thought experiment,
+
+suppose we were trying to, uh, do language modeling over sequences like this.
+
+Now, this is the kind of thing that, uh, RNNs sort of struggle with.
+
+Now, it's difficult for these models to, like we said, backpropagate through many layers of computation and learn how to remember things well.
+
+And so they they'll have a tendency to forget information over long periods of time.
+
+And we're going to see how attention can fix that. I'll caveat that by saying that of course this example is doable.
+
+You can actually hand construct weights to do it, uh, if you want to, uh, give that a shot.
+
+Okay. So let me introduce the basic, uh, kind of ideas of attention in the context of this example.
+
+So, uh. Our actual sequence that we're going to use is going to look like this.
+
+And of course, the kind of true next thing here, uh, should be be right because there is a B in the sequence.
+
+So, uh, we're going to have two concepts that are really important here.
+
+One is the notion of keys, which are just going to be the.
+
+Embeddings of the sequence for now.
+
+Uh, and we're also going to have a query, which is.
+
+What we want. To find.
+
+Okay.
+
+So in terms of embeddings we're going to assume the following word embeddings that A has the embedding one zero and B has the embedding zero one.
+
+So these are just one hot encodings of these um and we're going to call them.
+
+Uh, I. So.
+
+For the attention computation, it's going to have a number of steps.
+
+The first step is to compute a score.
+
+For each key. Given the query.
+
+Okay, so what does our sequence look like? Well, if we, uh.
+
+Use that embedding that I listed here.
+
+We get vectors that look like this for our forwards.
+
+Now the score here. Is going to be computed by.
+
+Taking the ith key and dotting it with the query.
+
+So this. Representation allows us to basically say, okay, what are things that have high dot product with our query?
+
+Let's give those a higher score. And in this case we're going to set the query.
+
+Equal to. Zero one.
+
+And what that's going to do is that's going to allow us to basically find these.
+
+So that's what the kind of scores here are going to do.
+
+And so if we go through and take the dot product, we get the scores zero, zero, one and zero like this.
+
+All right. So then let me kind of rewrite this over here for step two which is going to be to.
+
+Softmax. So we had our sequence A, a, B, a with scores 0010.
+
+And when we. Softmax. That gives us.
+
+The following vector of probabilities.
+
+If we. Assume E equals three.
+
+Um. So again, we're exponentiating these things and normalizing them.
+
+So when you exponentiate zero you get one. When you exponentiate one you get three.
+
+And so, uh, this this stuff kind of ultimately adds up to six.
+
+And you get a distribution that looks like this. And then for step three we compute.
+
+Output as a weighted sum of the input. And so what this means is that the result is going to be the sum of alpha I times e I from I equals 1 to 4.
+
+Here. Uh, and we're going to denote these, this vector uh, of probabilities as alphas.
+
+So basically this is one sixth times uh.
+
+One zero plus. One six times one zero plus one half times zero one.
+
+Plus a six times one zero, which ultimately gives us half.
+
+Half. Okay, so it feels like we went through actually a whole lot of work to get, uh,
+
+uniform kind of split between these two positions, uh, which kind of represent A and B, right.
+
+But in reality, if we kind of compare. Uh, to an average.
+
+The sort of average embedding of this would be three quarters, one quarter, right?
+
+If we just sort of averaged over the inputs that we were given.
+
+So what the attention has done is it's kind of amplified the B ness of the context here.
+
+And we can see that by the fact that the weights assign a kind of higher weight to that, uh, that, uh, position here.
+
+Right. So we were kind of taking a weighted average where the weight is higher here.
+
+Now, the reason the weight isn't even higher is because, well, zero when exponentiated still kind of gives you something, right?
+
+It still gives you one. Uh, so suppose that we actually, like, really want to make the attention even more peaked then.
+
+What we might want to do is, uh, kind of amplify these embeddings more when we do the attention computation.
+
+And so we can do that by scaling them up by this matrix.
+
+W.K. here, uh, where this is just a diagonal matrix with tens on the diagonal.
+
+And so it's just going to multiply all of the values of the keys by ten.
+
+So now if you go through the attention computation again, you're going to get something a little bit more peaked.
+
+And I'm going to leave that as an exercise for you to do. But you can kind of convince yourself that it's going to give us the same effect.
+
+Uh, but something even more extreme. So this uses a formulation of attention called product attention,
+
+where the interaction between the keys and the query is done is kind of mediated by the dot product operation.
+
+In reality, what we're using here once we start introducing these matrices is a form called scaled dot product attention,
+
+where you have a matrix that, uh, basically forms this by linear function that can compute, uh, uh, an inner product between k and q.
+
+And what we're going to see is actually the case in attention is we multiply the keys by a matrix K,
+
+which we saw, uh, kind of teaser for on the previous slide. And we're also going to multiply the the query Q by a matrix wq.
+
+And I. This is a kind of form of attention that is going to get used in basically all the standard transformers.
+
+There's other mechanisms for attention that were introduced in settings like machine translation.
+
+Um, some of these older papers talk about them. Um, but we're not really going to use them here.
+
+And what we're going to see is that, in fact, there ends up being a third matrix for values,
+
+and that's going to be, uh, sort of a key part of self-attention.
+
+So we'll come back to that later.
+
+But for now, what we've seen is that we can take these keys, which are each token in a sentence, and use a query to form a distribution over them,
+
+take a weighted sum of them and then get a, uh, kind of output, finding the stuff in the sentence that matches the query.
+
+That's the end of the segment.
+

@@ -1,0 +1,217 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to define feedforward neural networks and a little bit more formal mathematical notation.
+
+And we're going to talk about how backpropagation works.
+
+So we start off with the uh, multiclass logistic regression with different weights formulation that we had before.
+
+Um, so the probability of a class Y is the exponential of weights associated with that class dotted with features, uh,
+
+divided by the sum over that same kind of class score, weight stop features, um, for each possible class Y prime um, in the output space.
+
+So I just want to make the data types of all of these things pretty clear, because we're going to be vectorizing these operations.
+
+We're going to be going from a computation that returns a single scalar probability to a computation that returns a vector of probabilities.
+
+This is going to transform this into a form which is a lot closer to what PyTorch code looks like.
+
+So when we have these three classes and, uh, you know, let's assume we have three classes here, uh, and this different weights formalism.
+
+Um, each class has a weight vector and the dot product gives some score which looks like this.
+
+And then we can transform these into class probabilities as described in the above equation, using an operation called the softmax.
+
+Um and all softmax means is take these numbers, exponentiate them, and then normalize them.
+
+Divide by their sum. So you should be able to confirm for yourself that taking the, uh, each of these class scores weighed stop features, um,
+
+and exponentiating and normalizing gives you the class probabilities under this multi-class logistic regression model.
+
+And the reason we kind of go through all this effort is that we are going to write this, uh, whole equation at the top in this fairly compacted form.
+
+Um, softmax of times f of x.
+
+So what have we done here? We've stacked each of these, uh, vectors of class weights w1, w2, w3 into a single matrix.
+
+And now we can express this whole operation as multiplying that matrix by the feature vector and then softmax it.
+
+So what we had before was a single scalar probability.
+
+Um, and now the weight vector, uh.
+
+Each weight vector in each class gets kind of stacked up into this weight matrix, which is num classes by number of features.
+
+Um, and the output now is a vector of probabilities capturing the probabilities for all the classes.
+
+So that's why we write, um, bold y uh, on the left and the p of y given x instead of, uh, you know, just normal y.
+
+And then finally we what we can do is we can change f of x, or rather, we can introduce this hidden layer which,
+
+uh, computes our latent feature z by multiplying v and applying g as we were doing before.
+
+And so the nice thing is that now we've gone from something that we've looked at and understand, which is multi-class logistic regression, um,
+
+to a feedforward neural network with one hidden layer, um, just by, uh,
+
+kind of transforming this formula with a couple of extra mathematical operations.
+
+So to kind of map out exactly what's going on here and think about it a little bit graphically, um, we start out with our N features in F of x.
+
+Um, we multiply those by v, which is a d by n matrix, and put that through our non-linearity g.
+
+And then that gives us a vector of d hidden units.
+
+So again this is our latent feature space Z. It might be the same size as n.
+
+It might be a lot less. Who knows. Um and then we multiply by w which is our num classes by d matrix.
+
+So um, again the uh sizes of these matrices have to agree with, uh, the sizes of the layers in order for the operations to work out.
+
+And then we apply a softmax and we get our vector of probabilities which is num classes long.
+
+And so again if we have a three class classification problem we want three numbers at the end here.
+
+And so W needs to have three rows one corresponding to each of the uh individual classes.
+
+Weight vectors. If we're thinking about things in the different weights uh paradigm.
+
+Okay. So this is a you know, this is kind of gory, detailed graphical unpacking of what's going on in this, uh, in this formula up here.
+
+So now we understand how to do this computation.
+
+If we have all these, uh, parameters, we can compute this just, uh, you know, using relatively basic matrix math.
+
+But the real question is how to train these things.
+
+Um, we've talked about, you know, ways of training, multi-class logistic regression, taking the gradient and using stochastic gradient descent.
+
+And now we need to think about how those generalize to this case. All right.
+
+So recall that we can think about this uh, in terms of two stages.
+
+One is computing these latent feature Z and another is uh to actually compute the output probabilities.
+
+Um. And so, uh, we're going to train with the same basic objective as before, which is, uh, maximizing the log likelihood of training data.
+
+Or if you want to think about it, using loss as negative log likelihood and then minimizing that.
+
+So, uh, the log likelihood of a training example, uh, can be written in this way.
+
+So it's a little bit of a different notation than before. So what's going on here?
+
+So I star on the right we're using to denote the index of the gold label.
+
+So um for example in a three class problem, if the gold uh label is at position two you call this e two.
+
+And so what is E? E is basically just a kind of selector that has a one in the position of the subscript and zero elsewhere.
+
+So in that case it would be a vector 010.
+
+And the you know, the reason we write it out this way is so we can keep using our, uh, softmax notation.
+
+But now we're saying, okay, the log probability of, you know,
+
+the true classes is gotten by grabbing the log probabilities of everything and then taking this dot product and then logging in.
+
+So. If we do that, we apply the log and everything.
+
+We get a, uh, equation which looks like this,
+
+which is a little bit different than what we saw in the multiclass logistic regression case, but I claim that it's actually the same.
+
+What we have is this linear term to start with, uh, which basically looks like, uh, the weights of the correct class dotted with Z, uh,
+
+and then we subtract off this log sum of exponential term,
+
+which is what has sort of fallen out from the denominator of logistic regression, um, in the past.
+
+And, uh, you know, again, it's just using this, this slightly different notation here.
+
+All right.
+
+So the fact that it looks exactly like multi-class logistic regression means that we can think about computing the gradients of W exactly as before.
+
+Um, so, you know, we we once we compute the Z's, we don't even really have to kind of think about them anymore.
+
+We can just compute gradients of W and the loss and everything and treat it exactly like multiclass logistic regression,
+
+even from the standpoint of learning, even from the standpoint of computing gradient updates.
+
+So this is the kind of, you know, the top layer of the network, right?
+
+Um, the one closest to the output. So it's not to, uh, you know, nothing too crazy is going on.
+
+Uh, but now we have to think about, uh, using so-called backpropagation and actually computing gradients for earlier stages of the network.
+
+Um, and so this is where things get a little bit more complicated.
+
+I'm only going to go through a sketch of it. Um, there's plenty of resources out there for learning more about, uh, you know,
+
+exactly what this computation looks like and going through all the details with the chain rule.
+
+The high level idea is that we are going to be able to compute this vector that we call an error signal from based on the output layer.
+
+And we're going to pass that back to, uh, this, you know, position where we've computed Z in the network,
+
+and then we're going to be able to ignore everything that happens after that.
+
+Well, okay. We've already computed our gradient updates for W. Um, so you know modulo applying those gradient updates,
+
+we can now ignore everything that's going on there from the standpoint of the rest of the computation.
+
+Um, and so this is why, you know, we're thinking of this as back propagation.
+
+Um, you know, we compute something and then we're going to kind of work our way backwards through the network and compute gradient updates.
+
+All right. And so just to kind of mathematically motivate this a little bit, um,
+
+really what we're trying to do is compute the gradient of the loss with respect to, uh,
+
+the positions of the, you know, the different values in the V matrix,
+
+which is the kind of first, um, matrix in the computation, the one which helps compute Z.
+
+Um, and so this is using the chain rule. Um, what we do is we first compute the gradient of the loss with respect to Z.
+
+That's this so-called error term. Uh, and then we multiply that by the gradient of Z with respect to, uh, you know, the the matrix V.
+
+And so this second term isn't too scary. Um, and involves dealing with the gradient of the activation function, um, which, you know, fortunately,
+
+we've chosen all of these things like tan H, um, rectified linear units, etc. are differentiable.
+
+So, you know, we can compute that.
+
+And then the second term, um, the gradient of a, which we're just using as a kind of intermediate value here, uh, with respect to v.
+
+That's just a purely linear function. So given this error signal.
+
+What we can then do is compute gradient updates for V based on that by, uh,
+
+kind of applying a couple more operations based on the non-linearity and, um, these other linear operations.
+
+And so, uh, the way we can think about this is that for each of these parameter matrices,
+
+V and W, we have some gradient term which comes backward from the loss,
+
+um, which is either either kind of chain rule, the like partial derivative of the loss with respect to the output.
+
+Um, or it's just the kind of loss itself when you're at the last layer.
+
+And then we combine that with information from the input to that layer, either the features themselves f of X or the uh, hidden unit Z.
+
+And so this is the idea of back propagation, is that we have all these values saved up from the forward pass.
+
+And then going backwards, we you know, we look at the first chunk, compute the gradient, pass an error signal back.
+
+Look at the next chunk, compute the gradient, pass an error signal back, etc.
+
+So if you want more information about back propagation again there are other resources that you can look to for it.
+
+Um, for this course, we're not going to assume, uh, a kind of deep, you know, knowledge of exactly how this works.
+
+We're more going to use this kind of functionality and try to understand it from the perspective
+
+of what's actually needed in order to train the kinds of models that we're interested in.
+
+That's the end of the segment.
+

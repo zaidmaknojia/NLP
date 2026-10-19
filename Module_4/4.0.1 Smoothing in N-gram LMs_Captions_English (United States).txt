@@ -1,0 +1,175 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about how to smooth n-gram language models.
+
+So the reason we might need smoothing is that when we build N-gram LMS, we are basically counting, uh, word counts in a large corpus.
+
+And so when we have like a two grammar, a three gram model, this can work fine.
+
+We can usually see most of the triples of words that make a lot of sense, especially if we have enough data.
+
+Uh, but. Actually five gram.
+
+Models are more kind of in the range of and that we want uh, these actually can work pretty well.
+
+And to just kind of illustrate this, if we think about the distribution of words after two, um, so this would be,
+
+this would be a two gram model, um, versus the distribution of, of words after, uh, go to versus the distribution of words after, uh.
+
+Want to go to. Or after?
+
+Hate to go to. Then, uh.
+
+We can see that the distribution of words based on wanting or hating to go somewhere, uh, is probably going to be very different.
+
+Um, maybe we hate to go to class.
+
+Um, but we want to go to Austin.
+
+And so having this additional context is generally going to be very useful for these models.
+
+So we're going to see that recurrent neural networks allow us to get this in one fashion.
+
+But before people are using recurrent neural networks heavily for this task,
+
+there is this trade off between how many words of context you used and how difficult it was to estimate your parameters.
+
+So this is what smoothing, uh, is supposed to do.
+
+So suppose that we have the probability of Austin given to.
+
+Um, you know where we is. Assuming we have a big enough data set that contains the word Austin.
+
+Um, we're probably going to see it in some construction of, too.
+
+Austin. And so this is going to be greater than zero because it's seen in in the data.
+
+Um, but this only holds for a two gram model. If we think about the probability of Austin.
+
+Given. Want to go to?
+
+A lot of times this is going to be zero. Uh, if the corpus.
+
+Isn't huge. And even if you do have a huge corpus, uh, you know, are you necessarily going to see want to go to hate to go to like to go to,
+
+etc. every combination of it with like every place. No you're not.
+
+So the reason for that is just because we don't see, uh, we don't see this five grand.
+
+Want to go to Austin occur with non-zero count. So this is going to be the idea behind smoothing.
+
+So there are many techniques for figuring out how to reserve some probability mass.
+
+And basically like give a small amount of probability to these unseen instances.
+
+So we can, uh, you know, not judge them as totally impossible if they come along in future data.
+
+So the scheme that we're going to talk about is called absolute discounting.
+
+I'm just going to give you the high level picture of what's going on here, so you understand what this family of techniques looks like.
+
+The idea is that we reserve mass. From scene five grams.
+
+To allocate to unseen five grams.
+
+All right. And so concretely what this means is if we have p of Austan given want to go to.
+
+It's defined in the following way. Uh I'm going to abbreviate this.
+
+So this is the count of want to go to Austin. Over.
+
+The count of want to go to. So this is just the maximum likelihood estimate of the parameters here.
+
+Get given the counts drawn from a big corpus.
+
+So what we are going to change here is we are going to subtract a constant k.
+
+And we're just going to say that zero is less than k is less than one here.
+
+And then we're going to add Lambda.
+
+So. I'm going to write this as pad.
+
+Um, to indicate that this is this absolute discounting distribution plus lambda times pad of Austin given to go to.
+
+All right. So. Lambda here is set to.
+
+Make this normalize. So let me show you an example of this.
+
+So if we have the context I want to go to, maybe we observe this four times in our data and we see I want to go to, uh Maui.
+
+Twice. We see. Want to go to class? Once and want to go to campus once.
+
+We're very studious here, so. What we do is if k equals 0.2, then we are.
+
+So essentially think of it as subtracting off from each of these counts.
+
+And so our kind of denominator here the count of want to go to.
+
+Is four, right? We've seen it four times with, uh, you know, with these three unique contexts.
+
+And so Lambda here ends up being.
+
+Point six over four. It's the number of.
+
+Word types. Seen in this context.
+
+Uh, times K. That's what the that's what the numerator here is.
+
+And the denominator is just the count of uh count of want to go to.
+
+And so what this is allowed us to do is it says, all right, we have these four occurrences, right.
+
+But instead of saying we have a 50% chance of Maui, 25% chance of class, 25% chance of campus.
+
+And instead we've decreased all these counts a bit. We've we've turned this down to, you know, whatever 1.8 over four is chance of Maui,
+
+point eight over four, chance of class, point eight over four chance of campus.
+
+And now we have this 0.6 over four times a lower order model.
+
+So. This up here is the three gram.
+
+Uh, actually. Sorry. Four gram. Absolute discounting probabilities for, uh, Auston in now a shorter context.
+
+So the nice thing about this is that we can do this recursively.
+
+So then, uh. Pad of Austin given to go to, uh, is, you know, basically a big expression, uh, the sort of count expression before.
+
+Plus I'm going to call it lambda prime times pad of Austin given go to.
+
+And if you keep if you keep like unrolling this, uh, eventually you just get, uh, the probability of Austin at the very end.
+
+And then this is all this is always going to be greater than zero.
+
+If Austin is a word that's shown up in our data, but likely we're only placing a distribution over words that we actually have seen.
+
+So the the key property of this is that it allows us to.
+
+Basically allocate some probability mass to unseen events, and it backs off in this very natural way where we we first kind of say,
+
+okay, we're not just going to like, uh, throw out all the information.
+
+We're going to successively decrease the amount of information that we're looking at and, uh, get a sort of accurate estimate as a result.
+
+So one of the techniques you may see in the literature is what's called kinase or nice smoothing.
+
+Uh, kinase or nice smoothing is very similar to absolute discounting.
+
+There's one kind of extra trick that they use where these lower order, uh,
+
+these lower order probability distributions depend on essentially the number of unique words seen in a particular context.
+
+Because the assumption is when you're seeing a new word, what matters is what's called the fertility of the context.
+
+How many unique things can come after it. So go to would be a very fertile context because lots of things can come after it.
+
+So they they kind of adjust the probabilities in one additional way.
+
+But uh, if you ever do any kind of n-gram language modeling, it's probably going to be uh, with kinase or Nai, which uses roughly this framework.
+
+So this is not something we're going to be exploring too much more in the rest of the course.
+
+But this gives you an idea of what kind of techniques get used here in order to let you estimate these language models.
+
+And that's the end of the segment.
+

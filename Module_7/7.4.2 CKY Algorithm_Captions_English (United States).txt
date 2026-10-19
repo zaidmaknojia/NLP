@@ -1,0 +1,229 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about the key algorithm.
+
+So the k algorithm is going to help us compute the most likely tree for a given sentence x.
+
+So like we saw in the Hmhm case.
+
+We can. Think about this.
+
+Uh, most likely posterior tree as also the tree that maximizes the joint probability p of t comma acts, uh,
+
+because just by kind of multiplying the top and bottom by p of x, uh, and then sort of get, you know, that that term is constant with respect to T.
+
+Okay. So recall that the Viterbi algorithm was this dynamic program that had this.
+
+Sort of tag versus sentence matrix.
+
+And there is this whole, uh, kind of idea of for each position,
+
+having to evaluate which previous tag was the highest scoring one for getting us to this particular tag at this position in the sentence.
+
+So we're kind of maintaining uncertainty over each tag at each position.
+
+And this, combined with the Markov property of HMMs, allowed us to do efficient inference.
+
+So Y is going to be exactly the same idea, but it's going to be a little bit, uh,
+
+more involved because instead of predicting a sequence of tags, we're now predicting a tree structure.
+
+So let's go to a, uh, kind of diagram of what that structure actually looks like.
+
+All right, so we have this, uh. A chart.
+
+Now that looks like this. So what, each of these cells.
+
+Okay. So, uh, this and then the, um, so they're actually three dimensions of this chart.
+
+Uh. We are going to index it by uh I j and then x where this is the score.
+
+Of. The best derivation.
+
+Of X. Over span.
+
+I j. So the chart right now represents all the possible spans J.
+
+We're going to index them using what we call fence posts here.
+
+And so for example this cell here is the cell zero comma one.
+
+And the cell at the top is zero comma four.
+
+All right. And we also have this kind of dimension you can think of either within each cell we have uh set of uh constituents acts.
+
+Or you could think about their another dimension kind of going into the screen, um, capturing the different possible symbols.
+
+All right. So let's see. So so then, uh, the recurrence is going to be the following.
+
+Uh. So this is the base case.
+
+All right, so this is the, uh.
+
+Applies probabilities from the lexicon. So what we do at the start is to say, okay, over each possible word.
+
+What we need to do is we need to consider which symbols could have yielded that word and what their log probabilities are.
+
+So, uh, we're going to have a example grammar here.
+
+Oh. All right.
+
+And each of these rules is going to have probability one.
+
+And that's just because each you know, we only have one rule for each of these parts of speech.
+
+Uh, and so the probability of the word given, the part of speech, uh, has to be one in order for this to normalize.
+
+Notice that we have two ways of analyzing raises.
+
+We can say it's either a noun like, you know, the the kind of money raised or uh, sort of spatially raising something up.
+
+All right. So applying this first rule, remember that we're going to be dealing with log probabilities.
+
+So uh we're going to express things.
+
+So for example the score of DTE in the first cell here is going to be zero.
+
+And all the other scores. Are going to be minus infinity.
+
+I'm not going to bother writing out the rest of them. Uh, in general, I'm just going to write the scores that are non-negative infinity here.
+
+And so, uh, this is what we get by applying that.
+
+And again, every other, every other symbol in every other one of these bottom cells has scored negative infinity.
+
+All right. Now, the recurrent case for the dynamic program works as follows.
+
+All right. We have to max over two things.
+
+Um, and we'll kind of continue this on the next line here. Uh.
+
+All right. So what we are doing here is we are saying what is the best way to build symbol X over span ij.
+
+Well, we need to think about all the possible ways we could build that.
+
+And so this k variable is what we call a split point.
+
+K is going to be in the range uh between uh.
+
+It's going to be less than, uh, it's going to be between I and J here.
+
+And, uh, essentially the.
+
+Idea is that we have to pick a point in which the binary tree is going to split.
+
+So, for example, if we think about this cell right here, we have two possible ways to build it.
+
+We can either build it by uh, kind of let's say I'll do this with the highlighter.
+
+We can either build it by taking a unit here and combining it with this, or we could take a unit here and combine it with this.
+
+And those each represent two possible split points. All right.
+
+So we have to max over split points and then we also max over rules.
+
+So this is a max over all the rules in our grammar.
+
+X one uh x goes to X1X2.
+
+And then what is the actual score associated with this? Well, we have to look at the probability of that rule.
+
+And then also the chart values associated with uh x1 over the first half of the span,
+
+uh, or rather the span before the split point and x2 over the second half.
+
+All right. So let's finish out our grammar here.
+
+All right. And so these have probability 1.0. And then we'll say that the ndps have probability 0.5.
+
+And we're going to say that the log of 0.5 uh is going to be minus one here.
+
+Just for simplicity. All right, so now we can start to fill in the rest of our tree.
+
+So let's take a look at this cell. Uh, from 0 to 2.
+
+So we only have one possible split point, right?
+
+So we basically have to go with k equals one here.
+
+That's the only possible value that works. And then we have to consider every rule in the grammar.
+
+All right. So there's a lot of rules. And a lot of them are going to combine things like for example uh and then on the left over here uh with Gnns.
+
+And both of those have probability negative infinity. And that's going to give us a negative infinity in this cell as well.
+
+So we're just going to ignore that rule. I mean we have to think about it.
+
+We have to loop over it. But the fact that it's going to give us negative infinity, we're not going to draw it in our picture here.
+
+In fact, the only rule looping through the whole grammar that works here.
+
+Is one that combines D, t and m, so we apply n p goes to n.
+
+And that gives us an NP with a score of minus one.
+
+And the reason is because we.
+
+Had to apply the score of that rule and, uh, additionally take the scores from the to, uh, the tags here.
+
+The DNN. All right.
+
+Now it turns out that we can build an NP here with score minus one as well by taking NSS.
+
+But there's no way to use, uh, like the NBS or anything like that.
+
+On the right. Here, though, we can combine the VBS and the PRP to make a VPI, and that's going to have scores zero.
+
+All right. So you could consider you know, you can you can kind of think through the rest of this tree yourself.
+
+Uh, we're just kind of going to jump to the solution, which is that we're going to end up taking this NP and VPI, and we're going to make an S here.
+
+And the score of that is going to be minus one.
+
+All right. And so the algorithm at the end returns this score of the, uh.
+
+Uh, well, it assigns scores to every constituent over every span.
+
+And then what we say is, all right, what's the score of the root?
+
+Uh, so in this case, the score of the root symbol s, uh, is minus one.
+
+And so we know that there's a tree that can possibly be built.
+
+And what we can do is we can kind of trace the back pointers in here, like we talked about in Viterbi in order to reconstruct that tree.
+
+All right. So. This is the this is the basic kind of flow of the algorithm.
+
+Um, there's a fair amount of complexity to actually implementing it.
+
+Uh, you have to kind of think about building the right data structures for indexing over your grammar to do it efficient efficiently.
+
+And one thing we're not going to talk about is how to handle unary rules, which make this more complicated.
+
+All we saw here was this recurrence for the binary case. But there's another case we have to deal with as well.
+
+Uh, and then the last thing, the last thing I'll say about this is that the runtime, uh, ends up being cubic.
+
+Uh, and the reason it's cubic is because we have n squared chart cells here.
+
+And then for each one, we have to consider a loop over order and split points.
+
+Uh, and then we also have this grammar constant times G.
+
+Uh, so G represents here the kind of shape of the grammar with respect to how many possible values it allows you to build and how many rules it has.
+
+And those those factors are very important for the performance, in many ways more important than the kind of asymptotic, uh, behavior in terms of n.
+
+So that's why we kind of put it in this runtime explicitly.
+
+But, you know, without going kind of deeper on what factors matter the most there, it's a little bit hard to reason about.
+
+So that gives you a sketch of the key algorithm.
+
+It's a dynamic program in the same style as Viterbi that allows us to do the same thing.
+
+Uh, and this is an example of its execution that hopefully gives you a kind of rough sense of how it works.
+
+That's the end of this segment. Mike's clear.
+
+That was cool.
+

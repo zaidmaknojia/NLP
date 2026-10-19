@@ -1,0 +1,137 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment we're going to talk about sequence to sequence models also called encoder decoder models.
+
+So we've talked about both language modeling and also classification.
+
+But there's an important class of tasks which look like mapping from an input sequence of tokens to an output sequence of tokens.
+
+Um, and a lot of kind of surprising things can be cast into this, uh, can be viewed in this way.
+
+So, for example, syntactic parsing, which is going to be about building tree structures over sentences,
+
+can actually be viewed as producing this kind of goofy,
+
+uh, sequence of bracketed tokens as an output, given just the natural language sentence as input, um, semantic parsing,
+
+which is a kind of variant that, uh, resembles kind of translating natural language into source code,
+
+can also be viewed as basically mapping from a sequence of tokens here,
+
+which is a query what states border Texas into a lambda calculus expression that, uh, can be executed against a database?
+
+So there are lots of reasons why, rather than just kind of doing autocomplete with language models,
+
+we might want to view these or sort of use transformers more as kind of transducers
+
+to produce outputs that are of a different modality than their inputs.
+
+Um, machine translation is another great example, like kind of translating things into other languages.
+
+Um, and so what I'll say is I kind of note that conceptually,
+
+we're thinking about the inputs and outputs of sequence to sequence models as very distinct things compared to language modeling.
+
+Where we think about there is like there's just one sequence and you're going to, uh, kind of crank through and autocomplete that sequence.
+
+Now, models like ChatGPT actually do all of this basically adds language modeling with a shared vocabulary.
+
+So the distinction has been a little bit blurred.
+
+But if you look in the literature, it's still important to, uh, kind of understand the distinctions here.
+
+All right. So what are seek to seek models. These are words that are going to generate next words conditioned on the previous output,
+
+which is very similar to what language models do as well as their input.
+
+So if we want to translate a sentence into French, we have this input that we're going to call X.
+
+The movie was great and we're going to start generating our output sequence, kind of like language modeling.
+
+Uh, we're going to produce a contextualized representation.
+
+And then we're going to form a distribution via a softmax over the vocabulary and get our first, uh, predicted token y1.
+
+Now, critically, the transformer here is going to be able to look back or, you know, for any sequence to sequence model,
+
+but especially for Transformers, they're going to be able to look back at the input and do this generation conditioned on what's in the input.
+
+Um, so we can write the distribution that we get out this way, which again looks exactly like a language model.
+
+But everything here is conditioned on X. Uh, and the other kind of key difference here is we actually have two models floating around.
+
+Right? So unlike a language model where we have like one transformer here,
+
+we're going to have a decoder that has separate parameters and can actually have a separate vocabulary from the encoder.
+
+Okay. So how does this work? Well, it's very similar in many ways to language models just with this kind of encoder block hanging around.
+
+So we're going to kind of generate the first word if we're doing inference.
+
+And then uh we feed that in to the uh next step of the model.
+
+Just like language modeling kind of consumes the token for the next time step.
+
+Um, and we're going to do that repeatedly until we generate a stop token.
+
+So unlike language modeling, when a lot of times we're just kind of happy to go on forever.
+
+Um, here, when we're doing something like machine translation, we have a notion of, okay, we're done, and now we're going to stop.
+
+So that's a little more common to see in this, uh, kind of way of doing things.
+
+So. Just like in language modeling, we need to run inference up to a particular point in the computation graph.
+
+Take the argmax, get the next word, and then feed that into, uh,
+
+basically feed that into the next step, uh, of the model to predict the next output word.
+
+Uh, and this will kind of move along one at a time.
+
+The kind of key thing here that, uh, saves us time and makes this not be super slow is the fact that the encoder only needs to be run once.
+
+So the whole the movie was great. Piece doesn't interact with the decoder.
+
+Actually, the decoder looks back at it, but, um, the movie was great.
+
+Is just encoded separately. And so, uh, we can just do that once in advance.
+
+Um, this whole thing, what I've drawn up here is a computation graph.
+
+You can train this and end to maximize the probability of a gold sequence.
+
+Now, the model will learn to kind of look back at the input, and it'll use that information when generating these outputs.
+
+So we've said that language modeling is this impossible task.
+
+Well machine translation is difficult but not impossible in the same way right.
+
+We basically know what the sentence is going to say. And so the entropy of these distributions is a lot lower.
+
+All right, so I keep talking about models looking back, Transformers, etc.
+
+So the actual transformer, which we showed uh, a little while ago, has this ability kind of baked in.
+
+And that's what's going on inside this, uh, unit here.
+
+So there is a multi-head attention component of the decoder that's able to look back at the representations computed by the encoder.
+
+Uh, so this there's there's basically two steps of multi-head attention.
+
+There's one in the output for just kind of looking at prior things in the output.
+
+And then there's one that allows you to look back at the input as well.
+
+Uh, and otherwise like all the pieces here are basically the same.
+
+So there's nothing really new architecturally.
+
+But this gives you the kind of full Foley general, uh, mechanism that allows you to, uh, kind of model all this stuff.
+
+Um, and, uh, that's basically the, uh, kind of.
+
+Architecture that really is getting used for everything these days.
+
+Um, you know, the kind of autoregressive models like ChatGPT can be viewed as special cases of this.
+
+Um, but this is kind of the main idea. That's the end of the segment.
+

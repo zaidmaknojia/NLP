@@ -1,0 +1,123 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about a kind of grab bag idea of ideas related to Transformers and transformer language modeling,
+
+uh, and some kind of important concepts that help you understand where some of the current research is headed.
+
+So the first thing I want to mention are neural scaling laws, which are, uh,
+
+kind of really important driver for why transformers are probably the default,
+
+uh, model these days and why they're used so much for language modeling.
+
+Um, so what we have here is a graph from, uh, Jared Kaplan at all his paper, which looks at, uh, basically a set of, uh, kind of test losses.
+
+So this is basically perplexity, but not exponentiated.
+
+So just negative log likelihood, um, across plotted against three different, uh, x axes, compute data, set size and parameters.
+
+These are all basically scale like as the transformer gets bigger, as the data gets bigger.
+
+Um, and compute is a kind of mix of both of these. Um, and on the compute graph we see that there is these many blue lines.
+
+And these are basically different transformers with different parameters, um, that are all trained, uh, to basically with the same amount of time.
+
+And the kind of fascinating thing here is we see that you, we get these kind of, uh, these plots that have this very regular,
+
+uh, kind of log linear structure where as the parameters increase, we get these very regular decreases in test loss.
+
+And what this indicates is that compared to a lot of other architectures, like recurrent neural networks,
+
+where sometimes if you just like increase the number of parameters in the model, it just doesn't get any better.
+
+You've like hit a saturation point.
+
+We see the Transformers scale really, really well where if we could just make a model that's 10 or 100 x bigger than we have right now,
+
+there's really good evidence that it will actually perform better as a language model,
+
+which is which is quite rare and didn't exist in the era of linear models that didn't
+
+really exist for n gram language models that didn't exist for a lot of prior,
+
+uh, neural architectures. So this being the goal in mind, one of the challenges that prevents things from scaling is the, uh, kind of.
+
+Lack of, you know, compute in order to do this.
+
+And one of the big bottlenecks there is this quadratic nature of the transformer.
+
+So this has been, uh, one of the kind of headline problems in some sense of, uh, NLP, machine learning more broadly, how to address this.
+
+There are a million proposals here. This is a figure taken from, uh, it all survey of this stuff, which is, uh, now even a few years out of date.
+
+Um, just to give you an idea of the sort of flavor of one of these things, uh, there's a model called performers,
+
+which was from 2020, where, uh, basically, rather than forming the attention matrix here.
+
+Uh, so on the left side here, we have, uh, our standard computation where, uh, you know, a equals.
+
+The, um. The keys, the queries multiply by the keys.
+
+Instead of doing that, we are instead going to multiply things in a different order.
+
+We're going to multiply the keys by the values first, and kind of collapse things down along the sentence length this al dimension.
+
+And then we're going to multiply by the query. And this is going to make things faster.
+
+And it's going to make them more and more memory efficient. However it's doing a different computation right.
+
+This this a matrix requires multiplying queries and keys and then taking a softmax.
+
+And that's not what's happening on the right side.
+
+Here we have a fundamentally different computation that's approximating that.
+
+And I'm not going to go into the details of the approximation, but it's doing something different.
+
+Um, and one kind of common theme in all this work is that usually these approximations work a little bit less.
+
+Well, um, so the kind of standard transformer is just very hard to beat as a baseline by doing alternative variance.
+
+So another kind of line of things is to kind of directly go after the fact that the,
+
+uh, attention is quadratic and just try to make that not be quadratic.
+
+Uh, so long former is one model that devises a bunch of custom attention masking schemes that's
+
+going to make everything kind of more efficient when you want to encode very long documents.
+
+So the idea is to enable these things to scale to much larger, uh, contexts.
+
+Um, so these basically, uh, rather than using the full n squared attention matrix,
+
+they have this kind of combination of patterns like a sliding window pattern,
+
+this dilated sliding window pattern, and this global pattern where you're able to look at certain other tokens and,
+
+um, kind of combining these in clever ways.
+
+You get most of the benefits of the original transformer, um, but with a sparse, uh, self-attention matrix.
+
+So what this does is it actually doesn't, uh, cut down time by very much.
+
+So, um, on the left here, we see that the, uh, uh, there's the blue line here, which is full self-attention.
+
+Um, and this is actually, like reasonably fast. There's a chunked version of long former, which is, uh, faster.
+
+But, um, you know, the, uh, the, uh, the, um, kind of other versions of long form are basically the same in terms of time.
+
+The real benefit comes in terms of memory. Um, and so based on what I kind of showed, I want you to think about what the memory is should look like,
+
+both for, uh, the original transformer and also for long form or as a sequence length.
+
+Uh, it goes up. And one final thing I'll mention is that, uh,
+
+much of the work here has been not on developing new architectures or kind of changing the math, but instead,
+
+like kind of systems level things for how we can handle GPU memory and stuff more efficiently,
+
+uh, in order to scale transformers to longer context lengths.
+
+So, uh, there's a lot of other innovation that's kind of a bit outside the scope of this class that made these things,
+
+uh, kind of get better in recent years as well. That's the end of the segment.
+

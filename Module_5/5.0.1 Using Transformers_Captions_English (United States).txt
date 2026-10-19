@@ -1,0 +1,105 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to zoom out from the transformer architecture itself and look at how
+
+transformers can be used to produce classifiers and how they actually kind of,
+
+uh, function if we think about them from an API standpoint.
+
+So, uh, as a reminder, what a transformer does is it takes a sequence of vectors as input and produces
+
+a new sequence of vectors as outputs same length as the original sequence.
+
+So we can view that as an encoding of each word.
+
+And what that's going to allow us to do is it's going to allow us to stack these things,
+
+but then ultimately take those and use them as kind of proxies for those words to make predictions.
+
+Uh, so this is actually the same sort of API that RNNs have.
+
+RNNs also produce these kind of cell states. Uh, so transformers don't really materialize those in the same way.
+
+Um, but this kind of producing context dependent representations of items in a sequence, they're kind of exactly fungible.
+
+So the. One of the things we can do is we can actually just make a classification decision for each item in a sequence.
+
+So if we want to do something like part of speech tagging, we take those output representations for each token.
+
+Uh, we put it through some kind of classification layer like a linear and a softmax.
+
+And now, rather than having predictions that are in word space like we have for language modeling,
+
+we instead, uh, have a distribution over, let's say, a bunch of part of speech tags.
+
+We can also make a classification decision over an entire sequence at once.
+
+Uh, so just like deep averaging networks allowed us to, uh, take a bunch of words, average them together, and make a prediction.
+
+We can do the exact same thing just with a transformer. Kind of in the mix as well.
+
+So we can take, uh, the contextualized representations we get from the transformer layer,
+
+average those, and then do matrix multiply and softmax to do something like sentiment prediction.
+
+Now that's one way to do it. But there's actually another way which is a little bit more standard when we look at
+
+how people use transformers in practice and how the pre-trained models are set up.
+
+What we typically do is we append a placeholder token, uh,
+
+which uh is typically denoted by brackets class uh for classification at the start of the sequence.
+
+And rather than averaging over the contextualized embeddings of the whole sequence, instead we just take the vector representation of the CLS token,
+
+feed that into, uh, matrix, multiply and softmax, and then predict sentiment from there.
+
+Now why is this a good idea or why does this work?
+
+Well, if we remember kind of what is happening at each step of the transformer,
+
+the self-attention means that everything is attending to everything else.
+
+So what that means is that, uh, this CLS embedding at the very end of the network here is attending to all the other tokens.
+
+And we might imagine that the model can learn, uh, distribution of what tokens are important for this particular classification decision.
+
+So it's actually a little bit smarter than average pooling, uh, because this final layer is going to learn how to mix the information together for us.
+
+A final thing that, uh, Transformers have kind of proven to be really, really effective at is sentence pair classification.
+
+Uh, so one of the big kind of highlight results of the initial Bert pre-trained model was its ability to do tasks like this,
+
+textual entailment tasks that we see here. So we have a pair of sentences.
+
+The woman is driving a car and then the woman is walking.
+
+What we want to know is does the second sentence contradict the first?
+
+Is it implied by the first, or are they kind of unrelated?
+
+And in this case it contradicts it or it contradicts the first, because the woman can't be driving a car and walking at the same time.
+
+So Transformers are really good at this,
+
+partially because the self-attention mechanism gives them so much flexibility to do computation anchored to all these different tokens.
+
+So for example, uh, you can kind of get each of these words, uh,
+
+sort of attending to each other and then maybe you'll get driving and walking, uh, kind of mutually attending.
+
+And over a few layers of the transformer computation, the model will really figure out,
+
+oh, no, like, you know, driving a car and walking, these are sort of not compatible.
+
+And so ultimately it'll be able, uh, the model will be able to make a prediction that, uh, reflects this kind of mismatch in the two sequences.
+
+So that's another thing that Transformers can do.
+
+They're really quite flexible because self-attention lets them, you know, kind of align different parts of the input in different ways.
+
+And so you don't need custom architectures to do things like sentence pair classification or document classification.
+
+Um, you can just kind of feed whatever text you have into it and see what comes out.
+
+That's the end of the segment.
+

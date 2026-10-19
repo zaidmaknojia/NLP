@@ -1,0 +1,115 @@
+[Auto-generated transcript. Edits may have been applied for clarity.]
+In this segment, we're going to talk about the basic overall machine learning framework that we're going to be applying in this course.
+
+And we're going to introduce the idea of gradient descent. So.
+
+The high level idea is that we have a set of parameters w uh to optimize, and these might be the, uh,
+
+weights associated with a, uh, linear binary classifier, or they might be something like parameters of a big neural network.
+
+We're going to assume, uh, when we're doing supervised learning,
+
+which nearly everything in this course is that we have access to labeled data, uh, which is going to be in this form.
+
+So what this means is that there's the points.
+
+Um, and each one uh, consists of an input x, which would be something like a sentence and uh, a label y, uh,
+
+and these superscript I means that that's the, uh, you know, input or the label associated with the ith training example.
+
+So suppose. We're doing.
+
+Classification with 10,000.
+
+Features. And so, uh, w.
+
+Is a vector in R to the 10,000.
+
+And the way we can think about machine learning is we're searching.
+
+For. An optimal W.
+
+Um, we want to find a weight vector that is going to allow us to do well at our, uh, classification task that we've got.
+
+And so we think about this, uh, as an optimization problem.
+
+We have some sort of. Training objective.
+
+Um. Which is going to be linear over.
+
+Examples. And then we are going to optimize it.
+
+And this linearity is going to be important for this idea of stochastic gradient descent.
+
+So what does this objective look like? Um, again, to keep things pretty general will get, uh, concrete.
+
+You know, when we actually see, uh, algorithms that fall into this paradigm.
+
+The objective looks like a sum.
+
+From I equals one to d, so a sum over the training examples.
+
+Of. Of a loss defined with respect to the ith data point and the weights or parameters that we are optimizing.
+
+And so roughly the way you can think of this as, uh, okay, for these current weights, how well is it doing at fitting this particular example?
+
+And by summing up those losses over the training data, we get an overall sense of how well does this,
+
+uh, this weight vector, this current weight vector w fit the training data?
+
+And what we want to do is we want we want to find a W that fits this training data very well.
+
+Um, and so this leads to the idea of stochastic gradient descent.
+
+And there's a whole space of algorithms here. I'm basically just presenting the general framework so that we have the basics of the machine learning.
+
+And, you know, we can get on to the NLP stuff. Uh, but obviously there is a rich set of techniques here in optimization that we can take advantage of.
+
+So, uh, basically what this looks like is the following.
+
+So for. A variable t up to, uh.
+
+Uh, you know, some num epochs.
+
+For I up to d what we do is we sample.
+
+J from. The interval one to D.
+
+So basically we are picking a data point. And then we are applying an update to our weight vector which looks like the following.
+
+All right. And so what do we have here?
+
+We have the gradient. Of the loss.
+
+With respect to. So what this basically is, is this points.
+
+Towards W that. Give.
+
+Higher loss. And so.
+
+Because this gradient tells us, okay if we move.
+
+The current value of W in this direction. We're going to get a.
+
+We're going to get a higher amount of loss. What we want to do is we want to subtract that.
+
+We want to move in the other direction and reduce the loss, um, multiplied by some step size Alpha.
+
+And what the step size does is it allows us to to kind of look at how far we want to move and adjust that accordingly.
+
+And so we'll be talking about the step size, uh, a, you know, a little bit down the road when we, um, actually talk more about implementing this.
+
+And then um, for deep neural networks, this step size parameter is fairly important.
+
+But what this gives you is the kind of overall picture of where nearly all of the methods in this course are going to fall into.
+
+And so when we talk about perceptron and logistic regression, they are both going to turn out to be instances of this framework.
+
+Uh, and so we're going to be able to understand them in that vein.
+
+And then even training super complicated deep neural networks, uh, is also fundamentally going to look like this.
+
+And so this is the framework that we're going to be taking advantage of going forward.
+
+And that's the end of the segment.
+
